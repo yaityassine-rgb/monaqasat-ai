@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
-import { formatBudget, getSavedIds, setSavedIds, getStatusStyle } from "../../lib/utils";
+import { formatBudget, getSavedIds, setSavedIds, getStatusStyle, getLocalizedText } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -200,14 +200,22 @@ export default function TenderDetailPage() {
                 {getStatusLabel(tender.status, t)}
               </span>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-100 leading-snug mb-2">
-              {tender.title[lang]}
-            </h1>
-            {tender.sourceLanguage && tender.sourceLanguage !== lang && (
-              <p className="text-xs text-slate-500 mb-2">
-                {t("tenderDetail.sourceLanguage")}: {tender.sourceLanguage === "en" ? t("tenderDetail.langEn") : tender.sourceLanguage === "fr" ? t("tenderDetail.langFr") : t("tenderDetail.langAr")}
-              </p>
-            )}
+            {(() => {
+              const titleInfo = getLocalizedText(tender.title, lang);
+              return (
+                <>
+                  <h1 className="text-xl md:text-2xl font-bold text-slate-100 leading-snug mb-2">
+                    {titleInfo.text}
+                  </h1>
+                  {titleInfo.mismatch && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-400/10 border border-amber-400/30 text-xs font-medium text-amber-400 mb-2">
+                      <Globe className="w-3 h-3" />
+                      {t("tenderDetail.contentInEnglish")}
+                    </span>
+                  )}
+                </>
+              );
+            })()}
             <div className="flex items-center gap-2 text-sm text-slate-400">
               <Building2 className="w-4 h-4 shrink-0" />
               <span>{tender.organization[lang]}</span>
@@ -272,23 +280,38 @@ export default function TenderDetailPage() {
           </motion.div>
 
           {/* Requirements */}
-          <motion.div
-            {...fadeUp}
-            transition={{ delay: 0.25 }}
-            className="glass-card rounded-xl p-6"
-          >
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
-              {t("tenderDetail.requirements")}
-            </h2>
-            <ul className="space-y-3">
-              {tender.requirements.map((req, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-300">{req}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+          {tender.requirements && tender.requirements.length > 0 ? (
+            <motion.div
+              {...fadeUp}
+              transition={{ delay: 0.25 }}
+              className="glass-card rounded-xl p-6"
+            >
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">
+                {t("tenderDetail.requirements")}
+              </h2>
+              <ul className="space-y-3">
+                {tender.requirements.map((req, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-300">{req}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ) : (
+            <motion.div
+              {...fadeUp}
+              transition={{ delay: 0.25 }}
+              className="glass-card rounded-xl p-6"
+            >
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">
+                {t("tenderDetail.requirements")}
+              </h2>
+              <p className="text-sm text-slate-400 italic">
+                {t("tenderDetail.noRequirements")}
+              </p>
+            </motion.div>
+          )}
 
           {/* AI Analysis */}
           <motion.div
@@ -342,6 +365,11 @@ export default function TenderDetailPage() {
               <ExternalLink className="w-4 h-4" />
               {t("tenderDetail.applyNow")}
             </a>
+            {tender.sourceUrl && (
+              <p className="text-[10px] text-slate-500 text-center -mt-1">
+                {t("tenderDetail.externalLink")}
+              </p>
+            )}
             <button
               onClick={toggleSave}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 border text-sm font-medium rounded-lg transition-colors ${

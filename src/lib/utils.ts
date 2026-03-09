@@ -63,6 +63,22 @@ export function getMatchTextColor(score: number): string {
   return "text-red-400";
 }
 
+const ARABIC_RE = /[\u0600-\u06FF]/;
+
+/** Returns the text for the requested language, with a mismatch flag when
+ *  the stored text doesn't actually contain characters of that language. */
+export function getLocalizedText(
+  field: { en: string; ar: string; fr: string },
+  lang: "en" | "ar" | "fr",
+): { text: string; mismatch: boolean } {
+  const raw = field[lang];
+  if (lang === "ar" && raw && !ARABIC_RE.test(raw)) {
+    // Arabic field has no Arabic characters — it's a copy of the English text
+    return { text: raw, mismatch: true };
+  }
+  return { text: raw, mismatch: false };
+}
+
 export function getStatusStyle(status: string): string {
   switch (status) {
     case "open":

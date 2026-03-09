@@ -19,7 +19,7 @@ import {
 import { loadTenders, getTenders } from "../../lib/tender-store";
 import { COUNTRIES, SECTORS } from "../../lib/constants";
 import type { Tender } from "../../lib/types";
-import { formatBudget, getSavedIds, setSavedIds, getMatchColor, getStatusStyle } from "../../lib/utils";
+import { formatBudget, getSavedIds, setSavedIds, getMatchColor, getStatusStyle, getLocalizedText } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
 type SortOption = "match" | "deadline" | "budget" | "newest";
@@ -395,9 +395,21 @@ export default function DashboardPage() {
                           to={`/dashboard/tender/${tender.id}`}
                           className="block"
                         >
-                          <h3 className="text-sm font-semibold text-slate-100 leading-snug line-clamp-2 group-hover:text-primary-light transition-colors">
-                            {tender.title[lang]}
-                          </h3>
+                          {(() => {
+                            const titleInfo = getLocalizedText(tender.title, lang);
+                            return (
+                              <>
+                                <h3 className="text-sm font-semibold text-slate-100 leading-snug line-clamp-2 group-hover:text-primary-light transition-colors">
+                                  {titleInfo.text}
+                                </h3>
+                                {titleInfo.mismatch && (
+                                  <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/30 text-[10px] font-medium text-amber-400">
+                                    {t("tenderDetail.contentInEnglish")}
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
                         </Link>
                       </div>
                       <button
@@ -443,11 +455,6 @@ export default function DashboardPage() {
                       >
                         {t(`dashboard.${tender.status === "closing-soon" ? "closingSoon" : tender.status}`)}
                       </span>
-                      {tender.sourceLanguage && tender.sourceLanguage !== lang && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-700/60 border border-slate-600/40 text-[10px] font-semibold text-slate-400 uppercase">
-                          {tender.sourceLanguage}
-                        </span>
-                      )}
                     </div>
                   </div>
 

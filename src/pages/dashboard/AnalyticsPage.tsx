@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
-import { formatValue, formatBudget, getMatchTextColor } from "../../lib/utils";
+import { formatValue, formatBudget, getMatchTextColor, getLocalizedText } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -283,9 +283,19 @@ export default function AnalyticsPage() {
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-slate-200 line-clamp-1 group-hover:text-primary-light transition-colors">
-                      {tender.title[lang]}
-                    </h3>
+                    {(() => {
+                      const titleInfo = getLocalizedText(tender.title, lang);
+                      return (
+                        <h3 className="text-sm font-medium text-slate-200 line-clamp-1 group-hover:text-primary-light transition-colors">
+                          {titleInfo.text}
+                          {titleInfo.mismatch && (
+                            <span className="ms-2 inline-flex items-center px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/30 text-[10px] font-medium text-amber-400">
+                              {t("tenderDetail.contentInEnglish")}
+                            </span>
+                          )}
+                        </h3>
+                      );
+                    })()}
                     <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
                       {co && (
                         <span className="flex items-center gap-1">

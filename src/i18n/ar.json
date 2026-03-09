@@ -304,7 +304,11 @@
     "langEn": "English",
     "langFr": "Français",
     "langAr": "العربية",
-    "proposalComingSoon": "مولد العروض قريباً!"
+    "proposalComingSoon": "مولد العروض قريباً!",
+    "noRequirements": "المتطلبات التفصيلية متاحة على بوابة المصدر.",
+    "contentInEnglish": "المحتوى بالإنجليزية",
+    "contentInFrench": "المحتوى بالفرنسية",
+    "externalLink": "يفتح بوابة خارجية"
   },
   "savedTenders": {
     "title": "المناقصات المحفوظة",

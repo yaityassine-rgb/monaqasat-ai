@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
-import { formatBudget, getSavedIds, setSavedIds, getMatchTextColor, getStatusStyle } from "../../lib/utils";
+import { formatBudget, getSavedIds, setSavedIds, getMatchTextColor, getStatusStyle, getLocalizedText } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -132,9 +132,21 @@ export default function SavedTendersPage() {
                         </div>
 
                         <Link to={`/dashboard/tender/${tender.id}`}>
-                          <h3 className="text-sm md:text-base font-semibold text-slate-100 leading-snug line-clamp-2 hover:text-primary-light transition-colors mb-2">
-                            {tender.title[lang]}
-                          </h3>
+                          {(() => {
+                            const titleInfo = getLocalizedText(tender.title, lang);
+                            return (
+                              <>
+                                <h3 className="text-sm md:text-base font-semibold text-slate-100 leading-snug line-clamp-2 hover:text-primary-light transition-colors mb-1">
+                                  {titleInfo.text}
+                                </h3>
+                                {titleInfo.mismatch && (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/30 text-[10px] font-medium text-amber-400 mb-1">
+                                    {t("tenderDetail.contentInEnglish")}
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
                         </Link>
 
                         <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3">
