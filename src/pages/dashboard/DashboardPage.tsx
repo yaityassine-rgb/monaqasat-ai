@@ -39,6 +39,7 @@ function setSavedIds(ids: string[]) {
 }
 
 function formatBudget(amount: number, currency: string): string {
+  if (!amount || amount <= 0) return "Not disclosed";
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }
@@ -499,7 +500,7 @@ export default function DashboardPage() {
                       </span>
                       <span className="text-xs text-slate-300 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {tender.deadline}
+                        {tender.deadline || "See portal"}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1 items-end">

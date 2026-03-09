@@ -44,6 +44,7 @@ def parse_date(date_str: str) -> Optional[str]:
         "%Y-%m-%d",
         "%d/%m/%Y",
         "%d-%m-%Y",
+        "%d-%b-%Y",
         "%b %d, %Y",
         "%B %d, %Y",
         "%d %b %Y",

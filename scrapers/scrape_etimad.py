@@ -7,9 +7,11 @@ API returns JSON, rate-limited to 20 req/min. Max 24 items per page.
 Content is in Arabic.
 """
 
+import json
 import requests
 import logging
 import time
+from pathlib import Path
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
 logger = logging.getLogger("etimad")
@@ -18,6 +20,10 @@ API_URL = "https://tenders.etimad.sa/Tender/AllSupplierTendersForVisitorAsync"
 
 # We scrape recent pages — going too deep returns old/closed tenders
 MAX_PAGES = 200  # 200 pages × 24 items = ~4,800 recent tenders
+CLOSED_RATIO_THRESHOLD = 0.80  # Stop when pages are >80% closed
+CONSECUTIVE_CLOSED_PAGES = 3   # Need 3 such pages in a row
+CONSECUTIVE_KNOWN_PAGES = 2    # For incremental: stop after 2 pages of known tenders
+DATA_DIR = Path(__file__).parent / "data"
 
 
 def _create_session() -> requests.Session:
@@ -109,13 +115,46 @@ def _parse_tender(item: dict) -> dict | None:
     }
 
 
-def scrape() -> list[dict]:
-    """Scrape recent Saudi Etimad tenders."""
+def _load_known_refs() -> set[str]:
+    """Load sourceRef values from existing etimad.json for incremental mode."""
+    etimad_file = DATA_DIR / "etimad.json"
+    if not etimad_file.exists():
+        return set()
+    with open(etimad_file, encoding="utf-8") as f:
+        data = json.load(f)
+    items = data if isinstance(data, list) else data.get("tenders", [])
+    return {t.get("sourceRef") or t.get("id") for t in items}
+
+
+def _load_existing_tenders() -> list[dict]:
+    """Load existing tenders from etimad.json for merging."""
+    etimad_file = DATA_DIR / "etimad.json"
+    if not etimad_file.exists():
+        return []
+    with open(etimad_file, encoding="utf-8") as f:
+        data = json.load(f)
+    return data if isinstance(data, list) else data.get("tenders", [])
+
+
+def scrape(incremental: bool = False) -> list[dict]:
+    """Scrape recent Saudi Etimad tenders.
+
+    Args:
+        incremental: If True, skip pages of already-known tenders and merge
+                     new results with existing data.
+    """
     session = _create_session()
     tenders: list[dict] = []
     seen_refs: set[str] = set()
 
+    # Incremental: load known refs to detect already-scraped tenders
+    known_refs = _load_known_refs() if incremental else set()
+    if incremental and known_refs:
+        logger.info(f"Incremental mode: {len(known_refs)} known tenders loaded")
+
     consecutive_errors = 0
+    consecutive_closed_pages = 0
+    consecutive_known_pages = 0
     page = 1
 
     while page <= MAX_PAGES and consecutive_errors < 5:
@@ -128,15 +167,14 @@ def scrape() -> list[dict]:
             if resp.status_code != 200:
                 logger.warning(f"Etimad page {page}: HTTP {resp.status_code}")
                 consecutive_errors += 1
-                time.sleep(5)  # Back off on errors
+                time.sleep(5)
                 continue
 
-            # Check if we got HTML (bot protection) instead of JSON
             ct = resp.headers.get("content-type", "")
             if "json" not in ct:
                 logger.warning(f"Etimad page {page}: got {ct} instead of JSON — bot protection triggered")
                 consecutive_errors += 1
-                time.sleep(10)  # Longer back-off
+                time.sleep(10)
                 continue
 
             data = resp.json()
@@ -146,12 +184,27 @@ def scrape() -> list[dict]:
                 logger.info(f"Etimad page {page}: no more data")
                 break
 
+            # Track closed and known ratios for this page
+            page_closed = 0
+            page_known = 0
+            page_total = 0
             new_count = 0
+
             for item in items:
                 tender = _parse_tender(item)
                 if not tender:
                     continue
+                page_total += 1
                 ref_key = tender["sourceRef"] or tender["id"]
+
+                # Track closed tenders
+                if tender.get("status") == "closed":
+                    page_closed += 1
+
+                # Track known tenders (incremental)
+                if ref_key in known_refs:
+                    page_known += 1
+
                 if ref_key in seen_refs:
                     continue
                 seen_refs.add(ref_key)
@@ -159,11 +212,34 @@ def scrape() -> list[dict]:
                 new_count += 1
 
             consecutive_errors = 0
+
+            # Smart stop: track closed-tender ratio
+            closed_ratio = page_closed / max(page_total, 1)
+            if closed_ratio > CLOSED_RATIO_THRESHOLD:
+                consecutive_closed_pages += 1
+                logger.info(f"Etimad page {page}: {closed_ratio:.0%} closed ({consecutive_closed_pages}/{CONSECUTIVE_CLOSED_PAGES} consecutive)")
+            else:
+                consecutive_closed_pages = 0
+
+            if consecutive_closed_pages >= CONSECUTIVE_CLOSED_PAGES:
+                logger.info(f"Smart stop: {CONSECUTIVE_CLOSED_PAGES} consecutive pages with >{CLOSED_RATIO_THRESHOLD:.0%} closed tenders — stopping")
+                break
+
+            # Incremental stop: track known-tender ratio
+            if incremental and page_total > 0:
+                known_ratio = page_known / page_total
+                if known_ratio > CLOSED_RATIO_THRESHOLD:
+                    consecutive_known_pages += 1
+                    logger.info(f"Etimad page {page}: {known_ratio:.0%} already known ({consecutive_known_pages}/{CONSECUTIVE_KNOWN_PAGES} consecutive)")
+                else:
+                    consecutive_known_pages = 0
+
+                if consecutive_known_pages >= CONSECUTIVE_KNOWN_PAGES:
+                    logger.info(f"Incremental stop: {CONSECUTIVE_KNOWN_PAGES} consecutive pages with >{CLOSED_RATIO_THRESHOLD:.0%} known tenders — stopping")
+                    break
+
             logger.info(f"Etimad page {page}: {new_count} new tenders (total: {len(tenders)})")
-
             page += 1
-
-            # Respect rate limit: 20 req/min = 3s between requests
             time.sleep(3.5)
 
         except requests.exceptions.ConnectionError as e:
@@ -176,7 +252,17 @@ def scrape() -> list[dict]:
             consecutive_errors += 1
             time.sleep(5)
 
-    logger.info(f"Etimad total: {len(tenders)} tenders ({page - 1} pages scraped)")
+    logger.info(f"Etimad total: {len(tenders)} new tenders ({page - 1} pages scraped)")
+
+    # Incremental: merge new tenders with existing (new wins on conflicts)
+    if incremental and known_refs:
+        existing = _load_existing_tenders()
+        existing_by_ref = {(t.get("sourceRef") or t.get("id")): t for t in existing}
+        new_by_ref = {(t.get("sourceRef") or t.get("id")): t for t in tenders}
+        existing_by_ref.update(new_by_ref)  # new wins
+        tenders = list(existing_by_ref.values())
+        logger.info(f"Incremental merge: {len(tenders)} total tenders (was {len(existing)}, added/updated {len(new_by_ref)})")
+
     return tenders
 
 

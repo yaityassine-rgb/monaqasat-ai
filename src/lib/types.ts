@@ -14,6 +14,8 @@ export interface Tender {
   requirements: string[];
   matchScore: number;
   sourceLanguage?: "en" | "ar" | "fr";
+  sourceUrl?: string;
+  source?: string;
   saved?: boolean;
 }
 

@@ -1,0 +1,53 @@
+name: Update Tenders
+
+on:
+  schedule:
+    - cron: "0 4 * * *"  # 04:00 UTC daily (7 AM Saudi, 5 AM Morocco)
+  workflow_dispatch:       # Manual trigger from Actions tab
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scrapers/requirements.txt
+
+      - name: Restore scraper cache (for incremental mode)
+        uses: actions/cache@v4
+        with:
+          path: scrapers/data/
+          key: scraper-data-${{ github.sha }}
+          restore-keys: scraper-data-
+
+      - name: Run scrapers (incremental)
+        working-directory: scrapers
+        run: python run_all.py --incremental
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet public/data/tenders.json && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Count tenders
+        if: steps.diff.outputs.changed == 'true'
+        id: count
+        run: |
+          COUNT=$(python -c "import json; print(json.load(open('public/data/tenders.json'))['totalCount'])")
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/tenders.json
+          git commit -m "Update tenders data: ${{ steps.count.outputs.count }} active tenders"
+          git push

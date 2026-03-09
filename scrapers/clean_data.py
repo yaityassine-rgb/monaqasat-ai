@@ -3,6 +3,7 @@
 import json
 import re
 import hashlib
+from datetime import datetime, timedelta
 from pathlib import Path
 from bs4 import BeautifulSoup
 
@@ -58,6 +59,28 @@ def _normalize_title(title: str) -> str:
     t = re.sub(r"\s+", " ", t)
     t = re.sub(r"[^\w\s]", "", t)
     return t
+
+
+def _filter_closed(tenders: list[dict]) -> list[dict]:
+    """Remove closed/expired tenders and tenders without apply links.
+
+    Filters out:
+    - Tenders with status == "closed"
+    - Tenders whose deadline is >7 days in the past
+    - Tenders without a sourceUrl (user can't apply → useless)
+    """
+    cutoff = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    result = []
+    for t in tenders:
+        if t.get("status") == "closed":
+            continue
+        deadline = t.get("deadline", "")
+        if deadline and deadline < cutoff:
+            continue
+        if not t.get("sourceUrl"):
+            continue
+        result.append(t)
+    return result
 
 
 def _validate_country(tender: dict) -> dict | None:
@@ -211,10 +234,14 @@ def main():
     deduped = deduplicate(cleaned)
     print(f"After deduplication: {len(deduped)}")
 
-    # Step 3: Validate countries
+    # Step 3: Filter closed/expired tenders
+    active = _filter_closed(deduped)
+    print(f"After filtering closed/expired: {len(active)} (removed {len(deduped) - len(active)})")
+
+    # Step 4: Validate countries
     validated = []
     discarded_country = 0
-    for t in deduped:
+    for t in active:
         result = _validate_country(t)
         if result:
             validated.append(result)
@@ -222,7 +249,7 @@ def main():
             discarded_country += 1
     print(f"After country validation: {len(validated)} (discarded {discarded_country} non-MENA)")
 
-    # Step 4: Compute quality scores
+    # Step 5: Compute quality scores
     for t in validated:
         t["matchScore"] = _compute_quality_score(t)
 

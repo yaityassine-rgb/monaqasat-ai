@@ -39,6 +39,7 @@ function setSavedIds(ids: string[]) {
 }
 
 function formatBudget(amount: number, currency: string): string {
+  if (!amount || amount <= 0) return "Not disclosed";
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }
@@ -368,10 +369,20 @@ export default function TenderDetailPage() {
             transition={{ delay: 0.2 }}
             className="glass-card rounded-xl p-5 space-y-3"
           >
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors">
+            <a
+              href={tender.sourceUrl || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 text-white text-sm font-medium rounded-lg transition-colors ${
+                tender.sourceUrl
+                  ? "bg-primary hover:bg-primary-dark cursor-pointer"
+                  : "bg-gray-600 cursor-not-allowed opacity-50"
+              }`}
+              onClick={(e) => { if (!tender.sourceUrl) e.preventDefault(); }}
+            >
               <ExternalLink className="w-4 h-4" />
               {t("tenderDetail.applyNow")}
-            </button>
+            </a>
             <button
               onClick={toggleSave}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 border text-sm font-medium rounded-lg transition-colors ${

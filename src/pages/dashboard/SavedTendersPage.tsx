@@ -32,6 +32,7 @@ function setSavedIdsStorage(ids: string[]) {
 }
 
 function formatBudget(amount: number, currency: string): string {
+  if (!amount || amount <= 0) return "Not disclosed";
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }

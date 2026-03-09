@@ -34,6 +34,7 @@ function formatValue(amount: number): string {
 }
 
 function formatBudgetWithCurrency(amount: number, currency: string): string {
+  if (!amount || amount <= 0) return "Not disclosed";
   return `${formatValue(amount)} ${currency}`;
 }
 

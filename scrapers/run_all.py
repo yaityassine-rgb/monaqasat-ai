@@ -1,10 +1,17 @@
 """
 Master scraper runner — runs all scrapers and merges results.
+
+Usage:
+    python run_all.py                # Full scrape
+    python run_all.py --incremental  # Incremental (Etimad skips known tenders)
 """
 
+import argparse
 import json
 import logging
+import shutil
 from datetime import datetime
+from pathlib import Path
 from config import OUTPUT_FILE, DATA_DIR
 from base_scraper import load_all_tenders
 
@@ -12,12 +19,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(message
 logger = logging.getLogger("runner")
 
 
-def run_scraper(name: str, module_name: str) -> int:
+def run_scraper(name: str, module_name: str, **kwargs) -> int:
     """Run a single scraper and return count."""
     try:
         logger.info(f"Running {name} scraper...")
         mod = __import__(module_name)
-        results = mod.scrape()
+        results = mod.scrape(**kwargs)
         mod.save_tenders(results, module_name.replace("scrape_", ""))
         logger.info(f"{name}: {len(results)} tenders")
         return len(results)
@@ -53,26 +60,50 @@ def merge_all() -> list[dict]:
     return unique
 
 
-def main():
+def main(incremental: bool = False):
     DATA_DIR.mkdir(exist_ok=True)
 
     scrapers = [
-        ("World Bank Notices", "scrape_worldbank"),
-        ("World Bank Projects", "scrape_wb_projects"),
-        ("World Bank Documents", "scrape_wb_docs"),
-        ("UNDP", "scrape_undp"),
-        ("TED (EU)", "scrape_ted_v2"),
-        ("IsDB", "scrape_idb"),
-        ("Morocco Portal", "scrape_morocco"),
-        ("UNGM", "scrape_ungm"),
-        ("AfDB (IATI)", "scrape_afdb"),
-        ("Jordan JONEPS", "scrape_joneps"),
-        ("Saudi Etimad", "scrape_etimad"),
+        # --- Original 11 sources ---
+        ("World Bank Notices", "scrape_worldbank", {}),
+        ("World Bank Projects", "scrape_wb_projects", {}),
+        ("World Bank Documents", "scrape_wb_docs", {}),
+        ("UNDP", "scrape_undp", {}),
+        ("TED (EU)", "scrape_ted_v2", {}),
+        ("IsDB", "scrape_idb", {}),
+        ("Morocco Portal", "scrape_morocco", {}),
+        ("UNGM", "scrape_ungm", {}),
+        ("AfDB (IATI)", "scrape_afdb", {}),
+        ("Jordan JONEPS", "scrape_joneps", {}),
+        ("Saudi Etimad", "scrape_etimad", {"incremental": incremental}),
+        # --- Gulf government portals ---
+        ("Qatar Monaqasat", "scrape_qatar", {}),
+        ("Bahrain Tender Board", "scrape_bahrain", {}),
+        ("Kuwait CAPT", "scrape_kuwait", {}),
+        ("Oman Tender Board", "scrape_oman", {}),
+        ("Abu Dhabi ADGPG", "scrape_abudhabi", {}),
+        # --- North Africa ---
+        ("Algeria BAOSEM", "scrape_baosem", {}),
+        ("Libya NOC", "scrape_libya_noc", {}),
+        ("Morocco ONCF", "scrape_oncf", {}),
+        ("Morocco ONEE", "scrape_onee", {}),
+        ("Egypt EEHC", "scrape_eehc", {}),
+        ("Egypt Suez Canal", "scrape_suez", {}),
+        # --- Corporate & regional ---
+        ("EBRD", "scrape_ebrd", {}),
+        ("Palestine Shiraa", "scrape_palestine", {}),
+        ("Qatar Ashghal", "scrape_ashghal", {}),
+        ("Saudi Railway SAR", "scrape_sar", {}),
+        ("Dubai DEWA", "scrape_dewa", {}),
+        ("Kuwait KNPC Oil", "scrape_knpc", {}),
+        ("QatarEnergy", "scrape_qatarenergy", {}),
+        ("Morocco MASEN", "scrape_masen", {}),
+        ("Kurdistan KEPS", "scrape_kurdistan", {}),
     ]
 
     total = 0
-    for name, module in scrapers:
-        count = run_scraper(name, module)
+    for name, module, kwargs in scrapers:
+        count = run_scraper(name, module, **kwargs)
         total += count
 
     logger.info(f"\nTotal scraped: {total} tenders")
@@ -80,6 +111,18 @@ def main():
     # Merge all into single file
     merged = merge_all()
     logger.info(f"Final merged: {len(merged)} unique tenders")
+
+    # Clean data (filter closed, deduplicate, validate)
+    import clean_data
+    clean_data.main()
+
+    # Copy cleaned output to public/data/tenders.json
+    clean_output = DATA_DIR / "tenders_clean.json"
+    public_dir = Path(__file__).parent.parent / "public" / "data"
+    public_dir.mkdir(parents=True, exist_ok=True)
+    public_output = public_dir / "tenders.json"
+    shutil.copy2(clean_output, public_output)
+    logger.info(f"Copied cleaned data → {public_output}")
 
     # Print summary
     countries: dict[str, int] = {}
@@ -101,4 +144,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Run all tender scrapers")
+    parser.add_argument("--incremental", action="store_true",
+                        help="Incremental mode: skip already-known Etimad tenders")
+    args = parser.parse_args()
+    main(incremental=args.incremental)

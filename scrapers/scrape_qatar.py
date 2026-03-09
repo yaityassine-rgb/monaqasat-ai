@@ -1,0 +1,197 @@
+"""
+Scraper for Qatar Government Monaqasat Portal.
+Source: https://monaqasat.mof.gov.qa/TendersOnlineServices/AvailableMinistriesTenders/1
+
+Qatar's official government procurement portal. The site uses HTTPS with
+restrictive SSL/networking that may time out from outside Qatar.
+Content is primarily in Arabic.
+"""
+
+import logging
+import time
+import requests
+from bs4 import BeautifulSoup
+from base_scraper import classify_sector, generate_id, parse_date, save_tenders
+
+logger = logging.getLogger("qatar")
+
+BASE_URL = "https://monaqasat.mof.gov.qa"
+LISTING_URL = f"{BASE_URL}/TendersOnlineServices/AvailableMinistriesTenders"
+MAX_PAGES = 10
+
+
+def _create_session() -> requests.Session:
+    """Create a session with proper headers."""
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/131.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ar,en;q=0.9",
+        "Referer": BASE_URL,
+    })
+    return s
+
+
+def _parse_tender_row(row, page_url: str) -> dict | None:
+    """Parse a single tender row from the HTML table."""
+    cells = row.find_all("td")
+    if len(cells) < 3:
+        return None
+
+    texts = [c.get_text(strip=True) for c in cells]
+
+    # Try to extract title from the row
+    title = ""
+    ref = ""
+    org = ""
+    deadline = ""
+    pub_date = ""
+    source_url = page_url
+
+    # Look for a link in the row that goes to a detail page
+    link_tag = row.find("a", href=True)
+    if link_tag:
+        href = link_tag.get("href", "")
+        if href and not href.startswith("javascript"):
+            source_url = href if href.startswith("http") else f"{BASE_URL}{href}"
+        title = link_tag.get_text(strip=True)
+
+    # Fallback: use cell texts
+    if not title and len(texts) >= 2:
+        title = texts[1] if len(texts[0]) < len(texts[1]) else texts[0]
+    if not title or len(title) < 5:
+        return None
+
+    # Try to find reference number (usually short alphanumeric)
+    for t in texts:
+        if len(t) < 30 and any(c.isdigit() for c in t) and t != title:
+            if not ref:
+                ref = t
+            continue
+
+    # Try to find dates
+    for t in texts:
+        d = parse_date(t)
+        if d:
+            if not pub_date:
+                pub_date = d
+            else:
+                deadline = d
+
+    # Try to find organization
+    for t in texts:
+        if len(t) > 10 and t != title and t != ref:
+            if not any(c.isdigit() for c in t[:5]):
+                org = t
+                break
+
+    return {
+        "id": generate_id("qatar", ref or title[:80], ""),
+        "source": "Qatar Monaqasat",
+        "sourceRef": ref,
+        "sourceLanguage": "ar",
+        "title": {"en": title, "ar": title, "fr": title},
+        "organization": {
+            "en": org or "Government of Qatar",
+            "ar": org or "حكومة قطر",
+            "fr": org or "Gouvernement du Qatar",
+        },
+        "country": "Qatar",
+        "countryCode": "QA",
+        "sector": classify_sector(title),
+        "budget": 0,
+        "currency": "QAR",
+        "deadline": deadline,
+        "publishDate": pub_date,
+        "status": "open",
+        "description": {"en": title, "ar": title, "fr": title},
+        "requirements": [],
+        "matchScore": 0,
+        "sourceUrl": source_url,
+    }
+
+
+def scrape() -> list[dict]:
+    """Scrape Qatar Monaqasat portal for procurement notices."""
+    tenders: list[dict] = []
+    seen: set[str] = set()
+    session = _create_session()
+
+    for page in range(1, MAX_PAGES + 1):
+        url = f"{LISTING_URL}/{page}"
+        try:
+            resp = session.get(url, timeout=30, verify=True)
+            if resp.status_code != 200:
+                logger.warning(f"Qatar page {page}: HTTP {resp.status_code}")
+                break
+
+            soup = BeautifulSoup(resp.text, "lxml")
+
+            # Try multiple selectors for tender listings
+            rows = []
+            for selector in [
+                "table.table tbody tr",
+                "table tbody tr",
+                ".tender-item",
+                ".tender-row",
+                "div.panel",
+                ".card",
+            ]:
+                rows = soup.select(selector)
+                if rows:
+                    logger.info(f"Qatar page {page}: found {len(rows)} rows with '{selector}'")
+                    break
+
+            if not rows:
+                logger.info(f"Qatar page {page}: no tender rows found")
+                break
+
+            page_count = 0
+            for row in rows:
+                tender = _parse_tender_row(row, url)
+                if not tender:
+                    continue
+                key = tender["sourceRef"] or tender["title"]["ar"][:60]
+                if key in seen:
+                    continue
+                seen.add(key)
+                tenders.append(tender)
+                page_count += 1
+
+            logger.info(f"Qatar page {page}: {page_count} tenders (total: {len(tenders)})")
+            if page_count == 0:
+                break
+
+            time.sleep(2)
+
+        except requests.exceptions.SSLError as e:
+            logger.warning(f"Qatar page {page}: SSL error — {e}")
+            break
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f"Qatar page {page}: connection error — {e}")
+            break
+        except requests.exceptions.Timeout:
+            logger.warning(f"Qatar page {page}: request timed out")
+            break
+        except Exception as e:
+            logger.error(f"Qatar page {page}: {e}")
+            break
+
+    if not tenders:
+        logger.warning(
+            "Qatar: no tenders scraped. The portal may be unreachable "
+            "from outside Qatar or requires specific network access."
+        )
+
+    logger.info(f"Qatar total: {len(tenders)} tenders")
+    return tenders
+
+
+if __name__ == "__main__":
+    results = scrape()
+    save_tenders(results, "qatar")
+    print(f"Scraped {len(results)} tenders from Qatar Monaqasat")
