@@ -87,8 +87,8 @@ export default function HomePage() {
   return (
     <>
       <SEOHead
-        title="Monaqasat AI"
-        description="AI-powered procurement intelligence for MENA. Find and win government contracts faster."
+        title={t("seo.homeTitle")}
+        description={t("seo.homeDesc")}
       />
 
       {/* ============================================================ */}

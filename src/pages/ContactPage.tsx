@@ -63,6 +63,7 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="text"
+                        name="name"
                         required
                         className="w-full rounded-xl border border-dark-border bg-dark px-4 py-3 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-primary"
                         placeholder={t("contact.form.name")}
@@ -76,6 +77,7 @@ export default function ContactPage() {
                       </label>
                       <input
                         type="email"
+                        name="email"
                         required
                         className="w-full rounded-xl border border-dark-border bg-dark px-4 py-3 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-primary"
                         placeholder={t("contact.form.email")}
@@ -88,6 +90,7 @@ export default function ContactPage() {
                         {t("contact.form.subject")}
                       </label>
                       <select
+                        name="subject"
                         required
                         className="w-full rounded-xl border border-dark-border bg-dark px-4 py-3 text-sm text-white outline-none transition-colors focus:border-primary"
                       >
@@ -108,6 +111,7 @@ export default function ContactPage() {
                         {t("contact.form.message")}
                       </label>
                       <textarea
+                        name="message"
                         required
                         rows={5}
                         className="w-full resize-none rounded-xl border border-dark-border bg-dark px-4 py-3 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-primary"

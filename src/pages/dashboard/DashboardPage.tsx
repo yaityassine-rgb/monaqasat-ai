@@ -38,8 +38,8 @@ function setSavedIds(ids: string[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 }
 
-function formatBudget(amount: number, currency: string): string {
-  if (!amount || amount <= 0) return "Not disclosed";
+function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
+  if (!amount || amount <= 0) return notDisclosedLabel;
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }
@@ -89,6 +89,8 @@ export default function DashboardPage() {
   useEffect(() => {
     loadTenders().then((data) => {
       setAllTenders(data);
+      setLoading(false);
+    }).catch(() => {
       setLoading(false);
     });
   }, []);
@@ -381,7 +383,7 @@ export default function DashboardPage() {
       {loading && (
         <div className="glass-card rounded-xl p-12 text-center">
           <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">{t("dashboard.loading") || "Loading tenders..."}</p>
+          <p className="text-slate-400 text-sm">{t("dashboard.loading")}</p>
         </div>
       )}
 
@@ -491,7 +493,7 @@ export default function DashboardPage() {
                         {t("dashboard.budget")}
                       </span>
                       <span className="text-sm font-semibold text-slate-200">
-                        {formatBudget(tender.budget, tender.currency)}
+                        {formatBudget(tender.budget, tender.currency, t("dashboard.notDisclosed"))}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1 items-center">
@@ -500,7 +502,7 @@ export default function DashboardPage() {
                       </span>
                       <span className="text-xs text-slate-300 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {tender.deadline || "See portal"}
+                        {tender.deadline || t("dashboard.seePortal")}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1 items-end">
@@ -538,7 +540,7 @@ export default function DashboardPage() {
             className="flex items-center gap-1 px-3 py-2 rounded-lg bg-dark/60 border border-dark-border text-xs text-slate-300 hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
-            {t("dashboard.prev") || "Prev"}
+            {t("dashboard.prev")}
           </button>
           <span className="text-xs text-slate-400">
             {page} / {totalPages} ({filtered.length} {t("dashboard.results")})
@@ -548,7 +550,7 @@ export default function DashboardPage() {
             disabled={page === totalPages}
             className="flex items-center gap-1 px-3 py-2 rounded-lg bg-dark/60 border border-dark-border text-xs text-slate-300 hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            {t("dashboard.next") || "Next"}
+            {t("dashboard.next")}
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>

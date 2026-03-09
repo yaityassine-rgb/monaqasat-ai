@@ -31,8 +31,8 @@ function setSavedIdsStorage(ids: string[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 }
 
-function formatBudget(amount: number, currency: string): string {
-  if (!amount || amount <= 0) return "Not disclosed";
+function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
+  if (!amount || amount <= 0) return notDisclosedLabel;
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }
@@ -206,7 +206,7 @@ export default function SavedTendersPage() {
                             {tender.deadline}
                           </span>
                           <span className="font-semibold text-slate-200">
-                            {formatBudget(tender.budget, tender.currency)}
+                            {formatBudget(tender.budget, tender.currency, t("dashboard.notDisclosed"))}
                           </span>
                         </div>
                       </div>

@@ -33,8 +33,8 @@ function formatValue(amount: number): string {
   return amount.toLocaleString();
 }
 
-function formatBudgetWithCurrency(amount: number, currency: string): string {
-  if (!amount || amount <= 0) return "Not disclosed";
+function formatBudgetWithCurrency(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
+  if (!amount || amount <= 0) return notDisclosedLabel;
   return `${formatValue(amount)} ${currency}`;
 }
 
@@ -324,6 +324,7 @@ export default function AnalyticsPage() {
                         {formatBudgetWithCurrency(
                           tender.budget,
                           tender.currency,
+                          t("dashboard.notDisclosed"),
                         )}
                       </span>
                     </div>

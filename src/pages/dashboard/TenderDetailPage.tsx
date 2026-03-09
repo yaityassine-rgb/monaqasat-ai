@@ -38,8 +38,8 @@ function setSavedIds(ids: string[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 }
 
-function formatBudget(amount: number, currency: string): string {
-  if (!amount || amount <= 0) return "Not disclosed";
+function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
+  if (!amount || amount <= 0) return notDisclosedLabel;
   if (amount >= 1_000_000_000) {
     return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
   }
@@ -148,10 +148,10 @@ export default function TenderDetailPage() {
         <div className="glass-card rounded-xl p-12 text-center max-w-md">
           <Target className="w-16 h-16 text-slate-600 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-slate-200 mb-2">
-            Tender Not Found
+            {t("tenderDetail.notFound")}
           </h2>
           <p className="text-slate-400 text-sm mb-6">
-            The tender you are looking for does not exist or has been removed.
+            {t("tenderDetail.notFoundDesc")}
           </p>
           <Link
             to="/dashboard"
@@ -175,7 +175,7 @@ export default function TenderDetailPage() {
     {
       icon: DollarSign,
       label: t("tenderDetail.budget"),
-      value: formatBudget(tender.budget, tender.currency),
+      value: formatBudget(tender.budget, tender.currency, t("dashboard.notDisclosed")),
     },
     {
       icon: Calendar,
@@ -246,7 +246,7 @@ export default function TenderDetailPage() {
             </h1>
             {tender.sourceLanguage && tender.sourceLanguage !== lang && (
               <p className="text-xs text-slate-500 mb-2">
-                {t("tenderDetail.sourceLanguage")}: {tender.sourceLanguage === "en" ? "English" : tender.sourceLanguage === "fr" ? "Français" : "العربية"}
+                {t("tenderDetail.sourceLanguage")}: {tender.sourceLanguage === "en" ? t("tenderDetail.langEn") : tender.sourceLanguage === "fr" ? t("tenderDetail.langFr") : t("tenderDetail.langAr")}
               </p>
             )}
             <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -352,10 +352,10 @@ export default function TenderDetailPage() {
               />
               <span className="text-xs text-slate-400">
                 {tender.matchScore >= 80
-                  ? "Strong alignment with your profile"
+                  ? t("tenderDetail.alignStrong")
                   : tender.matchScore >= 60
-                    ? "Moderate alignment — review requirements carefully"
-                    : "Low alignment — significant gaps identified"}
+                    ? t("tenderDetail.alignModerate")
+                    : t("tenderDetail.alignLow")}
               </span>
             </div>
           </motion.div>
@@ -396,7 +396,10 @@ export default function TenderDetailPage() {
                 ? t("dashboard.saved")
                 : t("tenderDetail.saveForLater")}
             </button>
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors">
+            <button
+              onClick={() => alert(t("tenderDetail.proposalComingSoon"))}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors"
+            >
               <FileText className="w-4 h-4" />
               {t("tenderDetail.generateProposal")}
             </button>

@@ -269,7 +269,12 @@
     "sortMatch": "أفضل تطابق",
     "sortDeadline": "الموعد النهائي",
     "sortBudget": "الميزانية",
-    "sortNewest": "الأحدث"
+    "sortNewest": "الأحدث",
+    "notDisclosed": "غير معلن",
+    "seePortal": "انظر البوابة",
+    "loading": "جاري تحميل المناقصات...",
+    "prev": "السابق",
+    "next": "التالي"
   },
   "tenderDetail": {
     "back": "العودة للوحة التحكم",
@@ -290,7 +295,16 @@
     "saveForLater": "حفظ لاحقاً",
     "generateProposal": "إنشاء مخطط العرض",
     "similarTenders": "مناقصات مشابهة",
-    "sourceLanguage": "لغة المصدر"
+    "sourceLanguage": "لغة المصدر",
+    "notFound": "المناقصة غير موجودة",
+    "notFoundDesc": "المناقصة التي تبحث عنها غير موجودة أو تم حذفها.",
+    "alignStrong": "توافق قوي مع ملفك",
+    "alignModerate": "توافق متوسط — راجع المتطلبات بعناية",
+    "alignLow": "توافق ضعيف — فجوات كبيرة محددة",
+    "langEn": "English",
+    "langFr": "Français",
+    "langAr": "العربية",
+    "proposalComingSoon": "مولد العروض قريباً!"
   },
   "savedTenders": {
     "title": "المناقصات المحفوظة",
@@ -337,6 +351,10 @@
     "rights": "جميع الحقوق محفوظة.",
     "parent": "منتج من حلول AI",
     "builtIn": "صُنع بالذكاء الاصطناعي في المغرب"
+  },
+  "seo": {
+    "homeTitle": "مناقصات AI — ذكاء المناقصات الحكومية للمنطقة",
+    "homeDesc": "ذكاء المشتريات بالذكاء الاصطناعي لمنطقة الشرق الأوسط وشمال أفريقيا. اعثر على العقود الحكومية واربحها أسرع."
   },
   "notFound": {
     "title": "404",

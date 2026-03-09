@@ -269,7 +269,12 @@
     "sortMatch": "Meilleure correspondance",
     "sortDeadline": "Date limite",
     "sortBudget": "Budget",
-    "sortNewest": "Plus récent"
+    "sortNewest": "Plus récent",
+    "notDisclosed": "Non divulgué",
+    "seePortal": "Voir le portail",
+    "loading": "Chargement des appels d'offres...",
+    "prev": "Précédent",
+    "next": "Suivant"
   },
   "tenderDetail": {
     "back": "Retour au tableau de bord",
@@ -290,7 +295,16 @@
     "saveForLater": "Sauvegarder",
     "generateProposal": "Générer un plan de proposition",
     "similarTenders": "Appels d'offres similaires",
-    "sourceLanguage": "Langue source"
+    "sourceLanguage": "Langue source",
+    "notFound": "Appel d'offres introuvable",
+    "notFoundDesc": "L'appel d'offres que vous recherchez n'existe pas ou a été supprimé.",
+    "alignStrong": "Forte correspondance avec votre profil",
+    "alignModerate": "Correspondance modérée — examinez les exigences attentivement",
+    "alignLow": "Faible correspondance — écarts significatifs identifiés",
+    "langEn": "English",
+    "langFr": "Français",
+    "langAr": "العربية",
+    "proposalComingSoon": "Générateur de propositions bientôt disponible !"
   },
   "savedTenders": {
     "title": "Appels d'offres sauvegardés",
@@ -337,6 +351,10 @@
     "rights": "Tous droits réservés.",
     "parent": "Un produit Holoul AI",
     "builtIn": "Construit avec l'IA au Maroc"
+  },
+  "seo": {
+    "homeTitle": "Monaqasat AI — Intelligence des marchés publics pour la région MENA",
+    "homeDesc": "Intelligence d'approvisionnement par l'IA pour la région MENA. Trouvez et remportez les marchés publics plus vite."
   },
   "notFound": {
     "title": "404",
