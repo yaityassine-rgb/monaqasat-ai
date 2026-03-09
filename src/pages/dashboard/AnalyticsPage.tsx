@@ -14,35 +14,9 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
+import { formatValue, formatBudget, getMatchTextColor } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
-
-function formatValue(amount: number): string {
-  if (amount >= 1_000_000_000_000) {
-    return `${(amount / 1_000_000_000_000).toFixed(1)}T`;
-  }
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1)}B`;
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(1)}M`;
-  }
-  if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(0)}K`;
-  }
-  return amount.toLocaleString();
-}
-
-function formatBudgetWithCurrency(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
-  if (!amount || amount <= 0) return notDisclosedLabel;
-  return `${formatValue(amount)} ${currency}`;
-}
-
-function getMatchColor(score: number): string {
-  if (score >= 80) return "text-emerald-400";
-  if (score >= 60) return "text-amber-400";
-  return "text-red-400";
-}
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -321,7 +295,7 @@ export default function AnalyticsPage() {
                       )}
                       <span>{t(`sectors.${tender.sector}`)}</span>
                       <span className="text-slate-300 font-medium">
-                        {formatBudgetWithCurrency(
+                        {formatBudget(
                           tender.budget,
                           tender.currency,
                           t("dashboard.notDisclosed"),
@@ -332,7 +306,7 @@ export default function AnalyticsPage() {
 
                   {/* Match Score */}
                   <span
-                    className={`text-lg font-bold shrink-0 ${getMatchColor(tender.matchScore)}`}
+                    className={`text-lg font-bold shrink-0 ${getMatchTextColor(tender.matchScore)}`}
                   >
                     {tender.matchScore}%
                   </span>

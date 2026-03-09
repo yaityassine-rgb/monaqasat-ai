@@ -19,55 +19,10 @@ import {
 import { loadTenders, getTenders } from "../../lib/tender-store";
 import { COUNTRIES, SECTORS } from "../../lib/constants";
 import type { Tender } from "../../lib/types";
+import { formatBudget, getSavedIds, setSavedIds, getMatchColor, getStatusStyle } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
 type SortOption = "match" | "deadline" | "budget" | "newest";
-
-const STORAGE_KEY = "monaqasat-saved-tenders";
-
-function getSavedIds(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function setSavedIds(ids: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-}
-
-function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
-  if (!amount || amount <= 0) return notDisclosedLabel;
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(1)}M ${currency}`;
-  }
-  if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(0)}K ${currency}`;
-  }
-  return `${amount} ${currency}`;
-}
-
-function getMatchColor(score: number): string {
-  if (score >= 80) return "text-emerald-400 bg-emerald-400/10 border-emerald-400/30";
-  if (score >= 60) return "text-amber-400 bg-amber-400/10 border-amber-400/30";
-  return "text-red-400 bg-red-400/10 border-red-400/30";
-}
-
-function getStatusStyle(status: Tender["status"]): string {
-  switch (status) {
-    case "open":
-      return "text-emerald-400 bg-emerald-400/10 border-emerald-400/30";
-    case "closing-soon":
-      return "text-amber-400 bg-amber-400/10 border-amber-400/30";
-    case "closed":
-      return "text-red-400 bg-red-400/10 border-red-400/30";
-  }
-}
 
 const PAGE_SIZE = 24;
 

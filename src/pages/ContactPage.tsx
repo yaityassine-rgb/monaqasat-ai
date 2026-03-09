@@ -58,10 +58,11 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Name */}
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                      <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium text-slate-300">
                         {t("contact.form.name")}
                       </label>
                       <input
+                        id="contact-name"
                         type="text"
                         name="name"
                         required
@@ -72,10 +73,11 @@ export default function ContactPage() {
 
                     {/* Email */}
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                      <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium text-slate-300">
                         {t("contact.form.email")}
                       </label>
                       <input
+                        id="contact-email"
                         type="email"
                         name="email"
                         required
@@ -86,10 +88,11 @@ export default function ContactPage() {
 
                     {/* Subject */}
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                      <label htmlFor="contact-subject" className="mb-1.5 block text-sm font-medium text-slate-300">
                         {t("contact.form.subject")}
                       </label>
                       <select
+                        id="contact-subject"
                         name="subject"
                         required
                         className="w-full rounded-xl border border-dark-border bg-dark px-4 py-3 text-sm text-white outline-none transition-colors focus:border-primary"
@@ -107,10 +110,11 @@ export default function ContactPage() {
 
                     {/* Message */}
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                      <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium text-slate-300">
                         {t("contact.form.message")}
                       </label>
                       <textarea
+                        id="contact-message"
                         name="message"
                         required
                         rows={5}

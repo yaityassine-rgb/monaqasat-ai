@@ -13,56 +13,9 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
+import { formatBudget, getSavedIds, setSavedIds, getMatchTextColor, getStatusStyle } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
-
-const STORAGE_KEY = "monaqasat-saved-tenders";
-
-function getSavedIds(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function setSavedIdsStorage(ids: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-}
-
-function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
-  if (!amount || amount <= 0) return notDisclosedLabel;
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(1)}M ${currency}`;
-  }
-  if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(0)}K ${currency}`;
-  }
-  return `${amount.toLocaleString()} ${currency}`;
-}
-
-function getMatchColor(score: number): string {
-  if (score >= 80) return "text-emerald-400";
-  if (score >= 60) return "text-amber-400";
-  return "text-red-400";
-}
-
-function getStatusStyle(status: string): string {
-  switch (status) {
-    case "open":
-      return "text-emerald-400 bg-emerald-400/10 border-emerald-400/30";
-    case "closing-soon":
-      return "text-amber-400 bg-amber-400/10 border-amber-400/30";
-    case "closed":
-      return "text-red-400 bg-red-400/10 border-red-400/30";
-    default:
-      return "text-slate-400 bg-slate-400/10 border-slate-400/30";
-  }
-}
 
 export default function SavedTendersPage() {
   const { t, i18n } = useTranslation();
@@ -74,7 +27,7 @@ export default function SavedTendersPage() {
   const unsave = useCallback((id: string) => {
     setSavedIdsState((prev) => {
       const next = prev.filter((sid) => sid !== id);
-      setSavedIdsStorage(next);
+      setSavedIds(next);
       return next;
     });
   }, []);
@@ -214,7 +167,7 @@ export default function SavedTendersPage() {
                       {/* Right Side: Match Score + Unsave */}
                       <div className="flex md:flex-col items-center gap-3 md:gap-2 shrink-0">
                         <span
-                          className={`text-xl font-bold ${getMatchColor(tender.matchScore)}`}
+                          className={`text-xl font-bold ${getMatchTextColor(tender.matchScore)}`}
                         >
                           {tender.matchScore}%
                         </span>

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -20,37 +20,9 @@ import {
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
+import { formatBudget, getSavedIds, setSavedIds, getStatusStyle } from "../../lib/utils";
 
 type LangKey = "en" | "ar" | "fr";
-
-const STORAGE_KEY = "monaqasat-saved-tenders";
-
-function getSavedIds(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function setSavedIds(ids: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-}
-
-function formatBudget(amount: number, currency: string, notDisclosedLabel = "Not disclosed"): string {
-  if (!amount || amount <= 0) return notDisclosedLabel;
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(1)}B ${currency}`;
-  }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(1)}M ${currency}`;
-  }
-  if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(0)}K ${currency}`;
-  }
-  return `${amount.toLocaleString()} ${currency}`;
-}
 
 function getMatchScoreColor(score: number) {
   if (score >= 80)
@@ -73,19 +45,6 @@ function getMatchScoreColor(score: number) {
     text: "text-red-400",
     glow: "shadow-red-400/20",
   };
-}
-
-function getStatusStyle(status: string) {
-  switch (status) {
-    case "open":
-      return "text-emerald-400 bg-emerald-400/10 border-emerald-400/30";
-    case "closing-soon":
-      return "text-amber-400 bg-amber-400/10 border-amber-400/30";
-    case "closed":
-      return "text-red-400 bg-red-400/10 border-red-400/30";
-    default:
-      return "text-slate-400 bg-slate-400/10 border-slate-400/30";
-  }
 }
 
 function getStatusLabel(status: string, t: (k: string) => string) {
@@ -114,19 +73,19 @@ export default function TenderDetailPage() {
 
   const tender = getTenders().find((t) => t.id === id);
 
-  const savedIds = getSavedIds();
-  const isSaved = tender ? savedIds.includes(tender.id) : false;
+  const [savedIdsState, setSavedIdsState] = useState<string[]>(getSavedIds);
+  const [showProposalToast, setShowProposalToast] = useState(false);
+  const isSaved = tender ? savedIdsState.includes(tender.id) : false;
 
   const toggleSave = () => {
     if (!tender) return;
-    const current = getSavedIds();
-    const next = current.includes(tender.id)
-      ? current.filter((sid) => sid !== tender.id)
-      : [...current, tender.id];
-    setSavedIds(next);
-    // Force re-render by triggering storage event
-    window.dispatchEvent(new Event("storage"));
-    window.location.reload();
+    setSavedIdsState((prev) => {
+      const next = prev.includes(tender.id)
+        ? prev.filter((sid) => sid !== tender.id)
+        : [...prev, tender.id];
+      setSavedIds(next);
+      return next;
+    });
   };
 
   const similarTenders = useMemo(() => {
@@ -397,12 +356,20 @@ export default function TenderDetailPage() {
                 : t("tenderDetail.saveForLater")}
             </button>
             <button
-              onClick={() => alert(t("tenderDetail.proposalComingSoon"))}
+              onClick={() => {
+                setShowProposalToast(true);
+                setTimeout(() => setShowProposalToast(false), 3000);
+              }}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />
               {t("tenderDetail.generateProposal")}
             </button>
+            {showProposalToast && (
+              <p className="text-xs text-center text-primary-light mt-1 animate-pulse">
+                {t("tenderDetail.proposalComingSoon")}
+              </p>
+            )}
           </motion.div>
 
           {/* Similar Tenders */}
