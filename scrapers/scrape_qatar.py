@@ -2,12 +2,22 @@
 Scraper for Qatar Government Monaqasat Portal.
 Source: https://monaqasat.mof.gov.qa/TendersOnlineServices/AvailableMinistriesTenders/1
 
-Qatar's official government procurement portal. The site uses HTTPS with
-restrictive SSL/networking that may time out from outside Qatar.
-Content is primarily in Arabic.
+Qatar's official government procurement portal. Content is primarily in Arabic.
+The site uses a card-based layout within table rows (not traditional <td> cells).
+
+Each card contains:
+  - Reference number (e.g., 1221/2026)
+  - Title with link to detail page
+  - Publish date (تاريخ الطرح)
+  - Sector type (نوع القطاع المطلوب)
+  - Bond amount in QAR (التأمين المؤقت)
+  - Organization (الجهة)
+  - Closing date (تاريخ الإغلاق)
+  - PDF document link
 """
 
 import logging
+import re
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -45,74 +55,86 @@ def _get(url, **kwargs):
     return requests.get(url, **kwargs)
 
 
-def _create_session() -> requests.Session:
-    """Create a session with proper headers (used as fallback only)."""
-    s = requests.Session()
-    s.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/131.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "ar,en;q=0.9",
-        "Referer": BASE_URL,
-    })
-    return s
+def _parse_card(card, page_url: str) -> dict | None:
+    """Parse a single tender card from the Monaqasat portal.
 
+    The portal uses a card layout inside <tr> elements:
+      <tr>
+        <div class="row custom-cards">
+          <div class="col-md-7">  -- ref, title, publish date, bond
+          <div class="col-md-3">  -- organization, type
+          <div class="col-md-2">  -- closing date, buy link, PDF
+    """
+    # Reference number (e.g., "1221/2026")
+    ref_el = card.select_one(".col-header .card-label")
+    ref = ref_el.get_text(strip=True) if ref_el else ""
 
-def _parse_tender_row(row, page_url: str) -> dict | None:
-    """Parse a single tender row from the HTML table."""
-    cells = row.find_all("td")
-    if len(cells) < 3:
+    # Title and detail link
+    title_el = card.select_one(".col-header .card-title a")
+    if not title_el:
         return None
-
-    texts = [c.get_text(strip=True) for c in cells]
-
-    # Try to extract title from the row
-    title = ""
-    ref = ""
-    org = ""
-    deadline = ""
-    pub_date = ""
-    source_url = page_url
-
-    # Look for a link in the row that goes to a detail page
-    link_tag = row.find("a", href=True)
-    if link_tag:
-        href = link_tag.get("href", "")
-        if href and not href.startswith("javascript"):
-            source_url = href if href.startswith("http") else f"{BASE_URL}{href}"
-        title = link_tag.get_text(strip=True)
-
-    # Fallback: use cell texts
-    if not title and len(texts) >= 2:
-        title = texts[1] if len(texts[0]) < len(texts[1]) else texts[0]
+    title = title_el.get_text(strip=True)
     if not title or len(title) < 5:
         return None
 
-    # Try to find reference number (usually short alphanumeric)
-    for t in texts:
-        if len(t) < 30 and any(c.isdigit() for c in t) and t != title:
-            if not ref:
-                ref = t
+    # Detail page URL
+    href = title_el.get("href", "")
+    detail_url = f"{BASE_URL}{href}" if href and not href.startswith("http") else href
+
+    # Extract fields from cards-row elements
+    pub_date = ""
+    deadline = ""
+    bond = 0
+    org = ""
+    tender_type = ""
+    sector_type = ""
+
+    for cards_row in card.select(".cards-row"):
+        label_el = cards_row.select_one(".card-label")
+        value_el = cards_row.select_one(".card-title")
+        if not label_el or not value_el:
             continue
 
-    # Try to find dates
-    for t in texts:
-        d = parse_date(t)
-        if d:
-            if not pub_date:
-                pub_date = d
-            else:
-                deadline = d
+        label = label_el.get_text(strip=True)
+        value = value_el.get_text(strip=True)
 
-    # Try to find organization
-    for t in texts:
-        if len(t) > 10 and t != title and t != ref:
-            if not any(c.isdigit() for c in t[:5]):
-                org = t
-                break
+        if "تاريخ الطرح" in label:  # Publish date
+            pub_date = parse_date(value) or ""
+        elif "القطاع" in label:  # Sector type
+            sector_type = value
+        elif "التأمين" in label:  # Bond amount
+            amount_str = re.sub(r'[^\d.]', '', value)
+            try:
+                bond = int(float(amount_str))
+            except (ValueError, TypeError):
+                pass
+        elif "النوع" in label:  # Type
+            tender_type = value
+
+    # Organization from second column
+    org_cols = card.select(".cards-col")
+    if len(org_cols) >= 2:
+        org_el = org_cols[1].select_one(".col-header .card-title")
+        if org_el:
+            org = org_el.get_text(strip=True)
+
+    # Closing date from circle-container
+    circle = card.select_one(".circle-container")
+    if circle:
+        close_labels = circle.select(".card-label span")
+        for i, span in enumerate(close_labels):
+            if "الإغلاق" in span.get_text():  # تاريخ الإغلاق = Closing date
+                # Next span should be the date
+                if i + 1 < len(close_labels):
+                    deadline = parse_date(close_labels[i + 1].get_text(strip=True)) or ""
+
+    # Source URL: prefer the buy/purchase link, fall back to detail page
+    source_url = detail_url or page_url
+    buy_link = card.select_one(".circle-container a.btn[href]")
+    if buy_link:
+        buy_href = buy_link.get("href", "")
+        if buy_href:
+            source_url = f"{BASE_URL}{buy_href}" if not buy_href.startswith("http") else buy_href
 
     return {
         "id": generate_id("qatar", ref or title[:80], ""),
@@ -127,8 +149,8 @@ def _parse_tender_row(row, page_url: str) -> dict | None:
         },
         "country": "Qatar",
         "countryCode": "QA",
-        "sector": classify_sector(title),
-        "budget": 0,
+        "sector": classify_sector(title + " " + sector_type),
+        "budget": bond,
         "currency": "QAR",
         "deadline": deadline,
         "publishDate": pub_date,
@@ -140,71 +162,20 @@ def _parse_tender_row(row, page_url: str) -> dict | None:
     }
 
 
-def _scrape_playwright() -> list[dict]:
-    """Use Playwright headless browser to render the Qatar Monaqasat portal."""
-    tenders: list[dict] = []
-    if not HAS_PLAYWRIGHT:
-        logger.debug("Qatar: Playwright not installed, skipping browser scrape")
-        return tenders
+def _scrape_page(soup, page_url: str, seen: set) -> list[dict]:
+    """Parse all tender cards from a page's BeautifulSoup."""
+    tenders = []
+    rows = soup.select("table tbody tr")
 
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.set_extra_http_headers({
-                "Accept-Language": "ar,en;q=0.9",
-            })
-
-            for page_num in range(1, 6):
-                url = f"{LISTING_URL}/{page_num}"
-                logger.info(f"Qatar Playwright: loading page {page_num}")
-
-                try:
-                    page.goto(url, timeout=45000, wait_until="networkidle")
-                    page.wait_for_timeout(3000)
-                except Exception as e:
-                    logger.warning(f"Qatar Playwright page {page_num}: {e}")
-                    break
-
-                html = page.content()
-                soup = BeautifulSoup(html, "lxml")
-
-                rows = []
-                for selector in [
-                    "table.table tbody tr",
-                    "table tbody tr",
-                    ".tender-item",
-                    ".tender-row",
-                    "div.panel",
-                    ".card",
-                ]:
-                    rows = soup.select(selector)
-                    if rows:
-                        break
-
-                if not rows:
-                    logger.info(f"Qatar Playwright page {page_num}: no rows found")
-                    break
-
-                page_count = 0
-                for row in rows:
-                    tender = _parse_tender_row(row, url)
-                    if not tender:
-                        continue
-                    key = tender["sourceRef"] or tender["title"]["ar"][:60]
-                    existing = {t["sourceRef"] or t["title"]["ar"][:60] for t in tenders}
-                    if key not in existing:
-                        tenders.append(tender)
-                        page_count += 1
-
-                logger.info(f"Qatar Playwright page {page_num}: {page_count} tenders")
-                if page_count == 0:
-                    break
-
-            browser.close()
-
-    except Exception as e:
-        logger.error(f"Qatar Playwright error: {e}")
+    for row in rows:
+        tender = _parse_card(row, page_url)
+        if not tender:
+            continue
+        key = tender["sourceRef"] or tender["title"]["ar"][:60]
+        if key in seen:
+            continue
+        seen.add(key)
+        tenders.append(tender)
 
     return tenders
 
@@ -223,42 +194,14 @@ def scrape() -> list[dict]:
                 break
 
             soup = BeautifulSoup(resp.text, "lxml")
+            page_tenders = _scrape_page(soup, url, seen)
 
-            # Try multiple selectors for tender listings
-            rows = []
-            for selector in [
-                "table.table tbody tr",
-                "table tbody tr",
-                ".tender-item",
-                ".tender-row",
-                "div.panel",
-                ".card",
-            ]:
-                rows = soup.select(selector)
-                if rows:
-                    logger.info(f"Qatar page {page}: found {len(rows)} rows with '{selector}'")
-                    break
+            logger.info(f"Qatar page {page}: {len(page_tenders)} tenders (total: {len(tenders) + len(page_tenders)})")
 
-            if not rows:
-                logger.info(f"Qatar page {page}: no tender rows found")
+            if not page_tenders:
                 break
 
-            page_count = 0
-            for row in rows:
-                tender = _parse_tender_row(row, url)
-                if not tender:
-                    continue
-                key = tender["sourceRef"] or tender["title"]["ar"][:60]
-                if key in seen:
-                    continue
-                seen.add(key)
-                tenders.append(tender)
-                page_count += 1
-
-            logger.info(f"Qatar page {page}: {page_count} tenders (total: {len(tenders)})")
-            if page_count == 0:
-                break
-
+            tenders.extend(page_tenders)
             time.sleep(2)
 
         except Exception as e:
@@ -273,15 +216,37 @@ def scrape() -> list[dict]:
                 logger.error(f"Qatar page {page}: {e}")
             break
 
-    # If HTTP scraping found nothing, try Playwright
-    if not tenders:
+    # If HTTP scraping found nothing, try Playwright as fallback
+    if not tenders and HAS_PLAYWRIGHT:
         logger.info("Qatar: HTTP scraping found nothing, trying Playwright...")
-        pw_tenders = _scrape_playwright()
-        for t in pw_tenders:
-            key = t["sourceRef"] or t["title"]["ar"][:60]
-            if key not in seen:
-                seen.add(key)
-                tenders.append(t)
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                pw_page = browser.new_page()
+                pw_page.set_extra_http_headers({"Accept-Language": "ar,en;q=0.9"})
+
+                for page_num in range(1, 6):
+                    url = f"{LISTING_URL}/{page_num}"
+                    logger.info(f"Qatar Playwright: loading page {page_num}")
+                    try:
+                        pw_page.goto(url, timeout=45000, wait_until="networkidle")
+                        pw_page.wait_for_timeout(3000)
+                    except Exception as e:
+                        logger.warning(f"Qatar Playwright page {page_num}: {e}")
+                        break
+
+                    html = pw_page.content()
+                    soup = BeautifulSoup(html, "lxml")
+                    page_tenders = _scrape_page(soup, url, seen)
+
+                    logger.info(f"Qatar Playwright page {page_num}: {len(page_tenders)} tenders")
+                    if not page_tenders:
+                        break
+                    tenders.extend(page_tenders)
+
+                browser.close()
+        except Exception as e:
+            logger.error(f"Qatar Playwright error: {e}")
 
     if not tenders:
         logger.warning(
