@@ -289,7 +289,8 @@
     "applyNow": "Postuler sur le portail source",
     "saveForLater": "Sauvegarder",
     "generateProposal": "Générer un plan de proposition",
-    "similarTenders": "Appels d'offres similaires"
+    "similarTenders": "Appels d'offres similaires",
+    "sourceLanguage": "Langue source"
   },
   "savedTenders": {
     "title": "Appels d'offres sauvegardés",

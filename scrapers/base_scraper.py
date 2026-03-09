@@ -24,9 +24,13 @@ def classify_sector(text: str) -> str:
     return "it"  # default
 
 
-def generate_id(source: str, title: str, org: str) -> str:
-    """Generate a deterministic tender ID."""
-    raw = f"{source}:{title}:{org}"
+def generate_id(source: str, ref: str, _country: str = "") -> str:
+    """Generate a deterministic tender ID.
+
+    Country is intentionally ignored so the same tender content
+    always produces the same ID regardless of which API call found it.
+    """
+    raw = f"{source}:{ref}"
     h = hashlib.md5(raw.encode()).hexdigest()[:8]
     return f"TND-{h.upper()}"
 

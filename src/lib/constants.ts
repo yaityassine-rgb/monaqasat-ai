@@ -33,6 +33,12 @@ export const COUNTRIES = [
   { code: "TN", name: { en: "Tunisia", ar: "تونس", fr: "Tunisie" }, flag: "🇹🇳" },
   { code: "DZ", name: { en: "Algeria", ar: "الجزائر", fr: "Algérie" }, flag: "🇩🇿" },
   { code: "LY", name: { en: "Libya", ar: "ليبيا", fr: "Libye" }, flag: "🇱🇾" },
+  { code: "IQ", name: { en: "Iraq", ar: "العراق", fr: "Irak" }, flag: "🇮🇶" },
+  { code: "LB", name: { en: "Lebanon", ar: "لبنان", fr: "Liban" }, flag: "🇱🇧" },
+  { code: "PS", name: { en: "Palestine", ar: "فلسطين", fr: "Palestine" }, flag: "🇵🇸" },
+  { code: "SD", name: { en: "Sudan", ar: "السودان", fr: "Soudan" }, flag: "🇸🇩" },
+  { code: "YE", name: { en: "Yemen", ar: "اليمن", fr: "Yémen" }, flag: "🇾🇪" },
+  { code: "MR", name: { en: "Mauritania", ar: "موريتانيا", fr: "Mauritanie" }, flag: "🇲🇷" },
 ] as const;
 
 export const SECTORS: { key: string; icon: string }[] = [

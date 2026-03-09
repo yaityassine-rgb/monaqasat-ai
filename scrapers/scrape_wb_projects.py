@@ -58,6 +58,17 @@ def scrape() -> list[dict]:
                     if not name:
                         continue
 
+                    # Verify response country matches request
+                    raw_cn = proj.get("countryname", "")
+                    if isinstance(raw_cn, list):
+                        resp_country = " ".join(raw_cn).lower()
+                    else:
+                        resp_country = (raw_cn or "").lower()
+                    expected_name = MENA_COUNTRIES.get(country_code, "").lower()
+                    if resp_country and expected_name and expected_name not in resp_country and resp_country not in expected_name:
+                        logger.debug(f"WB Projects: skipping {name[:50]} — response country '{resp_country}' != '{expected_name}'")
+                        continue
+
                     sector = proj.get("sector1", "")
                     theme = proj.get("theme1", "")
                     amount = proj.get("totalamt", 0)
@@ -73,9 +84,10 @@ def scrape() -> list[dict]:
                         budget = 0
 
                     tender = {
-                        "id": generate_id("wbp", proj.get("id", name[:80]), country_code),
+                        "id": generate_id("wbp", proj.get("id", name[:80]), ""),
                         "source": "World Bank Projects",
                         "sourceRef": proj.get("id", ""),
+                        "sourceLanguage": "en",
                         "title": {
                             "en": f"{name} — Active Project with Procurement Opportunities",
                             "ar": f"{name} — مشروع نشط مع فرص مشتريات",

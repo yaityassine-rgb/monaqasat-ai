@@ -1,7 +1,9 @@
 """
 Scraper for World Bank Documents API — procurement plans and bidding documents.
 Source: https://search.worldbank.org/api/v3/wds
-Different from procnotices — this gives procurement plans, bid evaluation reports, etc.
+
+Country extracted from response fields, not from request loop variable.
+Deduplicates by (title, projectid) before saving.
 """
 
 import requests
@@ -36,6 +38,14 @@ WB_COUNTRY_NAMES = {
     "MR": "Mauritania",
 }
 
+# Reverse lookup: WB response country name → ISO2
+_RESPONSE_NAME_TO_CODE: dict[str, str] = {}
+for _code, _wb_name in WB_COUNTRY_NAMES.items():
+    _RESPONSE_NAME_TO_CODE[_wb_name.lower()] = _code
+# Also add our canonical names
+for _code, _name in MENA_COUNTRIES.items():
+    _RESPONSE_NAME_TO_CODE[_name.lower()] = _code
+
 DOC_TYPES = [
     "Procurement Plan",
     "Bidding Document",
@@ -43,9 +53,22 @@ DOC_TYPES = [
 ]
 
 
+def _resolve_country_from_doc(doc: dict) -> tuple[str, str]:
+    """Extract country from WB document response fields."""
+    # Try countryshortname field in the response
+    for field in ("countryshortname", "country", "countryname"):
+        raw = (doc.get(field) or "").strip()
+        if raw:
+            code = _RESPONSE_NAME_TO_CODE.get(raw.lower(), "")
+            if code:
+                return code, MENA_COUNTRIES[code]
+    return "", ""
+
+
 def scrape() -> list[dict]:
     """Scrape World Bank documents API for procurement-related docs."""
-    tenders = []
+    tenders: list[dict] = []
+    seen: set[str] = set()  # (normalized_title, projectid) dedup
 
     for iso2, wb_name in WB_COUNTRY_NAMES.items():
         for doc_type in DOC_TYPES:
@@ -79,16 +102,28 @@ def scrape() -> list[dict]:
                         continue
 
                     project = doc.get("projectid", "")
+
+                    # Deduplicate by (title, projectid)
+                    dedup_key = f"{title.strip().lower()}|{project}"
+                    if dedup_key in seen:
+                        continue
+                    seen.add(dedup_key)
+
+                    # Extract country from response, not loop variable
+                    resp_code, resp_name = _resolve_country_from_doc(doc)
+                    # Fall back to the request country if response doesn't have it
+                    country_code = resp_code or iso2
+                    country_name = resp_name or MENA_COUNTRIES.get(iso2, wb_name)
+
                     pub_date = doc.get("docdt", doc.get("discdt", ""))
                     doc_url = doc.get("url", doc.get("pdfurl", ""))
                     abstract = doc.get("abstracts", doc.get("textcont", ""))
 
-                    country_name = MENA_COUNTRIES.get(iso2, wb_name)
-
                     tender = {
-                        "id": generate_id("wbd", title[:80], iso2),
+                        "id": generate_id("wbd", title[:80], ""),
                         "source": "World Bank Documents",
                         "sourceRef": project,
+                        "sourceLanguage": "en",
                         "title": {
                             "en": f"{title} ({doc_type})",
                             "ar": f"{title} ({doc_type})",
@@ -100,7 +135,7 @@ def scrape() -> list[dict]:
                             "fr": f"Banque mondiale — {country_name}",
                         },
                         "country": country_name,
-                        "countryCode": iso2,
+                        "countryCode": country_code,
                         "sector": classify_sector(title + " " + str(abstract)),
                         "budget": 0,
                         "currency": "USD",
@@ -126,7 +161,7 @@ def scrape() -> list[dict]:
             except Exception as e:
                 logger.error(f"WB Docs {iso2} {doc_type}: {e}")
 
-    logger.info(f"World Bank Documents total: {len(tenders)}")
+    logger.info(f"World Bank Documents total: {len(tenders)} unique")
     return tenders
 
 

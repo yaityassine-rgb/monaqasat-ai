@@ -64,6 +64,10 @@ def main():
         ("TED (EU)", "scrape_ted_v2"),
         ("IsDB", "scrape_idb"),
         ("Morocco Portal", "scrape_morocco"),
+        ("UNGM", "scrape_ungm"),
+        ("AfDB (IATI)", "scrape_afdb"),
+        ("Jordan JONEPS", "scrape_joneps"),
+        ("Saudi Etimad", "scrape_etimad"),
     ]
 
     total = 0

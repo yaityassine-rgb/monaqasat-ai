@@ -13,6 +13,7 @@ export interface Tender {
   description: { en: string; ar: string; fr: string };
   requirements: string[];
   matchScore: number;
+  sourceLanguage?: "en" | "ar" | "fr";
   saved?: boolean;
 }
 
@@ -40,4 +41,10 @@ export type CountryCode =
   | "JO"
   | "TN"
   | "DZ"
-  | "LY";
+  | "LY"
+  | "IQ"
+  | "LB"
+  | "PS"
+  | "SD"
+  | "YE"
+  | "MR";

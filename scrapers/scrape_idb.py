@@ -86,8 +86,9 @@ def scrape() -> list[dict]:
                         pub_date = parse_date(date_el.get_text(strip=True)) or ""
 
                     tender = {
-                        "id": generate_id("isdb", title[:80], country_code),
+                        "id": generate_id("isdb", title[:80], ""),
                         "source": "IsDB",
+                        "sourceLanguage": "en",
                         "title": {"en": title, "ar": title, "fr": title},
                         "organization": {
                             "en": "Islamic Development Bank",

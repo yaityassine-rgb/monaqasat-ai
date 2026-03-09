@@ -90,8 +90,9 @@ def scrape() -> list[dict]:
                                     deadline = d
 
                         tender = {
-                            "id": generate_id("ma", title[:80], "MA"),
+                            "id": generate_id("ma", title[:80], ""),
                             "source": "Marchés Publics Maroc",
+                            "sourceLanguage": "fr",
                             "title": {
                                 "en": title,
                                 "ar": title,
@@ -131,8 +132,9 @@ def scrape() -> list[dict]:
                     if not title or len(title) < 5:
                         continue
                     tender = {
-                        "id": generate_id("ma_rss", title[:80], "MA"),
+                        "id": generate_id("ma_rss", title[:80], ""),
                         "source": "Marchés Publics Maroc",
+                        "sourceLanguage": "fr",
                         "title": {"en": title, "ar": title, "fr": title},
                         "organization": {"en": "Government of Morocco", "ar": "المملكة المغربية", "fr": "Royaume du Maroc"},
                         "country": "Morocco",

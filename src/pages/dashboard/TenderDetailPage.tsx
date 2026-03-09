@@ -240,9 +240,14 @@ export default function TenderDetailPage() {
                 {getStatusLabel(tender.status, t)}
               </span>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-100 leading-snug mb-3">
+            <h1 className="text-xl md:text-2xl font-bold text-slate-100 leading-snug mb-2">
               {tender.title[lang]}
             </h1>
+            {tender.sourceLanguage && tender.sourceLanguage !== lang && (
+              <p className="text-xs text-slate-500 mb-2">
+                {t("tenderDetail.sourceLanguage")}: {tender.sourceLanguage === "en" ? "English" : tender.sourceLanguage === "fr" ? "Français" : "العربية"}
+              </p>
+            )}
             <div className="flex items-center gap-2 text-sm text-slate-400">
               <Building2 className="w-4 h-4 shrink-0" />
               <span>{tender.organization[lang]}</span>

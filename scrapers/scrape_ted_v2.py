@@ -75,9 +75,10 @@ def scrape() -> list[dict]:
                     # TED API returns minimal data per notice (pub number + links)
                     # We create entries with the publication number as identifier
                     tender = {
-                        "id": generate_id("ted", pub_number, iso2),
+                        "id": generate_id("ted", pub_number, ""),
                         "source": "TED (EU)",
                         "sourceRef": pub_number,
+                        "sourceLanguage": "en",
                         "title": {
                             "en": f"TED Notice {pub_number} — {country_name}",
                             "ar": f"إشعار TED {pub_number} — {country_name}",

@@ -475,6 +475,11 @@ export default function DashboardPage() {
                       >
                         {t(`dashboard.${tender.status === "closing-soon" ? "closingSoon" : tender.status}`)}
                       </span>
+                      {tender.sourceLanguage && tender.sourceLanguage !== lang && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-700/60 border border-slate-600/40 text-[10px] font-semibold text-slate-400 uppercase">
+                          {tender.sourceLanguage}
+                        </span>
+                      )}
                     </div>
                   </div>
 

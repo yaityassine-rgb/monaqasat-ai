@@ -289,7 +289,8 @@
     "applyNow": "التقديم على البوابة المصدر",
     "saveForLater": "حفظ لاحقاً",
     "generateProposal": "إنشاء مخطط العرض",
-    "similarTenders": "مناقصات مشابهة"
+    "similarTenders": "مناقصات مشابهة",
+    "sourceLanguage": "لغة المصدر"
   },
   "savedTenders": {
     "title": "المناقصات المحفوظة",
