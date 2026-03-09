@@ -1,0 +1,346 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "pricing": "Tarifs",
+    "contact": "Contact",
+    "dashboard": "Tableau de bord",
+    "signIn": "Connexion",
+    "startFree": "Essai gratuit"
+  },
+  "hero": {
+    "badge": "Intelligence d'approvisionnement par l'IA",
+    "title": "Trouvez et remportez les",
+    "titleHighlight": "marchés publics plus vite",
+    "subtitle": "Monaqasat AI agrège les appels d'offres de plus de 12 pays MENA, les associe à votre profil et vous donne l'avantage IA pour remporter plus de contrats.",
+    "cta": "Essai gratuit",
+    "ctaSecondary": "Comment ça marche",
+    "trustedBy": "Surveillance des appels d'offres de"
+  },
+  "stats": {
+    "tenders": "Appels d'offres actifs",
+    "countries": "Pays",
+    "sectors": "Secteurs",
+    "saved": "Remportés par les utilisateurs"
+  },
+  "features": {
+    "title": "Tout ce qu'il faut pour remporter les appels d'offres",
+    "subtitle": "Arrêtez de vérifier manuellement 15 portails. Nous le faisons pour vous — avec l'IA.",
+    "f1": {
+      "title": "Flux d'appels d'offres unifié",
+      "desc": "Tous les marchés publics de plus de 12 pays MENA dans un seul tableau de bord. Mis à jour quotidiennement."
+    },
+    "f2": {
+      "title": "Matching intelligent IA",
+      "desc": "Configurez votre profil une fois. Notre IA évalue chaque nouvel appel d'offres selon vos capacités et certifications."
+    },
+    "f3": {
+      "title": "Alertes de délais",
+      "desc": "Ne manquez jamais une échéance. Recevez des notifications instantanées pour les nouveaux appels d'offres correspondants."
+    },
+    "f4": {
+      "title": "Intelligence d'appels d'offres",
+      "desc": "Taux de réussite historiques, modèles de prix et analyse concurrentielle. Sachez ce qu'il faut pour gagner."
+    },
+    "f5": {
+      "title": "Assistant de propositions IA",
+      "desc": "Générez des plans de proposition, des listes de conformité et des résumés exécutifs en quelques secondes."
+    },
+    "f6": {
+      "title": "Recherche multilingue",
+      "desc": "Recherchez en arabe, anglais ou français. Notre IA comprend les trois et trouve les opportunités pertinentes."
+    }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "subtitle": "De l'inscription à la victoire — en 3 étapes simples",
+    "s1": {
+      "title": "Configurez votre profil",
+      "desc": "Décrivez votre entreprise : secteurs, capacités, certifications et pays cibles. Prend 5 minutes."
+    },
+    "s2": {
+      "title": "Recevez des offres correspondantes",
+      "desc": "Notre IA analyse des milliers d'appels d'offres quotidiennement et livre les meilleures correspondances."
+    },
+    "s3": {
+      "title": "Remportez plus de contrats",
+      "desc": "Utilisez notre intelligence et nos outils IA pour soumettre des offres plus fortes."
+    }
+  },
+  "sectors": {
+    "title": "Tous les secteurs majeurs couverts",
+    "construction": "Construction",
+    "it": "IT & Technologie",
+    "healthcare": "Santé",
+    "energy": "Énergie & Pétrole",
+    "education": "Éducation",
+    "transport": "Transport",
+    "defense": "Défense & Sécurité",
+    "water": "Eau & Environnement",
+    "telecom": "Télécommunications",
+    "agriculture": "Agriculture"
+  },
+  "testimonials": {
+    "title": "La confiance des entreprises MENA",
+    "t1": {
+      "text": "Nous passions 3 heures par jour à vérifier les portails. Monaqasat AI a réduit cela à 5 minutes et nous avons gagné 4 nouveaux contrats en 2 mois.",
+      "name": "Ahmed Benali",
+      "role": "PDG, Atlas Construction — Maroc"
+    },
+    "t2": {
+      "text": "Le matching IA est incroyablement précis. Il nous a trouvé un appel d'offres de 2M$ au Koweït que nous aurions complètement manqué.",
+      "name": "Fatima Al-Rashidi",
+      "role": "Directrice BD, TechGulf Solutions — Arabie saoudite"
+    },
+    "t3": {
+      "text": "Enfin une plateforme qui comprend les appels d'offres arabes. L'assistant de propositions seul nous fait économiser 10 heures par offre.",
+      "name": "Omar Mansour",
+      "role": "Associé, Mansour & Partners — Égypte"
+    }
+  },
+  "pricing": {
+    "title": "Tarification simple et transparente",
+    "subtitle": "Commencez gratuitement. Passez à la vitesse supérieure quand vous êtes prêt.",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "save": "Économisez 20%",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "getStarted": "Commencer",
+    "contactSales": "Contacter les ventes",
+    "popular": "Le plus populaire",
+    "free": {
+      "name": "Explorateur",
+      "price": "0",
+      "desc": "Découvrez les appels d'offres",
+      "f1": "50 consultations/mois",
+      "f2": "3 pays",
+      "f3": "Recherche et filtres basiques",
+      "f4": "Résumé email (hebdomadaire)"
+    },
+    "pro": {
+      "name": "Professionnel",
+      "price": "49",
+      "priceYearly": "470",
+      "desc": "Pour les soumissionnaires actifs",
+      "f1": "Consultations illimitées",
+      "f2": "Tous les 12+ pays",
+      "f3": "Matching intelligent IA",
+      "f4": "Alertes en temps réel",
+      "f5": "Sauvegarde et suivi",
+      "f6": "Rapports d'intelligence"
+    },
+    "enterprise": {
+      "name": "Entreprise",
+      "price": "199",
+      "priceYearly": "1910",
+      "desc": "Pour les équipes et grandes entreprises",
+      "f1": "Tout dans Professionnel",
+      "f2": "Assistant de propositions IA",
+      "f3": "Collaboration d'équipe (5 places)",
+      "f4": "Accès API",
+      "f5": "Surveillance des concurrents",
+      "f6": "Gestionnaire de compte dédié"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "q1": { "q": "Combien d'appels d'offres suivez-vous ?", "a": "Nous suivons actuellement plus de 10 000 appels d'offres actifs dans plus de 12 pays MENA, avec des centaines ajoutés quotidiennement." },
+      "q2": { "q": "Comment fonctionne le matching IA ?", "a": "Notre IA évalue chaque nouvel appel d'offres par rapport à votre profil et les classe par pertinence. Précision typique : 85-95%." },
+      "q3": { "q": "Offrez-vous un essai gratuit ?", "a": "Oui ! Le plan Explorateur est gratuit pour toujours. Le plan Professionnel a un essai gratuit de 14 jours. Aucune carte requise." },
+      "q4": { "q": "Quels pays couvrez-vous ?", "a": "Maroc, Arabie saoudite, EAU, Égypte, Koweït, Qatar, Bahreïn, Oman, Jordanie, Tunisie, Algérie et Libye." },
+      "q5": { "q": "Puis-je annuler à tout moment ?", "a": "Absolument. Annulez à tout moment depuis vos paramètres. Consultez notre politique de remboursement." }
+    }
+  },
+  "about": {
+    "title": "À propos de Monaqasat AI",
+    "subtitle": "Rendre les marchés publics accessibles à toutes les entreprises",
+    "story": {
+      "title": "Le problème que nous résolvons",
+      "p1": "Les gouvernements MENA dépensent plus de 400 milliards de dollars par an en marchés publics. Routes, hôpitaux, infrastructures technologiques — des contrats massifs.",
+      "p2": "Mais trouver ces opportunités ? Un cauchemar. Les appels d'offres sont dispersés sur des dizaines de portails, dans différents formats et langues.",
+      "p3": "Nous avons créé Monaqasat AI pour résoudre cela. Une plateforme. Chaque appel d'offres. Matching par IA."
+    },
+    "values": {
+      "title": "Pourquoi Monaqasat AI ?",
+      "v1": { "title": "Couverture complète", "desc": "Nous agrégeons depuis chaque portail majeur de marchés publics dans plus de 12 pays MENA." },
+      "v2": { "title": "IA d'abord", "desc": "Notre moteur de matching apprend votre entreprise et s'améliore avec chaque interaction." },
+      "v3": { "title": "Arabe natif", "desc": "Construit pour l'arabe d'abord. Notre NLP comprend le vocabulaire des marchés publics arabes." },
+      "v4": { "title": "Égalité des chances", "desc": "Les PME méritent la même intelligence que les grandes entreprises." }
+    },
+    "company": {
+      "title": "Informations sur l'entreprise",
+      "name": "Un produit de Holoul AI SARL",
+      "location": "Casablanca, Maroc",
+      "email": "contact@monaqasat.ai"
+    }
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Questions ? Partenariats ? Nous serions ravis de vous entendre.",
+    "form": {
+      "name": "Votre nom",
+      "email": "Votre email",
+      "subject": "Sujet",
+      "message": "Votre message",
+      "send": "Envoyer",
+      "success": "Message envoyé ! Nous reviendrons vers vous sous 24 heures.",
+      "subjects": {
+        "general": "Demande générale",
+        "sales": "Ventes et tarifs",
+        "support": "Support technique",
+        "partnership": "Partenariat",
+        "data": "Données et couverture"
+      }
+    },
+    "info": {
+      "title": "Nous joindre",
+      "email": "Email",
+      "address": "Adresse",
+      "addressValue": "Casablanca, Maroc",
+      "hours": "Heures d'ouverture",
+      "hoursValue": "Lun-Ven, 9h00-18h00 (GMT+1)"
+    }
+  },
+  "terms": {
+    "title": "Conditions d'utilisation",
+    "lastUpdated": "Dernière mise à jour : Mars 2026",
+    "sections": {
+      "s1": { "title": "1. Acceptation des conditions", "content": "En utilisant Monaqasat AI ('Service'), opéré par Holoul AI SARL ('Société'), vous acceptez ces Conditions." },
+      "s2": { "title": "2. Description du service", "content": "Monaqasat AI est une plateforme d'intelligence des appels d'offres qui agrège les opportunités de marchés publics à partir de sources publiques dans les pays MENA." },
+      "s3": { "title": "3. Comptes utilisateurs", "content": "Vous devez fournir des informations exactes. Vous êtes responsable de la sécurité de votre compte. Vous devez avoir au moins 18 ans." },
+      "s4": { "title": "4. Exactitude des données", "content": "Les informations proviennent de portails gouvernementaux tiers. Nous ne garantissons pas l'exhaustivité. Vérifiez toujours auprès de l'autorité émettrice." },
+      "s5": { "title": "5. Conditions de paiement", "content": "Les plans payants sont facturés mensuellement ou annuellement à l'avance en USD." },
+      "s6": { "title": "6. Utilisation acceptable", "content": "Vous ne pouvez pas : extraire massivement des données ; revendre les données ; utiliser le service illégalement ; tenter de rétro-ingénier nos systèmes IA." },
+      "s7": { "title": "7. Propriété intellectuelle", "content": "Notre plateforme et nos modèles IA sont la propriété de Holoul AI SARL. Les données de marchés publics restent dans le domaine public." },
+      "s8": { "title": "8. Limitation de responsabilité", "content": "Monaqasat AI est un outil d'intelligence, pas une garantie d'attribution de contrats." },
+      "s9": { "title": "9. Droit applicable", "content": "Ces Conditions sont régies par les lois du Royaume du Maroc." },
+      "s10": { "title": "10. Contact", "content": "Pour toute question : contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Maroc" }
+    }
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : Mars 2026",
+    "sections": {
+      "s1": { "title": "1. Informations collectées", "content": "Nous collectons : informations de compte, données d'utilisation, données techniques et informations de paiement." },
+      "s2": { "title": "2. Utilisation des informations", "content": "Nous utilisons vos données pour : fournir le matching et les alertes, améliorer la précision, traiter les paiements." },
+      "s3": { "title": "3. Sécurité des données", "content": "Nous utilisons le chiffrement SSL/TLS, les contrôles d'accès et les audits de sécurité réguliers." },
+      "s4": { "title": "4. Partage des données", "content": "Nous ne vendons jamais vos données. Partage uniquement avec : processeurs de paiement, hébergeurs, et sur obligation légale." },
+      "s5": { "title": "5. Vos droits", "content": "Vous pouvez : accéder, corriger ou supprimer vos données ; exporter vos sauvegardes ; vous désabonner des emails marketing." },
+      "s6": { "title": "6. Cookies", "content": "Cookies essentiels pour la connexion et cookies analytiques optionnels." },
+      "s7": { "title": "7. Contact", "content": "Demandes de confidentialité : contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Maroc" }
+    }
+  },
+  "refund": {
+    "title": "Politique de remboursement",
+    "lastUpdated": "Dernière mise à jour : Mars 2026",
+    "sections": {
+      "s1": { "title": "1. Essai gratuit", "content": "Tous les nouveaux utilisateurs bénéficient d'un essai gratuit de 14 jours du plan Professionnel. Aucune carte requise." },
+      "s2": { "title": "2. Plans mensuels", "content": "Remboursement complet dans les 7 jours suivant l'achat. Après 7 jours, pas de remboursement pour la période en cours." },
+      "s3": { "title": "3. Plans annuels", "content": "Remboursement complet dans les 30 jours. Ensuite, remboursement au prorata des mois restants." },
+      "s4": { "title": "4. Comment demander", "content": "Envoyez un email à contact@monaqasat.ai. Traitement sous 5-10 jours ouvrables." },
+      "s5": { "title": "5. Contact", "content": "Demandes de remboursement : contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Maroc" }
+    }
+  },
+  "dashboard": {
+    "title": "Tableau des appels d'offres",
+    "search": "Rechercher des appels d'offres...",
+    "filters": "Filtres",
+    "country": "Pays",
+    "sector": "Secteur",
+    "status": "Statut",
+    "budget": "Budget",
+    "allCountries": "Tous les pays",
+    "allSectors": "Tous les secteurs",
+    "allStatuses": "Tous les statuts",
+    "open": "Ouvert",
+    "closingSoon": "Clôture proche",
+    "closed": "Fermé",
+    "matchScore": "Correspondance",
+    "deadline": "Date limite",
+    "publishDate": "Publié",
+    "viewDetails": "Voir les détails",
+    "save": "Sauvegarder",
+    "saved": "Sauvegardé",
+    "unsave": "Retirer",
+    "results": "appels d'offres trouvés",
+    "noResults": "Aucun appel d'offres ne correspond à vos filtres",
+    "clearFilters": "Effacer les filtres",
+    "sortBy": "Trier par",
+    "sortMatch": "Meilleure correspondance",
+    "sortDeadline": "Date limite",
+    "sortBudget": "Budget",
+    "sortNewest": "Plus récent"
+  },
+  "tenderDetail": {
+    "back": "Retour au tableau de bord",
+    "overview": "Aperçu",
+    "requirements": "Exigences",
+    "organization": "Organisation",
+    "budget": "Budget",
+    "deadline": "Date limite de soumission",
+    "published": "Publié",
+    "sector": "Secteur",
+    "country": "Pays",
+    "status": "Statut",
+    "matchScore": "Score de correspondance IA",
+    "description": "Description",
+    "aiAnalysis": "Analyse IA",
+    "aiInsight": "Basé sur votre profil, cet appel d'offres est une forte correspondance. Points forts : alignement sectoriel et expérience régionale.",
+    "applyNow": "Postuler sur le portail source",
+    "saveForLater": "Sauvegarder",
+    "generateProposal": "Générer un plan de proposition",
+    "similarTenders": "Appels d'offres similaires"
+  },
+  "savedTenders": {
+    "title": "Appels d'offres sauvegardés",
+    "subtitle": "Vos opportunités marquées",
+    "empty": "Aucun appel d'offres sauvegardé. Parcourez le tableau de bord et sauvegardez ceux qui vous intéressent.",
+    "browseTenders": "Parcourir les appels d'offres"
+  },
+  "profile": {
+    "title": "Profil de l'entreprise",
+    "subtitle": "Aidez notre IA à trouver les meilleurs appels d'offres pour vous",
+    "companyName": "Nom de l'entreprise",
+    "companyNamePh": "Nom de votre entreprise",
+    "sector": "Secteur principal",
+    "sectors": "Secteurs supplémentaires",
+    "countries": "Pays cibles",
+    "certifications": "Certifications",
+    "certificationsPh": "ISO 9001, ISO 14001, Marquage CE...",
+    "experience": "Années d'expérience",
+    "description": "Description de l'entreprise",
+    "descriptionPh": "Brève description de votre entreprise...",
+    "save": "Enregistrer le profil",
+    "saved": "Profil enregistré avec succès !"
+  },
+  "analytics": {
+    "title": "Analyses de marché",
+    "subtitle": "Insights d'approvisionnement par l'IA",
+    "totalValue": "Valeur totale des appels d'offres",
+    "avgBudget": "Budget moyen",
+    "openTenders": "Appels d'offres ouverts",
+    "closingSoon": "Clôture proche",
+    "byCountry": "Par pays",
+    "bySector": "Par secteur",
+    "timeline": "Chronologie",
+    "topOpportunities": "Meilleures opportunités"
+  },
+  "footer": {
+    "company": "Entreprise",
+    "product": "Produit",
+    "legal": "Juridique",
+    "connect": "Contact",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "refund": "Politique de remboursement",
+    "rights": "Tous droits réservés.",
+    "parent": "Un produit Holoul AI",
+    "builtIn": "Construit avec l'IA au Maroc"
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Page non trouvée",
+    "text": "La page que vous recherchez n'existe pas.",
+    "cta": "Retour à l'accueil"
+  }
+}

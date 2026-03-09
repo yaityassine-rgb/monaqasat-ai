@@ -1,0 +1,346 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "startFree": "Start Free"
+  },
+  "hero": {
+    "badge": "AI-Powered Procurement Intelligence",
+    "title": "Find & Win Government",
+    "titleHighlight": "Contracts Faster",
+    "subtitle": "Monaqasat AI aggregates government tenders from 12+ MENA countries, matches them to your business profile, and gives you the AI-powered edge to win more contracts.",
+    "cta": "Start Free Trial",
+    "ctaSecondary": "See How It Works",
+    "trustedBy": "Monitoring tenders from"
+  },
+  "stats": {
+    "tenders": "Active Tenders",
+    "countries": "Countries",
+    "sectors": "Sectors",
+    "saved": "Won by Users"
+  },
+  "features": {
+    "title": "Everything You Need to Win Tenders",
+    "subtitle": "Stop manually checking 15 different procurement portals. We do it for you — with AI.",
+    "f1": {
+      "title": "Unified Tender Feed",
+      "desc": "All government tenders from 12+ MENA countries in one dashboard. Morocco, Saudi Arabia, UAE, Egypt, and more — updated daily."
+    },
+    "f2": {
+      "title": "AI Smart Matching",
+      "desc": "Set your company profile once. Our AI scores every new tender against your capabilities, experience, and certifications."
+    },
+    "f3": {
+      "title": "Deadline Alerts",
+      "desc": "Never miss a deadline. Get instant notifications for new matching tenders and upcoming submission deadlines."
+    },
+    "f4": {
+      "title": "Bid Intelligence",
+      "desc": "Historical win rates, pricing patterns, and competitor analysis. Know what it takes to win before you bid."
+    },
+    "f5": {
+      "title": "AI Proposal Assistant",
+      "desc": "Generate proposal outlines, compliance checklists, and executive summaries from tender documents in seconds."
+    },
+    "f6": {
+      "title": "Multi-Language Search",
+      "desc": "Search tenders in Arabic, English, or French. Our AI understands all three and finds relevant opportunities regardless of language."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "From signup to winning — in 3 simple steps",
+    "s1": {
+      "title": "Set Up Your Profile",
+      "desc": "Tell us about your company: sectors, capabilities, certifications, and target countries. Takes 5 minutes."
+    },
+    "s2": {
+      "title": "Get Matched Tenders",
+      "desc": "Our AI scans thousands of tenders daily and delivers the best matches to your dashboard, ranked by relevance."
+    },
+    "s3": {
+      "title": "Win More Contracts",
+      "desc": "Use our bid intelligence and AI proposal tools to submit stronger bids. Track everything from one place."
+    }
+  },
+  "sectors": {
+    "title": "All Major Sectors Covered",
+    "construction": "Construction",
+    "it": "IT & Technology",
+    "healthcare": "Healthcare",
+    "energy": "Energy & Oil",
+    "education": "Education",
+    "transport": "Transport",
+    "defense": "Defense & Security",
+    "water": "Water & Environment",
+    "telecom": "Telecommunications",
+    "agriculture": "Agriculture"
+  },
+  "testimonials": {
+    "title": "Trusted by MENA Businesses",
+    "t1": {
+      "text": "We used to spend 3 hours daily checking procurement portals. Monaqasat AI reduced that to 5 minutes and we've won 4 new contracts in 2 months.",
+      "name": "Ahmed Benali",
+      "role": "CEO, Atlas Construction — Morocco"
+    },
+    "t2": {
+      "text": "The AI matching is incredibly accurate. It found us a $2M tender in Kuwait that we would have completely missed.",
+      "name": "Fatima Al-Rashidi",
+      "role": "BD Director, TechGulf Solutions — Saudi Arabia"
+    },
+    "t3": {
+      "text": "Finally, a platform that understands Arabic tenders. The proposal assistant alone saves us 10 hours per bid.",
+      "name": "Omar Mansour",
+      "role": "Partner, Mansour & Partners — Egypt"
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Start free. Upgrade when you're ready to win more.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save 20%",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "getStarted": "Get Started",
+    "contactSales": "Contact Sales",
+    "popular": "Most Popular",
+    "free": {
+      "name": "Explorer",
+      "price": "0",
+      "desc": "Get started with tender discovery",
+      "f1": "50 tender views/month",
+      "f2": "3 countries",
+      "f3": "Basic search & filters",
+      "f4": "Email digest (weekly)"
+    },
+    "pro": {
+      "name": "Professional",
+      "price": "49",
+      "priceYearly": "470",
+      "desc": "For active bidders",
+      "f1": "Unlimited tender views",
+      "f2": "All 12+ countries",
+      "f3": "AI smart matching",
+      "f4": "Real-time alerts",
+      "f5": "Save & track tenders",
+      "f6": "Bid intelligence reports"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "199",
+      "priceYearly": "1910",
+      "desc": "For teams & large companies",
+      "f1": "Everything in Professional",
+      "f2": "AI proposal assistant",
+      "f3": "Team collaboration (5 seats)",
+      "f4": "API access",
+      "f5": "Competitor monitoring",
+      "f6": "Dedicated account manager"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": { "q": "How many tenders do you track?", "a": "We currently track 10,000+ active tenders across 12+ MENA countries, with hundreds of new ones added daily from government procurement portals." },
+      "q2": { "q": "How does AI matching work?", "a": "When you set up your company profile (sectors, certifications, past experience), our AI scores every new tender against your profile and ranks them by relevance. Typical accuracy is 85-95%." },
+      "q3": { "q": "Do you offer a free trial?", "a": "Yes! The Explorer plan is free forever with limited features. Professional plan has a 14-day free trial with full access. No credit card required." },
+      "q4": { "q": "Which countries do you cover?", "a": "Morocco, Saudi Arabia, UAE, Egypt, Kuwait, Qatar, Bahrain, Oman, Jordan, Tunisia, Algeria, and Libya. We're adding more countries quarterly." },
+      "q5": { "q": "Can I cancel anytime?", "a": "Absolutely. Cancel anytime from your account settings. See our refund policy for details on refunds." }
+    }
+  },
+  "about": {
+    "title": "About Monaqasat AI",
+    "subtitle": "Making government procurement accessible to every business",
+    "story": {
+      "title": "The Problem We're Solving",
+      "p1": "MENA governments spend over $400 billion annually on procurement. That's roads, hospitals, tech infrastructure, defense systems — massive contracts that fuel entire industries.",
+      "p2": "But finding these opportunities? It's a nightmare. Tenders are scattered across dozens of government portals, in different formats, different languages, with different submission requirements. A business in Morocco has to manually check 15+ websites daily just to stay current.",
+      "p3": "We built Monaqasat AI to fix this. One platform. Every tender. AI-powered matching. So businesses can spend less time searching and more time winning."
+    },
+    "values": {
+      "title": "Why Monaqasat AI?",
+      "v1": { "title": "Complete Coverage", "desc": "We aggregate from every major government procurement portal across 12+ MENA countries. No tender falls through the cracks." },
+      "v2": { "title": "AI-First", "desc": "Our matching engine learns your business and gets smarter with every interaction. Higher match accuracy over time." },
+      "v3": { "title": "Arabic-Native", "desc": "Built for Arabic first. Our NLP understands Arabic procurement language, legal terms, and sector-specific jargon." },
+      "v4": { "title": "Leveling the Field", "desc": "Small businesses deserve the same tender intelligence that large corporations have. We make it affordable for everyone." }
+    },
+    "company": {
+      "title": "Company Information",
+      "name": "A product by Holoul AI SARL",
+      "location": "Casablanca, Morocco",
+      "email": "contact@monaqasat.ai"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Questions? Partnerships? We'd love to hear from you.",
+    "form": {
+      "name": "Your Name",
+      "email": "Your Email",
+      "subject": "Subject",
+      "message": "Your Message",
+      "send": "Send Message",
+      "success": "Message sent! We'll get back to you within 24 hours.",
+      "subjects": {
+        "general": "General Inquiry",
+        "sales": "Sales & Pricing",
+        "support": "Technical Support",
+        "partnership": "Partnership",
+        "data": "Data & Coverage"
+      }
+    },
+    "info": {
+      "title": "Get in Touch",
+      "email": "Email",
+      "address": "Address",
+      "addressValue": "Casablanca, Morocco",
+      "hours": "Business Hours",
+      "hoursValue": "Mon-Fri, 9:00-18:00 (GMT+1)"
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: March 2026",
+    "sections": {
+      "s1": { "title": "1. Acceptance of Terms", "content": "By using Monaqasat AI ('Service'), operated by Holoul AI SARL ('Company'), you agree to these Terms. The Service aggregates publicly available government procurement data and provides AI-powered analysis tools." },
+      "s2": { "title": "2. Service Description", "content": "Monaqasat AI is a tender intelligence platform that aggregates government procurement opportunities from public sources across MENA countries. We provide search, matching, and analysis tools. Tender data is sourced from publicly accessible government portals." },
+      "s3": { "title": "3. User Accounts", "content": "You must provide accurate information when creating an account. You are responsible for your account security. You must be at least 18 years old and authorized to act on behalf of your organization." },
+      "s4": { "title": "4. Data Accuracy", "content": "While we strive for accuracy, tender information is sourced from third-party government portals. We do not guarantee the completeness or accuracy of tender data. Always verify details with the issuing authority before submitting bids." },
+      "s5": { "title": "5. Payment Terms", "content": "Paid plans are billed monthly or annually in advance. Prices are in USD. We accept major credit cards and PayPal. We reserve the right to change pricing with 30 days' notice." },
+      "s6": { "title": "6. Acceptable Use", "content": "You may not: scrape or bulk-download data; resell tender data; use the service for illegal purposes; attempt to reverse-engineer our AI systems; or exceed reasonable usage limits." },
+      "s7": { "title": "7. Intellectual Property", "content": "Our platform, AI models, and proprietary analysis are owned by Holoul AI SARL. Government tender data remains in the public domain. Your company profile and saved data belong to you." },
+      "s8": { "title": "8. Limitation of Liability", "content": "Monaqasat AI is an intelligence tool, not a guarantee of contract awards. We are not liable for: missed tenders, inaccurate data from source portals, failed bids, or business decisions made based on our analysis." },
+      "s9": { "title": "9. Governing Law", "content": "These Terms are governed by the laws of the Kingdom of Morocco. Disputes shall be resolved in the courts of Casablanca, Morocco." },
+      "s10": { "title": "10. Contact", "content": "For questions: contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Morocco" }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: March 2026",
+    "sections": {
+      "s1": { "title": "1. Information We Collect", "content": "We collect: account information (name, email, company details); usage data (searches, saved tenders); technical data (IP, browser, device); and payment information (processed securely by our payment partners)." },
+      "s2": { "title": "2. How We Use Your Information", "content": "We use your data to: provide tender matching and alerts; improve our AI matching accuracy; process payments; send service communications; and generate anonymized market analytics." },
+      "s3": { "title": "3. Data Security", "content": "We use encryption (SSL/TLS), access controls, and regular security audits. Company profiles and search history are encrypted at rest. We follow industry best practices for data protection." },
+      "s4": { "title": "4. Data Sharing", "content": "We never sell your data. We share data only with: payment processors, cloud hosting providers, and when legally required. All third parties are bound by data protection agreements." },
+      "s5": { "title": "5. Your Rights", "content": "You can: access, correct, or delete your data; export your saved tenders and profile; opt out of marketing emails; and close your account at any time. Contact contact@monaqasat.ai." },
+      "s6": { "title": "6. Cookies", "content": "We use essential cookies for login/preferences and optional analytics cookies. You can manage preferences in your browser settings." },
+      "s7": { "title": "7. Contact", "content": "Privacy inquiries: contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Morocco" }
+    }
+  },
+  "refund": {
+    "title": "Refund Policy",
+    "lastUpdated": "Last updated: March 2026",
+    "sections": {
+      "s1": { "title": "1. Free Trial", "content": "All new users get a 14-day free trial of the Professional plan. No credit card required. At the end of the trial, you'll be downgraded to the Explorer (free) plan unless you subscribe." },
+      "s2": { "title": "2. Monthly Plans", "content": "Request a full refund within 7 days of purchase or renewal. After 7 days, no refund for the current period, but you can cancel to prevent future charges." },
+      "s3": { "title": "3. Annual Plans", "content": "Full refund within 30 days of initial purchase. After 30 days, prorated refund for remaining months upon request." },
+      "s4": { "title": "4. How to Request", "content": "Email contact@monaqasat.ai with your account email and reason. We process refunds within 5-10 business days." },
+      "s5": { "title": "5. Contact", "content": "Refund inquiries: contact@monaqasat.ai\n\nHoloul AI SARL\nCasablanca, Morocco" }
+    }
+  },
+  "dashboard": {
+    "title": "Tender Dashboard",
+    "search": "Search tenders...",
+    "filters": "Filters",
+    "country": "Country",
+    "sector": "Sector",
+    "status": "Status",
+    "budget": "Budget",
+    "allCountries": "All Countries",
+    "allSectors": "All Sectors",
+    "allStatuses": "All Statuses",
+    "open": "Open",
+    "closingSoon": "Closing Soon",
+    "closed": "Closed",
+    "matchScore": "Match",
+    "deadline": "Deadline",
+    "publishDate": "Published",
+    "viewDetails": "View Details",
+    "save": "Save",
+    "saved": "Saved",
+    "unsave": "Unsave",
+    "results": "tenders found",
+    "noResults": "No tenders match your filters",
+    "clearFilters": "Clear Filters",
+    "sortBy": "Sort by",
+    "sortMatch": "Best Match",
+    "sortDeadline": "Deadline",
+    "sortBudget": "Budget",
+    "sortNewest": "Newest"
+  },
+  "tenderDetail": {
+    "back": "Back to Dashboard",
+    "overview": "Overview",
+    "requirements": "Requirements",
+    "organization": "Organization",
+    "budget": "Budget",
+    "deadline": "Submission Deadline",
+    "published": "Published",
+    "sector": "Sector",
+    "country": "Country",
+    "status": "Status",
+    "matchScore": "AI Match Score",
+    "description": "Description",
+    "aiAnalysis": "AI Analysis",
+    "aiInsight": "Based on your company profile, this tender is a strong match. Key strengths: sector alignment and regional experience. Consider highlighting your relevant certifications in the proposal.",
+    "applyNow": "Apply on Source Portal",
+    "saveForLater": "Save for Later",
+    "generateProposal": "Generate Proposal Outline",
+    "similarTenders": "Similar Tenders"
+  },
+  "savedTenders": {
+    "title": "Saved Tenders",
+    "subtitle": "Your bookmarked opportunities",
+    "empty": "No saved tenders yet. Browse the dashboard and save tenders you're interested in.",
+    "browseTenders": "Browse Tenders"
+  },
+  "profile": {
+    "title": "Company Profile",
+    "subtitle": "Help our AI find the best tenders for you",
+    "companyName": "Company Name",
+    "companyNamePh": "Your company name",
+    "sector": "Primary Sector",
+    "sectors": "Additional Sectors",
+    "countries": "Target Countries",
+    "certifications": "Certifications",
+    "certificationsPh": "ISO 9001, ISO 14001, CE Marking...",
+    "experience": "Years of Experience",
+    "description": "Company Description",
+    "descriptionPh": "Brief description of your company and capabilities...",
+    "save": "Save Profile",
+    "saved": "Profile saved successfully!"
+  },
+  "analytics": {
+    "title": "Market Analytics",
+    "subtitle": "AI-powered procurement insights",
+    "totalValue": "Total Tender Value",
+    "avgBudget": "Average Budget",
+    "openTenders": "Open Tenders",
+    "closingSoon": "Closing Soon",
+    "byCountry": "Tenders by Country",
+    "bySector": "Tenders by Sector",
+    "timeline": "Tender Timeline",
+    "topOpportunities": "Top Matched Opportunities"
+  },
+  "footer": {
+    "company": "Company",
+    "product": "Product",
+    "legal": "Legal",
+    "connect": "Connect",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "refund": "Refund Policy",
+    "rights": "All rights reserved.",
+    "parent": "A Holoul AI product",
+    "builtIn": "Built with AI in Morocco"
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Page Not Found",
+    "text": "The page you're looking for doesn't exist.",
+    "cta": "Back to Home"
+  }
+}
