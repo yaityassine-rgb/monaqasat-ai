@@ -315,7 +315,7 @@ export default function TenderDetailPage() {
               {isSaved ? t("dashboard.saved") : t("tenderDetail.saveForLater")}
             </button>
             <Link
-              to="/pricing"
+              to={`/dashboard/proposals?tender=${tender.id}`}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />

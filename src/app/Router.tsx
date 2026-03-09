@@ -22,6 +22,8 @@ import ProfilePage from "../pages/dashboard/ProfilePage";
 import AnalyticsPage from "../pages/dashboard/AnalyticsPage";
 import SubscriptionPage from "../pages/dashboard/SubscriptionPage";
 import AlertsPage from "../pages/dashboard/AlertsPage";
+import DocumentsPage from "../pages/dashboard/DocumentsPage";
+import ProposalPage from "../pages/dashboard/ProposalPage";
 
 export default function Router() {
   return (
@@ -51,6 +53,9 @@ export default function Router() {
         <Route path="dashboard/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
         <Route path="dashboard/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
         <Route path="dashboard/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+        <Route path="dashboard/documents" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
+        <Route path="dashboard/proposals" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
+        <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFoundPage />} />
