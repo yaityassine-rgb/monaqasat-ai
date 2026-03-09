@@ -18,7 +18,7 @@ import {
   Clock,
   Target,
 } from "lucide-react";
-import { MOCK_TENDERS } from "../../lib/mock-data";
+import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 
 type LangKey = "en" | "ar" | "fr";
@@ -111,7 +111,7 @@ export default function TenderDetailPage() {
   const lang = i18n.language as LangKey;
   const isRtl = lang === "ar";
 
-  const tender = MOCK_TENDERS.find((t) => t.id === id);
+  const tender = getTenders().find((t) => t.id === id);
 
   const savedIds = getSavedIds();
   const isSaved = tender ? savedIds.includes(tender.id) : false;
@@ -130,7 +130,7 @@ export default function TenderDetailPage() {
 
   const similarTenders = useMemo(() => {
     if (!tender) return [];
-    return MOCK_TENDERS.filter(
+    return getTenders().filter(
       (t) => t.sector === tender.sector && t.id !== tender.id,
     )
       .sort((a, b) => b.matchScore - a.matchScore)

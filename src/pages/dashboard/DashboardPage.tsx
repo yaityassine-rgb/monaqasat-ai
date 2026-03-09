@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,8 +12,11 @@ import {
   ArrowUpDown,
   X,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
 } from "lucide-react";
-import { MOCK_TENDERS } from "../../lib/mock-data";
+import { loadTenders, getTenders } from "../../lib/tender-store";
 import { COUNTRIES, SECTORS } from "../../lib/constants";
 import type { Tender } from "../../lib/types";
 
@@ -65,10 +68,14 @@ function getStatusStyle(status: Tender["status"]): string {
   }
 }
 
+const PAGE_SIZE = 24;
+
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
 
+  const [allTenders, setAllTenders] = useState<Tender[]>(getTenders);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("");
   const [sector, setSector] = useState("");
@@ -76,6 +83,14 @@ export default function DashboardPage() {
   const [sort, setSort] = useState<SortOption>("match");
   const [savedIds, setSavedIdsState] = useState<string[]>(getSavedIds);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    loadTenders().then((data) => {
+      setAllTenders(data);
+      setLoading(false);
+    });
+  }, []);
 
   const toggleSave = useCallback(
     (id: string) => {
@@ -91,7 +106,7 @@ export default function DashboardPage() {
   );
 
   const filtered = useMemo(() => {
-    let list = [...MOCK_TENDERS];
+    let list = [...allTenders];
 
     // Search
     if (search.trim()) {
@@ -137,7 +152,13 @@ export default function DashboardPage() {
     }
 
     return list;
-  }, [search, country, sector, status, sort]);
+  }, [allTenders, search, country, sector, status, sort]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [search, country, sector, status, sort]);
 
   const hasActiveFilters = country || sector || status;
 
@@ -355,8 +376,16 @@ export default function DashboardPage() {
         </AnimatePresence>
       </motion.div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="glass-card rounded-xl p-12 text-center">
+          <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
+          <p className="text-slate-400 text-sm">{t("dashboard.loading") || "Loading tenders..."}</p>
+        </div>
+      )}
+
       {/* Tender Cards Grid */}
-      {filtered.length === 0 ? (
+      {!loading && filtered.length === 0 ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -373,10 +402,10 @@ export default function DashboardPage() {
             {t("dashboard.clearFilters")}
           </button>
         </motion.div>
-      ) : (
+      ) : !loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
-            {filtered.map((tender, idx) => {
+            {paginated.map((tender, idx) => {
               const co = countryObj(tender.countryCode);
               const isSaved = savedIds.includes(tender.id);
 
@@ -491,6 +520,31 @@ export default function DashboardPage() {
               );
             })}
           </AnimatePresence>
+        </div>
+      ) : null}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-8 mb-4">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="flex items-center gap-1 px-3 py-2 rounded-lg bg-dark/60 border border-dark-border text-xs text-slate-300 hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            {t("dashboard.prev") || "Prev"}
+          </button>
+          <span className="text-xs text-slate-400">
+            {page} / {totalPages} ({filtered.length} {t("dashboard.results")})
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="flex items-center gap-1 px-3 py-2 rounded-lg bg-dark/60 border border-dark-border text-xs text-slate-300 hover:border-primary/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            {t("dashboard.next") || "Next"}
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
     </motion.div>

@@ -1,7 +1,7 @@
 """
 Scraper for African Development Bank (AfDB) Procurement.
-Source: https://www.afdb.org/en/projects-and-operations/procurement
-Covers North African MENA countries: Morocco, Tunisia, Algeria, Libya, Egypt, Mauritania.
+Source: https://www.afdb.org/en/about-us/corporate-procurement/procurement-notices/current-solicitations
+Covers North African MENA countries: Morocco, Tunisia, Algeria, Egypt, Libya, Mauritania.
 """
 
 import requests
@@ -12,152 +12,122 @@ from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
 logger = logging.getLogger("afdb")
 
-# AfDB API/listing
-AFDB_URL = "https://www.afdb.org/en/projects-and-operations/procurement"
-AFDB_API = "https://projectsportal.afdb.org/dataportal/api/procurement"
+AFDB_URLS = [
+    "https://www.afdb.org/en/about-us/corporate-procurement/procurement-notices/current-solicitations",
+    "https://www.afdb.org/en/documents/project-related-procurement/procurement-notices",
+    "https://www.afdb.org/en/projects-and-operations/procurement",
+]
 
-# North African countries covered by AfDB
-NORTH_AFRICA = {"MA", "TN", "DZ", "LY", "EG", "MR", "SD"}
+NORTH_AFRICA = {"MA": "Morocco", "TN": "Tunisia", "DZ": "Algeria", "EG": "Egypt", "LY": "Libya", "MR": "Mauritania", "SD": "Sudan"}
 
 
 def scrape() -> list[dict]:
-    """Scrape AfDB procurement for North African MENA countries."""
+    """Scrape AfDB procurement notices."""
     tenders = []
 
-    # Try AfDB data portal API
-    try:
-        for country_code in NORTH_AFRICA:
-            country_name = MENA_COUNTRIES.get(country_code, "")
-            if not country_name:
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "en,fr",
+    })
+
+    for url in AFDB_URLS:
+        try:
+            resp = session.get(url, timeout=30)
+            if resp.status_code != 200:
+                logger.warning(f"AfDB {url} returned {resp.status_code}")
                 continue
 
-            params = {
-                "country": country_name,
-                "limit": 50,
-                "offset": 0,
-            }
+            soup = BeautifulSoup(resp.text, "lxml")
 
-            resp = requests.get(AFDB_API, params=params, headers=HEADERS, timeout=30)
+            # Try various selectors
+            selectors = [
+                "table tbody tr",
+                ".views-row",
+                "article",
+                ".node--type-procurement",
+                ".procurement-notice",
+                ".field-content",
+                ".view-content .item-list li",
+                ".list-group-item",
+            ]
 
-            if resp.status_code == 200:
-                data = resp.json()
-                items = data if isinstance(data, list) else data.get("results", data.get("data", []))
+            for selector in selectors:
+                items = soup.select(selector)
+                if not items or len(items) < 2:
+                    continue
+
+                logger.info(f"AfDB: found {len(items)} items with '{selector}' on {url}")
 
                 for item in items:
-                    if isinstance(item, str):
-                        continue
-                    title = item.get("title", item.get("description", ""))
-                    if not title:
+                    title_el = item.select_one("a, h2, h3, h4, .title, td:first-child")
+                    if not title_el:
+                        title_el = item
+                    title = title_el.get_text(strip=True)
+                    if len(title) < 10:
                         continue
 
-                    org = item.get("agency", item.get("borrower", f"AfDB — {country_name}"))
-                    deadline_raw = item.get("deadline", item.get("closing_date", ""))
-                    publish_raw = item.get("published_date", item.get("approval_date", ""))
+                    link = ""
+                    a_tag = item.select_one("a[href]")
+                    if a_tag:
+                        link = a_tag.get("href", "")
+                        if link and not link.startswith("http"):
+                            link = f"https://www.afdb.org{link}"
+
+                    # Check if relates to North Africa
+                    text = item.get_text()
+                    country_code = "XX"
+                    country_name = ""
+                    for code, name in NORTH_AFRICA.items():
+                        if name.lower() in text.lower():
+                            country_code = code
+                            country_name = name
+                            break
+
+                    if country_code == "XX":
+                        country_name = "Africa"
+
+                    # Extract date
+                    date_el = item.select_one(".date, time, .datetime")
+                    pub_date = ""
+                    if date_el:
+                        pub_date = parse_date(date_el.get_text(strip=True)) or ""
 
                     tender = {
-                        "id": generate_id("afdb", title[:100], country_code),
+                        "id": generate_id("afdb", title[:80], country_code),
                         "source": "AfDB",
                         "title": {"en": title, "ar": title, "fr": title},
                         "organization": {
-                            "en": f"AfDB — {country_name}",
-                            "ar": f"بنك التنمية الأفريقي — {country_name}",
-                            "fr": f"BAD — {country_name}",
+                            "en": "African Development Bank",
+                            "ar": "البنك الأفريقي للتنمية",
+                            "fr": "Banque africaine de développement",
                         },
                         "country": country_name,
                         "countryCode": country_code,
                         "sector": classify_sector(title),
                         "budget": 0,
                         "currency": "USD",
-                        "deadline": parse_date(str(deadline_raw)) or "",
-                        "publishDate": parse_date(str(publish_raw)) or "",
+                        "deadline": "",
+                        "publishDate": pub_date,
                         "status": "open",
                         "description": {"en": title, "ar": title, "fr": title},
                         "requirements": [],
                         "matchScore": 0,
-                        "sourceUrl": item.get("url", ""),
+                        "sourceUrl": link,
                     }
                     tenders.append(tender)
 
-                logger.info(f"AfDB API: {len(items)} items for {country_code}")
-            else:
-                logger.warning(f"AfDB API returned {resp.status_code} for {country_code}")
-
-    except Exception as e:
-        logger.error(f"AfDB API error: {e}")
-
-    # Fallback: scrape the public listing page
-    if not tenders:
-        tenders = scrape_html_fallback()
-
-    logger.info(f"Total: {len(tenders)} tenders from AfDB")
-    return tenders
-
-
-def scrape_html_fallback() -> list[dict]:
-    """Fallback scraper using HTML parsing."""
-    tenders = []
-
-    try:
-        resp = requests.get(AFDB_URL, headers=HEADERS, timeout=30)
-        if resp.status_code != 200:
-            logger.warning(f"AfDB HTML returned {resp.status_code}")
-            return tenders
-
-        soup = BeautifulSoup(resp.text, "lxml")
-
-        # Look for procurement notice cards/listings
-        for article in soup.select("article, .views-row, .procurement-item, .node--type-procurement"):
-            title_el = article.select_one("h2 a, h3 a, .title a, .field--name-title a")
-            if not title_el:
-                continue
-
-            title = title_el.get_text(strip=True)
-            link = title_el.get("href", "")
-            if link and not link.startswith("http"):
-                link = f"https://www.afdb.org{link}"
-
-            # Try to find country
-            country_el = article.select_one(".country, .field--name-field-country")
-            country_text = country_el.get_text(strip=True) if country_el else ""
-
-            country_code = "XX"
-            for code, name in MENA_COUNTRIES.items():
-                if name.lower() in (country_text + " " + title).lower():
-                    country_code = code
+                if tenders:
                     break
 
-            if country_code == "XX":
-                continue
+            if tenders:
+                break
 
-            tender = {
-                "id": generate_id("afdb", title[:100], country_code),
-                "source": "AfDB",
-                "title": {"en": title, "ar": title, "fr": title},
-                "organization": {
-                    "en": f"AfDB — {MENA_COUNTRIES.get(country_code, '')}",
-                    "ar": f"بنك التنمية الأفريقي",
-                    "fr": f"BAD",
-                },
-                "country": MENA_COUNTRIES.get(country_code, ""),
-                "countryCode": country_code,
-                "sector": classify_sector(title),
-                "budget": 0,
-                "currency": "USD",
-                "deadline": "",
-                "publishDate": "",
-                "status": "open",
-                "description": {"en": title, "ar": title, "fr": title},
-                "requirements": [],
-                "matchScore": 0,
-                "sourceUrl": link,
-            }
-            tenders.append(tender)
+        except Exception as e:
+            logger.error(f"AfDB error on {url}: {e}")
 
-        logger.info(f"AfDB HTML fallback: {len(tenders)} tenders")
-
-    except Exception as e:
-        logger.error(f"AfDB HTML error: {e}")
-
+    logger.info(f"AfDB total: {len(tenders)}")
     return tenders
 
 

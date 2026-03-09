@@ -11,7 +11,7 @@ import {
   ArrowRight,
   ArrowLeft,
 } from "lucide-react";
-import { MOCK_TENDERS } from "../../lib/mock-data";
+import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 
 type LangKey = "en" | "ar" | "fr";
@@ -79,7 +79,7 @@ export default function SavedTendersPage() {
   }, []);
 
   const savedTenders = useMemo(() => {
-    return MOCK_TENDERS.filter((t) => savedIds.includes(t.id));
+    return getTenders().filter((t) => savedIds.includes(t.id));
   }, [savedIds]);
 
   return (

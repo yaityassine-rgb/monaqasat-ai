@@ -65,11 +65,15 @@ def save_tenders(tenders: list[dict], source: str) -> None:
 
 def load_all_tenders() -> list[dict]:
     """Load all scraped tenders from all source files."""
+    skip = {"tenders.json", "tenders_clean.json"}
     all_tenders = []
     for f in DATA_DIR.glob("*.json"):
-        if f.name == "tenders.json":
+        if f.name in skip:
             continue
         with open(f, encoding="utf-8") as fh:
-            tenders = json.load(fh)
-            all_tenders.extend(tenders)
+            data = json.load(fh)
+            if isinstance(data, list):
+                all_tenders.extend(data)
+            elif isinstance(data, dict) and "tenders" in data:
+                all_tenders.extend(data["tenders"])
     return all_tenders

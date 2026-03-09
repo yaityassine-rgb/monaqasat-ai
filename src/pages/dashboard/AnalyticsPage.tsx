@@ -12,7 +12,7 @@ import {
   Globe,
   Layers,
 } from "lucide-react";
-import { MOCK_TENDERS } from "../../lib/mock-data";
+import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 
 type LangKey = "en" | "ar" | "fr";
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
   const lang = i18n.language as LangKey;
 
   const stats = useMemo(() => {
-    const tenders = MOCK_TENDERS;
+    const tenders = getTenders();
     const totalValue = tenders.reduce((sum, t) => sum + t.budget, 0);
     const avgBudget = tenders.length > 0 ? totalValue / tenders.length : 0;
     const openCount = tenders.filter((t) => t.status === "open").length;
@@ -66,7 +66,7 @@ export default function AnalyticsPage() {
 
   const tendersByCountry = useMemo(() => {
     const map = new Map<string, number>();
-    MOCK_TENDERS.forEach((t) => {
+    getTenders().forEach((t) => {
       map.set(t.countryCode, (map.get(t.countryCode) || 0) + 1);
     });
     const entries = Array.from(map.entries())
@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
 
   const tendersBySector = useMemo(() => {
     const map = new Map<string, number>();
-    MOCK_TENDERS.forEach((t) => {
+    getTenders().forEach((t) => {
       map.set(t.sector, (map.get(t.sector) || 0) + 1);
     });
     const entries = Array.from(map.entries())
@@ -101,7 +101,7 @@ export default function AnalyticsPage() {
   }, [t]);
 
   const topOpportunities = useMemo(() => {
-    return [...MOCK_TENDERS]
+    return [...getTenders()]
       .sort((a, b) => b.matchScore - a.matchScore)
       .slice(0, 5);
   }, []);

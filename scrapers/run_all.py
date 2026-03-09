@@ -57,11 +57,13 @@ def main():
     DATA_DIR.mkdir(exist_ok=True)
 
     scrapers = [
-        ("World Bank", "scrape_worldbank"),
-        ("UNGM", "scrape_ungm"),
-        ("AfDB", "scrape_afdb"),
-        ("dgMarket", "scrape_dgmarket"),
-        ("TED (EU)", "scrape_ted"),
+        ("World Bank Notices", "scrape_worldbank"),
+        ("World Bank Projects", "scrape_wb_projects"),
+        ("World Bank Documents", "scrape_wb_docs"),
+        ("UNDP", "scrape_undp"),
+        ("TED (EU)", "scrape_ted_v2"),
+        ("IsDB", "scrape_idb"),
+        ("Morocco Portal", "scrape_morocco"),
     ]
 
     total = 0
