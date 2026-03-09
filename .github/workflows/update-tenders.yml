@@ -59,6 +59,21 @@ jobs:
             echo "Supabase not configured, skipping upload"
           fi
 
+      - name: Trigger email alerts
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            curl -s -X POST "${SUPABASE_URL}/functions/v1/send-alerts" \
+              -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"sinceHours": 24}' || echo "Alert function call failed (non-critical)"
+          else
+            echo "Supabase not configured, skipping alerts"
+          fi
+
       - name: Commit and push
         if: steps.diff.outputs.changed == 'true'
         run: |

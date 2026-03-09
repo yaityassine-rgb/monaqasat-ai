@@ -406,7 +406,8 @@
     "profile": "My Profile",
     "subscription": "Subscription",
     "settings": "Settings",
-    "freeAccount": "Free Plan"
+    "freeAccount": "Free Plan",
+    "alerts": "Alerts"
   },
   "analysis": {
     "title": "AI Analysis",
@@ -432,6 +433,37 @@
       "PARTIALLY_ELIGIBLE": "Partially Eligible — Review Gaps",
       "NOT_ELIGIBLE": "Not Eligible"
     }
+  },
+  "alerts": {
+    "title": "Smart Alerts",
+    "subtitle": "Get notified when new tenders match your profile",
+    "settings": "Settings",
+    "history": "History",
+    "enableAlerts": "Enable Email Alerts",
+    "frequency": "Frequency",
+    "freq": {
+      "daily": "Daily Digest",
+      "weekly": "Weekly Summary"
+    },
+    "minScore": "Minimum Match Score",
+    "minScoreHint": "Only alert me for tenders with at least this match score",
+    "minBudget": "Minimum Budget (USD)",
+    "sectors": "Sectors",
+    "sectorsHint": "Leave empty for all sectors",
+    "countries": "Countries",
+    "countriesHint": "Leave empty for all countries",
+    "statuses": "Tender Statuses",
+    "emailOverride": "Alert Email (optional)",
+    "emailHint": "Leave empty to use your account email",
+    "emailPlaceholder": "alerts@company.com",
+    "savePrefs": "Save Preferences",
+    "saving": "Saving...",
+    "saved": "Alert preferences saved!",
+    "upgradeRequired": "Smart Alerts are available on Starter plan and above.",
+    "upgradeCta": "Upgrade Now",
+    "noHistory": "No alerts sent yet. Enable alerts and we'll notify you when new matching tenders appear.",
+    "tendersMatched": "tenders matched",
+    "sentTo": "Sent to"
   },
   "subscription": {
     "title": "Subscription",

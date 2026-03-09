@@ -21,6 +21,7 @@ import SavedTendersPage from "../pages/dashboard/SavedTendersPage";
 import ProfilePage from "../pages/dashboard/ProfilePage";
 import AnalyticsPage from "../pages/dashboard/AnalyticsPage";
 import SubscriptionPage from "../pages/dashboard/SubscriptionPage";
+import AlertsPage from "../pages/dashboard/AlertsPage";
 
 export default function Router() {
   return (
@@ -49,6 +50,7 @@ export default function Router() {
         <Route path="dashboard/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="dashboard/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
         <Route path="dashboard/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
+        <Route path="dashboard/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<NotFoundPage />} />

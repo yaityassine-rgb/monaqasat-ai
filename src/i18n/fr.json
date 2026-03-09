@@ -406,7 +406,8 @@
     "profile": "Mon profil",
     "subscription": "Abonnement",
     "settings": "Paramètres",
-    "freeAccount": "Plan gratuit"
+    "freeAccount": "Plan gratuit",
+    "alerts": "Alertes"
   },
   "analysis": {
     "title": "Analyse IA",
@@ -432,6 +433,37 @@
       "PARTIALLY_ELIGIBLE": "Partiellement éligible — Vérifiez les écarts",
       "NOT_ELIGIBLE": "Non éligible"
     }
+  },
+  "alerts": {
+    "title": "Alertes intelligentes",
+    "subtitle": "Soyez notifié quand de nouveaux appels d'offres correspondent à votre profil",
+    "settings": "Paramètres",
+    "history": "Historique",
+    "enableAlerts": "Activer les alertes par e-mail",
+    "frequency": "Fréquence",
+    "freq": {
+      "daily": "Résumé quotidien",
+      "weekly": "Résumé hebdomadaire"
+    },
+    "minScore": "Score de correspondance minimum",
+    "minScoreHint": "M'alerter uniquement pour les appels d'offres avec au moins ce score",
+    "minBudget": "Budget minimum (USD)",
+    "sectors": "Secteurs",
+    "sectorsHint": "Laissez vide pour tous les secteurs",
+    "countries": "Pays",
+    "countriesHint": "Laissez vide pour tous les pays",
+    "statuses": "Statuts des appels d'offres",
+    "emailOverride": "E-mail d'alerte (optionnel)",
+    "emailHint": "Laissez vide pour utiliser l'e-mail de votre compte",
+    "emailPlaceholder": "alertes@entreprise.com",
+    "savePrefs": "Enregistrer les préférences",
+    "saving": "Enregistrement...",
+    "saved": "Préférences d'alertes enregistrées !",
+    "upgradeRequired": "Les alertes intelligentes sont disponibles à partir du plan Starter.",
+    "upgradeCta": "Mettre à niveau",
+    "noHistory": "Aucune alerte envoyée. Activez les alertes et nous vous informerons quand de nouveaux appels d'offres correspondants apparaissent.",
+    "tendersMatched": "appels d'offres correspondants",
+    "sentTo": "Envoyé à"
   },
   "subscription": {
     "title": "Abonnement",
