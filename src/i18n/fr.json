@@ -347,7 +347,11 @@
     "byCountry": "Par pays",
     "bySector": "Par secteur",
     "timeline": "Chronologie",
-    "topOpportunities": "Meilleures opportunités"
+    "topOpportunities": "Meilleures opportunités",
+    "marketTrends": "Tendances du marché",
+    "tenderVolume": "Volume d'appels d'offres (MoM)",
+    "totalMarketValue": "Valeur totale du marché (MoM)",
+    "tenders": "appels d'offres"
   },
   "footer": {
     "company": "Entreprise",
@@ -409,7 +413,8 @@
     "freeAccount": "Plan gratuit",
     "alerts": "Alertes",
     "proposals": "Propositions",
-    "documents": "Documents"
+    "documents": "Documents",
+    "team": "Équipe"
   },
   "analysis": {
     "title": "Analyse IA",
@@ -510,6 +515,54 @@
     "upgradeRequired": "Les propositions IA nécessitent le plan Professionnel",
     "upgradeDesc": "Générez des propositions complètes en arabe, anglais ou français — alimentées par l'IA avec le contexte de votre entreprise.",
     "upgradeCta": "Passer au Professionnel"
+  },
+  "winProb": {
+    "title": "Probabilité de victoire",
+    "calculate": "Calculer la probabilité de victoire",
+    "sectorMatch": "Correspondance sectorielle",
+    "experience": "Expérience",
+    "countryCoverage": "Couverture géographique",
+    "eligibility": "Éligibilité",
+    "historicalRate": "Taux de victoire historique",
+    "competition": "Niveau de concurrence",
+    "verdict": {
+      "HIGH": "Probabilité élevée",
+      "MODERATE": "Probabilité modérée",
+      "LOW": "Probabilité faible",
+      "VERY_LOW": "Probabilité très faible"
+    }
+  },
+  "competitors": {
+    "title": "Veille concurrentielle",
+    "analyze": "Analyser les concurrents",
+    "totalAwards": "Total des attributions",
+    "uniqueWinners": "Gagnants uniques",
+    "topCompetitors": "Principaux concurrents",
+    "wins": "victoires",
+    "avg": "moy",
+    "noData": "Aucune donnée concurrentielle disponible pour ce secteur/région.",
+    "aiInsights": "Insights IA",
+    "pricing": "Tendance des prix"
+  },
+  "team": {
+    "upgradeRequired": "Espace équipe — Plan Business requis",
+    "upgradeDesc": "Collaborez avec votre équipe sur les appels d'offres et les propositions. Partagez les insights.",
+    "upgradeCta": "Passer au plan Business",
+    "createTitle": "Créer votre équipe",
+    "createDesc": "Configurez un espace équipe pour collaborer sur les appels d'offres et partager les propositions.",
+    "teamNamePh": "Nom de l'équipe",
+    "create": "Créer l'équipe",
+    "members": "membres",
+    "tab": {
+      "members": "Membres",
+      "tenders": "Appels d'offres partagés",
+      "proposals": "Propositions partagées"
+    },
+    "invitePh": "Adresse e-mail à inviter",
+    "invite": "Inviter",
+    "pending": "En attente",
+    "noSharedTenders": "Aucun appel d'offres partagé. Sauvegardez des appels d'offres et partagez-les avec votre équipe.",
+    "noSharedProposals": "Aucune proposition partagée. Générez des propositions et partagez-les avec votre équipe."
   },
   "subscription": {
     "title": "Abonnement",

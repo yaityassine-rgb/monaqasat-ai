@@ -21,6 +21,8 @@ import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 import { formatBudget, getSavedIds, setSavedIds, getStatusStyle, getLocalizedText } from "../../lib/utils";
 import TenderAnalysis from "../../components/TenderAnalysis";
+import WinProbability from "../../components/WinProbability";
+import CompetitorInsights from "../../components/CompetitorInsights";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -322,6 +324,16 @@ export default function TenderDetailPage() {
               {t("tenderDetail.generateProposal")}
             </Link>
           </motion.div>
+
+          {/* Win Probability */}
+          <WinProbability tenderId={tender.id} />
+
+          {/* Competitor Insights */}
+          <CompetitorInsights
+            sector={tender.sector}
+            countryCode={tender.countryCode}
+            tenderId={tender.id}
+          />
 
           {/* Similar Tenders */}
           {similarTenders.length > 0 && (

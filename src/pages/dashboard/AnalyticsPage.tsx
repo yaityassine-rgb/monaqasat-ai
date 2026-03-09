@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -11,10 +11,13 @@ import {
   Trophy,
   Globe,
   Layers,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 import { formatValue, formatBudget, getMatchTextColor, getLocalizedText } from "../../lib/utils";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -23,9 +26,54 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 };
 
+interface TrendSnapshot {
+  snapshot_month: string;
+  country_code: string;
+  sector: string;
+  tender_count: number;
+  total_value: number;
+  avg_budget: number;
+  avg_lead_days: number;
+}
+
 export default function AnalyticsPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
+
+  const [trends, setTrends] = useState<TrendSnapshot[]>([]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    supabase
+      .rpc("get_market_trends", { months_back: 6 })
+      .then(({ data }) => {
+        if (data) setTrends(data);
+      });
+  }, []);
+
+  // Aggregate trends by month for summary
+  const monthlyTrends = useMemo(() => {
+    const map = new Map<string, { count: number; value: number }>();
+    trends.forEach((s) => {
+      const prev = map.get(s.snapshot_month) || { count: 0, value: 0 };
+      map.set(s.snapshot_month, {
+        count: prev.count + s.tender_count,
+        value: prev.value + s.total_value,
+      });
+    });
+    return Array.from(map.entries())
+      .map(([month, data]) => ({ month, ...data }))
+      .sort((a, b) => a.month.localeCompare(b.month));
+  }, [trends]);
+
+  const trendGrowth = useMemo(() => {
+    if (monthlyTrends.length < 2) return null;
+    const curr = monthlyTrends[monthlyTrends.length - 1];
+    const prev = monthlyTrends[monthlyTrends.length - 2];
+    const countChange = prev.count > 0 ? ((curr.count - prev.count) / prev.count) * 100 : 0;
+    const valueChange = prev.value > 0 ? ((curr.value - prev.value) / prev.value) * 100 : 0;
+    return { countChange, valueChange };
+  }, [monthlyTrends]);
 
   const stats = useMemo(() => {
     const tenders = getTenders();
@@ -250,6 +298,80 @@ export default function AnalyticsPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Market Intelligence Trends */}
+      {monthlyTrends.length > 0 && (
+        <motion.div
+          {...fadeUp}
+          transition={{ delay: 0.4 }}
+          className="glass-card rounded-xl p-5 md:p-6 mb-8"
+        >
+          <h2 className="text-base font-semibold text-slate-100 mb-5 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary-light" />
+            {t("analytics.marketTrends")}
+          </h2>
+
+          {/* Growth indicators */}
+          {trendGrowth && (
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <div className="bg-dark/40 rounded-lg p-3">
+                <p className="text-xs text-slate-500 mb-1">{t("analytics.tenderVolume")}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-white">
+                    {monthlyTrends[monthlyTrends.length - 1].count}
+                  </span>
+                  <span className={`flex items-center gap-0.5 text-xs font-medium ${trendGrowth.countChange >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                    {trendGrowth.countChange >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs(trendGrowth.countChange).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+              <div className="bg-dark/40 rounded-lg p-3">
+                <p className="text-xs text-slate-500 mb-1">{t("analytics.totalMarketValue")}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-white">
+                    {formatValue(monthlyTrends[monthlyTrends.length - 1].value)}
+                  </span>
+                  <span className={`flex items-center gap-0.5 text-xs font-medium ${trendGrowth.valueChange >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                    {trendGrowth.valueChange >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {Math.abs(trendGrowth.valueChange).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Monthly trend bars */}
+          <div className="space-y-2.5">
+            {monthlyTrends.map((m, idx) => {
+              const maxCount = Math.max(...monthlyTrends.map((t) => t.count), 1);
+              return (
+                <motion.div
+                  key={m.month}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45 + idx * 0.04 }}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-slate-400 font-mono">{m.month}</span>
+                    <span className="text-xs text-slate-300">
+                      {m.count} {t("analytics.tenders")} · {formatValue(m.value)}
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-dark/60 border border-dark-border overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(m.count / maxCount) * 100}%` }}
+                      transition={{ delay: 0.5 + idx * 0.05, duration: 0.6, ease: "easeOut" as const }}
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
 
       {/* Top Matched Opportunities */}
       <motion.div

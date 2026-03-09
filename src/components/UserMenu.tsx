@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, ChevronDown } from "lucide-react";
+import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 
 export default function UserMenu() {
@@ -88,6 +88,15 @@ export default function UserMenu() {
           >
             <Bell className="w-4 h-4" />
             {t("auth.alerts")}
+          </Link>
+
+          <Link
+            to="/dashboard/team"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <Users className="w-4 h-4" />
+            {t("auth.team")}
           </Link>
 
           <Link

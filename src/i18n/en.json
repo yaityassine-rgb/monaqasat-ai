@@ -347,7 +347,11 @@
     "byCountry": "Tenders by Country",
     "bySector": "Tenders by Sector",
     "timeline": "Tender Timeline",
-    "topOpportunities": "Top Matched Opportunities"
+    "topOpportunities": "Top Matched Opportunities",
+    "marketTrends": "Market Trends",
+    "tenderVolume": "Tender Volume (MoM)",
+    "totalMarketValue": "Total Market Value (MoM)",
+    "tenders": "tenders"
   },
   "footer": {
     "company": "Company",
@@ -409,7 +413,8 @@
     "freeAccount": "Free Plan",
     "alerts": "Alerts",
     "proposals": "Proposals",
-    "documents": "Documents"
+    "documents": "Documents",
+    "team": "Team"
   },
   "analysis": {
     "title": "AI Analysis",
@@ -510,6 +515,54 @@
     "upgradeRequired": "AI Proposals require Professional plan",
     "upgradeDesc": "Generate complete bid proposals in Arabic, English, or French — powered by AI with your company context.",
     "upgradeCta": "Upgrade to Professional"
+  },
+  "winProb": {
+    "title": "Win Probability",
+    "calculate": "Calculate Win Probability",
+    "sectorMatch": "Sector Match",
+    "experience": "Experience",
+    "countryCoverage": "Country Coverage",
+    "eligibility": "Eligibility",
+    "historicalRate": "Historical Win Rate",
+    "competition": "Competition Level",
+    "verdict": {
+      "HIGH": "High Probability",
+      "MODERATE": "Moderate Probability",
+      "LOW": "Low Probability",
+      "VERY_LOW": "Very Low Probability"
+    }
+  },
+  "competitors": {
+    "title": "Competitor Insights",
+    "analyze": "Analyze Competitors",
+    "totalAwards": "Total Awards",
+    "uniqueWinners": "Unique Winners",
+    "topCompetitors": "Top Competitors",
+    "wins": "wins",
+    "avg": "avg",
+    "noData": "No competitor data available for this sector/region yet.",
+    "aiInsights": "AI Insights",
+    "pricing": "Pricing Trend"
+  },
+  "team": {
+    "upgradeRequired": "Team Workspace — Business Plan Required",
+    "upgradeDesc": "Collaborate with your team on tenders and proposals. Share insights and work together.",
+    "upgradeCta": "Upgrade to Business",
+    "createTitle": "Create Your Team",
+    "createDesc": "Set up a team workspace to collaborate on tenders and share proposals with your colleagues.",
+    "teamNamePh": "Team name",
+    "create": "Create Team",
+    "members": "members",
+    "tab": {
+      "members": "Members",
+      "tenders": "Shared Tenders",
+      "proposals": "Shared Proposals"
+    },
+    "invitePh": "Email address to invite",
+    "invite": "Invite",
+    "pending": "Pending",
+    "noSharedTenders": "No shared tenders yet. Save tenders and share them with your team.",
+    "noSharedProposals": "No shared proposals yet. Generate proposals and share them with your team."
   },
   "subscription": {
     "title": "Subscription",
