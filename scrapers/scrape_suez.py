@@ -21,6 +21,12 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
 logger = logging.getLogger("suez")
@@ -365,6 +371,119 @@ def _scrape_angular_api() -> list[dict]:
     return tenders
 
 
+def _scrape_playwright() -> list[dict]:
+    """Use Playwright to render the Suez Canal Angular SPA."""
+    tenders = []
+    if not HAS_PLAYWRIGHT:
+        logger.debug("Suez: Playwright not installed, skipping")
+        return tenders
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_extra_http_headers({
+                "Accept-Language": "en,ar",
+            })
+
+            # Try the main tenders page first
+            logger.info("Suez Playwright: loading tenders page...")
+            page.goto(TENDERS_URL_EN, timeout=60000, wait_until="networkidle")
+            page.wait_for_timeout(5000)
+
+            # Also try the SPA route with hash navigation
+            spa_url = f"{SERVICES_URL}#/SupplierTenderList"
+            logger.info("Suez Playwright: loading SPA tender list...")
+            page.goto(spa_url, timeout=60000, wait_until="networkidle")
+            page.wait_for_timeout(8000)  # Angular apps need extra render time
+
+            html = page.content()
+            soup = BeautifulSoup(html, "lxml")
+
+            for selector in [
+                "table tbody tr", ".ms-listviewtable tr",
+                ".tender-item", ".bid-item",
+                "[class*='tender']", "[class*='bid']",
+                ".card", ".panel", ".list-item",
+                "ng-component table tr", "[ng-repeat] tr",
+            ]:
+                items = soup.select(selector)
+                if not items:
+                    continue
+
+                logger.info(f"Suez Playwright: found {len(items)} items with '{selector}'")
+                for item in items:
+                    cells = item.find_all(["td", "div", "span"])
+                    if not cells:
+                        continue
+
+                    texts = [c.get_text(strip=True) for c in cells if c.get_text(strip=True)]
+                    full_text = " ".join(texts)
+
+                    if len(full_text) < 10:
+                        continue
+                    if any(kw in full_text.lower() for kw in
+                           ["home", "about", "contact", "navigation", "copyright", "footer"]):
+                        continue
+
+                    title = texts[0] if texts else ""
+                    if len(title) < 5:
+                        title = full_text[:200]
+                    if len(title) < 5:
+                        continue
+
+                    link = ""
+                    a = item.select_one("a[href]")
+                    if a:
+                        href = a.get("href", "")
+                        if href and not href.startswith("javascript"):
+                            link = href if href.startswith("http") else f"{BASE_URL}{href}"
+
+                    dates = re.findall(r"(\d{2}/\d{2}/\d{4})", full_text)
+                    pub_date = parse_date(dates[0]) if dates else ""
+                    deadline = parse_date(dates[1]) if len(dates) > 1 else ""
+
+                    ref_match = re.search(r"(?:No\.?|Ref\.?|#)\s*([\w\-/]+)", full_text)
+                    ref = ref_match.group(1) if ref_match else title[:60]
+
+                    tender = {
+                        "id": generate_id("suez", ref, ""),
+                        "source": "Suez Canal Authority",
+                        "sourceRef": ref,
+                        "sourceLanguage": "en",
+                        "title": {"en": title, "ar": title, "fr": title},
+                        "organization": {
+                            "en": "Suez Canal Authority",
+                            "ar": "هيئة قناة السويس",
+                            "fr": "Autorité du Canal de Suez",
+                        },
+                        "country": "Egypt",
+                        "countryCode": "EG",
+                        "sector": classify_sector(title + " port maritime canal transport"),
+                        "budget": 0,
+                        "currency": "EGP",
+                        "deadline": deadline,
+                        "publishDate": pub_date,
+                        "status": "open",
+                        "description": {"en": title, "ar": title, "fr": title},
+                        "requirements": [],
+                        "matchScore": 0,
+                        "sourceUrl": link or TENDERS_URL_EN,
+                    }
+                    tenders.append(tender)
+
+                if tenders:
+                    break
+
+            logger.info(f"Suez Playwright: {len(tenders)} tenders")
+            browser.close()
+
+    except Exception as e:
+        logger.error(f"Suez Playwright error: {e}")
+
+    return tenders
+
+
 def scrape() -> list[dict]:
     """Scrape Suez Canal Authority tenders."""
     all_tenders: list[dict] = []
@@ -389,13 +508,20 @@ def scrape() -> list[dict]:
 
         time.sleep(2)
 
+    # If HTTP methods found nothing, try Playwright
+    if not all_tenders:
+        logger.info("Suez Canal: HTTP methods found nothing, trying Playwright...")
+        pw_tenders = _scrape_playwright()
+        for t in pw_tenders:
+            key = t.get("sourceRef", "") or t["title"]["en"][:60]
+            if key not in seen:
+                seen.add(key)
+                all_tenders.append(t)
+
     if not all_tenders:
         logger.warning(
             "Suez Canal: No tenders found. The site uses an Angular SPA "
-            "with SharePoint backend. Tenders are loaded dynamically and "
-            "may require authentication via the BidSupplierSubscription "
-            "portal. URL: %s#/SupplierTenderList",
-            SERVICES_URL,
+            "with SharePoint backend that may require authentication."
         )
 
     logger.info(f"Suez Canal total: {len(all_tenders)}")

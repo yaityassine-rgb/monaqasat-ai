@@ -16,6 +16,12 @@ import requests
 from bs4 import BeautifulSoup
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 logger = logging.getLogger("qatarenergy")
 
 BASE_URL = "https://www.qatarenergy.qa"
@@ -224,6 +230,146 @@ def _try_sharepoint_api() -> list[dict]:
     return tenders
 
 
+def _scrape_playwright() -> list[dict]:
+    """Use Playwright to render QatarEnergy's SharePoint CSOM page."""
+    tenders: list[dict] = []
+    if not HAS_PLAYWRIGHT:
+        logger.debug("QatarEnergy: Playwright not installed, skipping")
+        return tenders
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_extra_http_headers({
+                "Accept-Language": "en-US,en;q=0.9",
+            })
+
+            logger.info("QatarEnergy Playwright: loading tenders page...")
+            page.goto(TENDERS_URL, timeout=60000, wait_until="networkidle")
+            page.wait_for_timeout(8000)  # SharePoint CSOM needs time to render
+
+            html = page.content()
+            soup = BeautifulSoup(html, "lxml")
+
+            # The page renders a table with columns:
+            # ID | Tender ID | Status | Title | Bond(QR) | BID Closing
+            # Each data row has a link to the detail page
+            rows = soup.select("table tr, .ms-listviewtable tr")
+
+            for row in rows:
+                cells = row.find_all("td")
+                if len(cells) < 4:
+                    continue
+
+                texts = [c.get_text(strip=True) for c in cells]
+                full_text = " ".join(texts)
+
+                # Skip header rows
+                if "tender id" in full_text.lower() or "status" == texts[0].lower():
+                    continue
+
+                # Extract tender ID (e.g., LT25106600, LT26MT0010)
+                tender_id_match = re.search(r'(LT[A-Z0-9]+)', full_text)
+                ref = tender_id_match.group(1) if tender_id_match else ""
+
+                # Extract numeric ID for URL
+                numeric_id = ""
+                for t in texts:
+                    if t.isdigit() and len(t) >= 4:
+                        numeric_id = t
+                        break
+
+                # Extract title — the longest text cell that isn't a number/date
+                title = ""
+                for t in texts:
+                    if (len(t) > len(title) and not t.isdigit()
+                            and "tender" != t.lower() and "status" != t.lower()):
+                        title = t
+
+                if not title or len(title) < 10:
+                    continue
+
+                # Skip if title looks like a header
+                if title.lower().startswith("id ") or "bond(qr)" in title.lower():
+                    continue
+
+                # Extract deadline from date-like text
+                deadline = ""
+                for t in texts:
+                    d = parse_date(t)
+                    if d:
+                        deadline = d
+                        break
+                # Also check full text for dates like "30  March  2026"
+                if not deadline:
+                    date_match = re.search(
+                        r'(\d{1,2}\s+\w+\s+\d{4})', full_text
+                    )
+                    if date_match:
+                        deadline = parse_date(date_match.group(1)) or ""
+
+                # Extract bond amount
+                bond = 0
+                for t in texts:
+                    if t.isdigit() and 1000 <= int(t) <= 50000000:
+                        bond = int(t)
+
+                # Get link to detail page
+                link_el = row.select_one("a[href]")
+                href = ""
+                if link_el:
+                    href = link_el.get("href", "")
+                    if href and not href.startswith("http"):
+                        href = BASE_URL + href
+                # Build detail URL from numeric ID if no link found
+                if not href and numeric_id:
+                    href = (f"{BASE_URL}/en/SupplyManagement/Tenders/Pages/"
+                            f"ViewTenders.aspx?TenderId={numeric_id}"
+                            f"&awdType=latesttenders")
+
+                if not ref:
+                    ref = numeric_id or title[:60]
+
+                tender = {
+                    "id": generate_id("qatarenergy", ref, ""),
+                    "source": "QatarEnergy",
+                    "sourceRef": ref,
+                    "sourceLanguage": "en",
+                    "title": {"en": title, "ar": title, "fr": title},
+                    "organization": {
+                        "en": "QatarEnergy",
+                        "ar": "قطر للطاقة",
+                        "fr": "QatarEnergy",
+                    },
+                    "country": "Qatar",
+                    "countryCode": "QA",
+                    "sector": classify_sector(title + " energy oil gas"),
+                    "budget": bond,
+                    "currency": "QAR",
+                    "deadline": deadline,
+                    "publishDate": "",
+                    "status": "open",
+                    "description": {
+                        "en": title,
+                        "ar": title,
+                        "fr": title,
+                    },
+                    "requirements": [],
+                    "matchScore": 0,
+                    "sourceUrl": href or TENDERS_URL,
+                }
+                tenders.append(tender)
+
+            logger.info(f"QatarEnergy Playwright: {len(tenders)} tenders")
+            browser.close()
+
+    except Exception as e:
+        logger.error(f"QatarEnergy Playwright error: {e}")
+
+    return tenders
+
+
 def scrape() -> list[dict]:
     """Scrape QatarEnergy tenders."""
     html_tenders = _scrape_html_page()
@@ -242,11 +388,19 @@ def scrape() -> list[dict]:
     logger.info(f"QatarEnergy total: {len(all_tenders)} tenders "
                 f"(HTML: {len(html_tenders)}, API: {len(api_tenders)})")
 
+    # If HTTP methods found nothing, try Playwright
+    if not all_tenders:
+        logger.info("QatarEnergy: HTTP methods found nothing, trying Playwright...")
+        pw_tenders = _scrape_playwright()
+        for t in pw_tenders:
+            key = t["sourceRef"]
+            if key not in seen:
+                seen.add(key)
+                all_tenders.append(t)
+
     if not all_tenders:
         logger.warning("QatarEnergy: No tenders found. The SharePoint-based portal "
-                        "likely loads tender data via client-side JavaScript (CSOM). "
-                        "Consider using a headless browser or contacting QatarEnergy "
-                        "for API access.")
+                        "may require authentication or specific network access.")
 
     return all_tenders
 

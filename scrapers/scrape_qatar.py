@@ -19,6 +19,12 @@ try:
 except ImportError:
     HAS_CURL_CFFI = False
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 logger = logging.getLogger("qatar")
 
 BASE_URL = "https://monaqasat.mof.gov.qa"
@@ -134,6 +140,75 @@ def _parse_tender_row(row, page_url: str) -> dict | None:
     }
 
 
+def _scrape_playwright() -> list[dict]:
+    """Use Playwright headless browser to render the Qatar Monaqasat portal."""
+    tenders: list[dict] = []
+    if not HAS_PLAYWRIGHT:
+        logger.debug("Qatar: Playwright not installed, skipping browser scrape")
+        return tenders
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_extra_http_headers({
+                "Accept-Language": "ar,en;q=0.9",
+            })
+
+            for page_num in range(1, 6):
+                url = f"{LISTING_URL}/{page_num}"
+                logger.info(f"Qatar Playwright: loading page {page_num}")
+
+                try:
+                    page.goto(url, timeout=45000, wait_until="networkidle")
+                    page.wait_for_timeout(3000)
+                except Exception as e:
+                    logger.warning(f"Qatar Playwright page {page_num}: {e}")
+                    break
+
+                html = page.content()
+                soup = BeautifulSoup(html, "lxml")
+
+                rows = []
+                for selector in [
+                    "table.table tbody tr",
+                    "table tbody tr",
+                    ".tender-item",
+                    ".tender-row",
+                    "div.panel",
+                    ".card",
+                ]:
+                    rows = soup.select(selector)
+                    if rows:
+                        break
+
+                if not rows:
+                    logger.info(f"Qatar Playwright page {page_num}: no rows found")
+                    break
+
+                page_count = 0
+                for row in rows:
+                    tender = _parse_tender_row(row, url)
+                    if not tender:
+                        continue
+                    key = tender["sourceRef"] or tender["title"]["ar"][:60]
+                    existing = {t["sourceRef"] or t["title"]["ar"][:60] for t in tenders}
+                    if key not in existing:
+                        tenders.append(tender)
+                        page_count += 1
+
+                logger.info(f"Qatar Playwright page {page_num}: {page_count} tenders")
+                if page_count == 0:
+                    break
+
+            browser.close()
+
+    except Exception as e:
+        logger.error(f"Qatar Playwright error: {e}")
+
+    return tenders
+
+
 def scrape() -> list[dict]:
     """Scrape Qatar Monaqasat portal for procurement notices."""
     tenders: list[dict] = []
@@ -197,6 +272,16 @@ def scrape() -> list[dict]:
             else:
                 logger.error(f"Qatar page {page}: {e}")
             break
+
+    # If HTTP scraping found nothing, try Playwright
+    if not tenders:
+        logger.info("Qatar: HTTP scraping found nothing, trying Playwright...")
+        pw_tenders = _scrape_playwright()
+        for t in pw_tenders:
+            key = t["sourceRef"] or t["title"]["ar"][:60]
+            if key not in seen:
+                seen.add(key)
+                tenders.append(t)
 
     if not tenders:
         logger.warning(

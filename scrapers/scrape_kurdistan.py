@@ -22,6 +22,12 @@ try:
 except ImportError:
     HAS_CURL_CFFI = False
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 logger = logging.getLogger("kurdistan")
 
 KEPS_URL = "https://keps.digital.gov.krd/"
@@ -306,6 +312,168 @@ def _scrape_keps_portal() -> list[dict]:
     return tenders
 
 
+def _scrape_playwright() -> list[dict]:
+    """Use Playwright to render Cloudflare-protected Kurdistan pages."""
+    tenders: list[dict] = []
+    if not HAS_PLAYWRIGHT:
+        logger.debug("Kurdistan: Playwright not installed, skipping")
+        return tenders
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.set_extra_http_headers({
+                "Accept-Language": "en-US,en;q=0.9,ar;q=0.8,ku;q=0.7",
+            })
+
+            # Try gov.krd tenders page (Cloudflare-protected)
+            logger.info("Kurdistan Playwright: loading gov.krd...")
+            try:
+                page.goto(GOV_KRD_URL, timeout=60000, wait_until="networkidle")
+                page.wait_for_timeout(5000)  # Extra wait for CF challenge
+
+                html = page.content()
+                if "Just a moment" not in html and "challenge-platform" not in html:
+                    soup = BeautifulSoup(html, "lxml")
+                    articles = soup.select("article, .post, .entry, .tender-item, "
+                                           ".hot-topic-item, [class*='tender']")
+
+                    for article in articles:
+                        title_el = article.select_one("h2 a, h3 a, .entry-title a, "
+                                                       ".post-title a, a[href]")
+                        if not title_el:
+                            continue
+                        title = title_el.get_text(strip=True)
+                        if not title or len(title) < 10:
+                            continue
+
+                        href = title_el.get("href", "")
+                        if href and not href.startswith("http"):
+                            href = "https://gov.krd" + href
+
+                        article_text = article.get_text(" ", strip=True)
+                        date_el = article.select_one("time, .date, .entry-date")
+                        pub_date = ""
+                        if date_el:
+                            dt = date_el.get("datetime", "") or date_el.get_text(strip=True)
+                            pub_date = parse_date(dt) or ""
+
+                        ref_match = re.search(r'(?:No|Ref|#)[.\s:]*([A-Z0-9\-/]+)',
+                                              article_text, re.I)
+                        ref = ref_match.group(1) if ref_match else title[:60]
+
+                        tender = {
+                            "id": generate_id("kurdistan", ref, ""),
+                            "source": "Kurdistan KRG",
+                            "sourceRef": ref,
+                            "sourceLanguage": "ar",
+                            "title": {"en": title, "ar": title, "fr": title},
+                            "organization": {
+                                "en": "Kurdistan Regional Government",
+                                "ar": "حكومة إقليم كردستان",
+                                "fr": "Gouvernement régional du Kurdistan",
+                            },
+                            "country": "Iraq",
+                            "countryCode": "IQ",
+                            "sector": classify_sector(title),
+                            "budget": 0,
+                            "currency": "IQD",
+                            "deadline": "",
+                            "publishDate": pub_date,
+                            "status": "open",
+                            "description": {
+                                "en": article_text[:500],
+                                "ar": article_text[:500],
+                                "fr": article_text[:500],
+                            },
+                            "requirements": [],
+                            "matchScore": 0,
+                            "sourceUrl": href or GOV_KRD_URL,
+                        }
+                        tenders.append(tender)
+
+                    logger.info(f"Kurdistan Playwright gov.krd: {len(tenders)} tenders")
+                else:
+                    logger.warning("Kurdistan Playwright: Cloudflare challenge still present")
+            except Exception as e:
+                logger.warning(f"Kurdistan Playwright gov.krd error: {e}")
+
+            # Try KEPS portal
+            keps_count = 0
+            logger.info("Kurdistan Playwright: loading KEPS portal...")
+            try:
+                page.goto(KEPS_URL, timeout=60000, wait_until="networkidle")
+                page.wait_for_timeout(5000)
+
+                html = page.content()
+                if "Just a moment" not in html:
+                    soup = BeautifulSoup(html, "lxml")
+                    items = soup.select("table tr, .tender-item, .opportunity, "
+                                        "[class*='tender'], article, .card")
+
+                    for item in items:
+                        title_el = item.select_one("a, h2, h3, .title, td:nth-child(2)")
+                        if not title_el:
+                            continue
+                        title = title_el.get_text(strip=True)
+                        if not title or len(title) < 10:
+                            continue
+
+                        link_el = item.select_one("a[href]")
+                        href = ""
+                        if link_el:
+                            href = link_el.get("href", "")
+                            if href and not href.startswith("http"):
+                                href = KEPS_URL.rstrip("/") + "/" + href.lstrip("/")
+
+                        item_text = item.get_text(" ", strip=True)
+                        ref_match = re.search(r'([A-Z0-9]{2,}-\d+)', item_text)
+                        ref = ref_match.group(1) if ref_match else title[:60]
+
+                        tender = {
+                            "id": generate_id("keps", ref, ""),
+                            "source": "Kurdistan KRG",
+                            "sourceRef": ref,
+                            "sourceLanguage": "ar",
+                            "title": {"en": title, "ar": title, "fr": title},
+                            "organization": {
+                                "en": "Kurdistan Regional Government - E-Procurement",
+                                "ar": "حكومة إقليم كردستان - المشتريات الإلكترونية",
+                                "fr": "Gouvernement régional du Kurdistan - E-Procurement",
+                            },
+                            "country": "Iraq",
+                            "countryCode": "IQ",
+                            "sector": classify_sector(title),
+                            "budget": 0,
+                            "currency": "IQD",
+                            "deadline": "",
+                            "publishDate": "",
+                            "status": "open",
+                            "description": {
+                                "en": item_text[:500],
+                                "ar": item_text[:500],
+                                "fr": item_text[:500],
+                            },
+                            "requirements": [],
+                            "matchScore": 0,
+                            "sourceUrl": href or KEPS_URL,
+                        }
+                        tenders.append(tender)
+                        keps_count += 1
+
+                    logger.info(f"Kurdistan Playwright KEPS: {keps_count} tenders")
+            except Exception as e:
+                logger.warning(f"Kurdistan Playwright KEPS error: {e}")
+
+            browser.close()
+
+    except Exception as e:
+        logger.error(f"Kurdistan Playwright error: {e}")
+
+    return tenders
+
+
 def scrape() -> list[dict]:
     """Scrape Kurdistan Regional Government tender listings."""
     html_tenders = _scrape_gov_krd_html()
@@ -327,12 +495,20 @@ def scrape() -> list[dict]:
                 f"(HTML: {len(html_tenders)}, API: {len(api_tenders)}, "
                 f"KEPS: {len(keps_tenders)})")
 
+    # If nothing from HTTP methods, try Playwright
+    if not all_tenders:
+        logger.info("Kurdistan: HTTP methods found nothing, trying Playwright...")
+        pw_tenders = _scrape_playwright()
+        for t in pw_tenders:
+            key = t["sourceRef"]
+            if key not in seen:
+                seen.add(key)
+                all_tenders.append(t)
+
     if not all_tenders:
         logger.warning("Kurdistan: No tenders found. Both gov.krd and "
                         "keps.digital.gov.krd use Cloudflare bot protection "
-                        "that blocks automated requests. Consider using a "
-                        "headless browser (Playwright/Selenium) to bypass "
-                        "the JS challenge.")
+                        "that blocks automated requests.")
 
     return all_tenders
 

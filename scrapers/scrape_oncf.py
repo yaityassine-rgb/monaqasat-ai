@@ -20,6 +20,12 @@ import urllib3
 import requests
 from bs4 import BeautifulSoup
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
 # ONCF's SSL certificate sometimes fails verification
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -350,6 +356,119 @@ def _scrape_marches_publics() -> list[dict]:
     return tenders
 
 
+def _scrape_playwright() -> list[dict]:
+    """Use Playwright to render ONCF's AJAX-loaded tender list."""
+    tenders = []
+    if not HAS_PLAYWRIGHT:
+        logger.debug("ONCF: Playwright not installed, skipping")
+        return tenders
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(ignore_https_errors=True)
+            page = context.new_page()
+            page.set_extra_http_headers({
+                "Accept-Language": "fr,en,ar",
+            })
+
+            logger.info("ONCF Playwright: loading tenders page...")
+            page.goto(TENDERS_PAGE, timeout=60000, wait_until="networkidle")
+            page.wait_for_timeout(5000)  # Wait for AJAX to populate content
+
+            # Try clicking filter buttons to trigger tender loading
+            for btn_selector in [
+                "button.search-btn", "button[type='submit']",
+                ".btn-search", ".filter-btn", "input[type='submit']",
+            ]:
+                try:
+                    btn = page.query_selector(btn_selector)
+                    if btn:
+                        btn.click()
+                        page.wait_for_timeout(3000)
+                        break
+                except Exception:
+                    pass
+
+            html = page.content()
+            soup = BeautifulSoup(html, "lxml")
+
+            for selector in [
+                ".ao-card", ".ao-item", ".tender-card", ".result-item",
+                ".appel-offre", ".card", "table tbody tr",
+                ".list-group-item", ".search-result",
+                "[class*='tender']", "[class*='appel']",
+            ]:
+                items = soup.select(selector)
+                if not items:
+                    continue
+
+                logger.info(f"ONCF Playwright: found {len(items)} items with '{selector}'")
+                for item in items:
+                    title_el = item.select_one("h3, h4, h5, .title, .card-title, a")
+                    if not title_el:
+                        continue
+                    title = title_el.get_text(strip=True)
+                    if len(title) < 5:
+                        continue
+
+                    # Filter out "no results" messages
+                    if any(kw in title.lower() for kw in
+                           ["aucun résultat", "aucun resultat", "no result",
+                            "pas de résultat", "pas de resultat"]):
+                        continue
+
+                    link = ""
+                    a = item.select_one("a[href]")
+                    if a:
+                        href = a.get("href", "")
+                        link = href if href.startswith("http") else f"{BASE_URL}{href}"
+
+                    text = item.get_text(strip=True)
+                    ref_match = re.search(r"(AO[/-]?\d[\w\-/]*)", text)
+                    ref = ref_match.group(1) if ref_match else title[:60]
+
+                    date_match = re.search(r"(\d{2}/\d{2}/\d{4})", text)
+                    deadline = parse_date(date_match.group(1)) if date_match else ""
+
+                    tender = {
+                        "id": generate_id("oncf", ref, ""),
+                        "source": "ONCF Morocco",
+                        "sourceRef": ref,
+                        "sourceLanguage": "fr",
+                        "title": {"en": title, "ar": title, "fr": title},
+                        "organization": {
+                            "en": "ONCF - Morocco Railways",
+                            "ar": "المكتب الوطني للسكك الحديدية",
+                            "fr": "ONCF - Office National des Chemins de Fer",
+                        },
+                        "country": "Morocco",
+                        "countryCode": "MA",
+                        "sector": classify_sector(title + " railway transport"),
+                        "budget": 0,
+                        "currency": "MAD",
+                        "deadline": deadline,
+                        "publishDate": "",
+                        "status": "open",
+                        "description": {"en": title, "ar": title, "fr": title},
+                        "requirements": [],
+                        "matchScore": 0,
+                        "sourceUrl": link or TENDERS_PAGE,
+                    }
+                    tenders.append(tender)
+
+                if tenders:
+                    break
+
+            logger.info(f"ONCF Playwright: {len(tenders)} tenders")
+            browser.close()
+
+    except Exception as e:
+        logger.error(f"ONCF Playwright error: {e}")
+
+    return tenders
+
+
 def scrape() -> list[dict]:
     """Scrape ONCF Morocco railway tenders."""
     all_tenders: list[dict] = []
@@ -371,11 +490,20 @@ def scrape() -> list[dict]:
         except Exception as e:
             logger.error(f"ONCF {method_name} failed: {e}")
 
+    # If HTTP methods found nothing, try Playwright
+    if not all_tenders:
+        logger.info("ONCF: HTTP methods found nothing, trying Playwright...")
+        pw_tenders = _scrape_playwright()
+        for t in pw_tenders:
+            key = t.get("sourceRef", "") or t["title"]["fr"][:60]
+            if key not in seen:
+                seen.add(key)
+                all_tenders.append(t)
+
     if not all_tenders:
         logger.warning(
             "ONCF: No tenders found. The tender list is loaded via AJAX "
-            "and may require JavaScript rendering or authentication. "
-            "Consider accessing marchespublics.gov.ma directly."
+            "and may require JavaScript rendering or authentication."
         )
 
     logger.info(f"ONCF total: {len(all_tenders)}")

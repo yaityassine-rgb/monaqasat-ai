@@ -107,14 +107,9 @@ def _scrape_local_trust(url: str, label: str) -> list[dict]:
             logger.warning(f"MASEN {label}: HTTP {resp.status_code}")
             return tenders
 
-        # The page declares ISO-8859-1 but contains UTF-8 content.
-        # Decode the raw bytes directly as UTF-8 to get proper characters.
-        raw_bytes = resp.content
-        try:
-            page_text = raw_bytes.decode("utf-8")
-        except UnicodeDecodeError:
-            # Fallback: decode as latin-1
-            page_text = raw_bytes.decode("latin-1", errors="replace")
+        # The page content is primarily UTF-8 but may have stray Latin-1
+        # bytes. Decode as UTF-8 with replacement to preserve French accents.
+        page_text = resp.content.decode("utf-8", errors="replace")
         soup = BeautifulSoup(page_text, "lxml")
 
         # Each consultation is wrapped in a div.generalBox
