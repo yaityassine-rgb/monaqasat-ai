@@ -1,112 +1,180 @@
 """
 Scraper for European Bank for Reconstruction and Development (EBRD).
-Source: https://www.ebrd.com/work-with-us/procurement/notices.html
+Source: https://ecepp.ebrd.com/delta/noticeSearchResults.html
 
-The EBRD main procurement notices page uses a JS-heavy CMS (Adobe AEM).
-We attempt to scrape the HTML listing and fall back to the EBRD project
-search API. EBRD covers multiple MENA countries.
+Scrapes the ECEPP (EBRD Client E-Procurement Portal) search results page,
+which is server-rendered HTML containing a table of procurement notices.
+Filters for MENA-region countries relevant to monaqasat.
 """
 
 import logging
 import re
-import time
 import requests
 from bs4 import BeautifulSoup
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
 logger = logging.getLogger("ebrd")
 
-NOTICES_URL = "https://www.ebrd.com/work-with-us/procurement/notices.html"
-# Alternative: EBRD project search with MENA countries
-PROJECT_SEARCH_URL = "https://www.ebrd.com/api/search"
+ECEPP_SEARCH_URL = (
+    "https://ecepp.ebrd.com/delta/noticeSearchResults.html"
+    "?locale=en"
+    "&form_fields[keyword]="
+    "&form_fields[noticeType]="
+    "&form_fields[status]="
+)
+
+ECEPP_NOTICE_BASE = "https://ecepp.ebrd.com/delta/"
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 
 # MENA countries that EBRD covers
 EBRD_MENA_COUNTRIES = {
-    "EG": "Egypt",
-    "JO": "Jordan",
-    "LB": "Lebanon",
-    "MA": "Morocco",
-    "TN": "Tunisia",
-    "IQ": "Iraq",
-    "PS": "Palestine",
-    "TR": "Turkey",
+    "egypt": ("Egypt", "EG"),
+    "jordan": ("Jordan", "JO"),
+    "lebanon": ("Lebanon", "LB"),
+    "morocco": ("Morocco", "MA"),
+    "tunisia": ("Tunisia", "TN"),
+    "iraq": ("Iraq", "IQ"),
+    "palestine": ("Palestine", "PS"),
+    "west bank": ("Palestine", "PS"),
+    "gaza": ("Palestine", "PS"),
+    "turkey": ("Turkey", "TR"),
+    "türkiye": ("Turkey", "TR"),
+    "turkiye": ("Turkey", "TR"),
 }
 
 
 def _detect_country(text: str) -> tuple[str, str]:
-    """Detect country from tender text."""
+    """Detect MENA country from tender text."""
     text_lower = text.lower()
-    for code, name in EBRD_MENA_COUNTRIES.items():
-        if name.lower() in text_lower:
+    for keyword, (name, code) in EBRD_MENA_COUNTRIES.items():
+        if keyword in text_lower:
             return name, code
-    return "Multi-country", "XX"
+    return "MENA Region", "XX"
 
 
-def _scrape_notices_html() -> list[dict]:
-    """Scrape procurement notices from the EBRD HTML page."""
+def _parse_ecepp_date(date_str: str) -> str:
+    """Parse ECEPP date format like '09/03/2026 09:29UK Time' into ISO date."""
+    if not date_str or date_str.strip() == "N/A":
+        return ""
+    # Extract date part before any time/timezone info
+    match = re.match(r"(\d{2}/\d{2}/\d{4})", date_str.strip())
+    if match:
+        parsed = parse_date(match.group(1))
+        if parsed:
+            return parsed
+    return ""
+
+
+def _scrape_ecepp_search() -> list[dict]:
+    """Scrape procurement notices from the ECEPP search results page."""
     tenders: list[dict] = []
 
     try:
-        resp = requests.get(NOTICES_URL, headers={
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml",
-            "Accept-Language": "en-US,en;q=0.9",
-        }, timeout=30)
+        resp = requests.get(ECEPP_SEARCH_URL, headers=HEADERS, timeout=60)
 
         if resp.status_code != 200:
-            logger.warning(f"EBRD notices page returned {resp.status_code}")
+            logger.warning(f"ECEPP search page returned HTTP {resp.status_code}")
             return tenders
 
         soup = BeautifulSoup(resp.text, "lxml")
+        table = soup.select_one("table.basic-table")
+        if not table:
+            logger.warning("ECEPP: Could not find the basic-table element")
+            return tenders
 
-        # Look for procurement notice items (cards, list items, table rows)
-        # The EBRD page uses various card/list structures
-        cards = soup.select(".procurement-notice, .notice-item, .card, .result-item, "
-                            ".listing-item, article, .cmp-teaser")
+        rows = table.select("tr")
+        if len(rows) < 2:
+            logger.warning("ECEPP: Table has no data rows")
+            return tenders
 
-        for card in cards:
-            # Try to find title
-            title_el = card.select_one("h2, h3, h4, .title, .heading, a[href]")
-            if not title_el:
+        logger.info(f"ECEPP: Found {len(rows) - 1} total notices, filtering for MENA...")
+
+        # Header row: Title | Notice Type | Procurement Exercise Title |
+        #              Published | Closing Date | Current State
+        # Plus hidden cols: published date, sort key, empty, metadata
+        mena_keywords = set(EBRD_MENA_COUNTRIES.keys())
+
+        for row in rows[1:]:
+            cells = row.select("td")
+            if len(cells) < 6:
                 continue
-            title = title_el.get_text(strip=True)
-            if not title or len(title) < 10:
+
+            # Get full row text for country detection
+            full_text = " ".join(c.get_text(strip=True) for c in cells)
+            full_lower = full_text.lower()
+
+            # Filter: only keep MENA-region notices
+            is_mena = any(kw in full_lower for kw in mena_keywords)
+            if not is_mena:
                 continue
 
-            # Try to get link
-            link_el = card.select_one("a[href]")
+            # Extract fields from cells
+            title_cell = cells[0]
+            notice_type = cells[1].get_text(strip=True) if len(cells) > 1 else ""
+            procurement_title = cells[2].get_text(strip=True) if len(cells) > 2 else ""
+            published_raw = cells[3].get_text(strip=True) if len(cells) > 3 else ""
+            closing_raw = cells[4].get_text(strip=True) if len(cells) > 4 else ""
+            current_state = cells[5].get_text(strip=True) if len(cells) > 5 else ""
+
+            # Get title and link
+            title_text = title_cell.get_text(strip=True)
+            link_el = title_cell.select_one("a[href]")
             href = ""
-            if link_el and link_el.get("href"):
-                href = link_el["href"]
-                if href.startswith("/"):
-                    href = "https://www.ebrd.com" + href
+            if link_el:
+                href = link_el.get("href", "")
+                if href and not href.startswith("http"):
+                    href = ECEPP_NOTICE_BASE + href
 
-            # Try to find dates
-            date_els = card.select(".date, time, .published, .deadline")
-            pub_date = ""
-            deadline = ""
-            for d in date_els:
-                dt = d.get("datetime", "") or d.get_text(strip=True)
-                parsed = parse_date(dt)
-                if parsed and not pub_date:
-                    pub_date = parsed
+            if not title_text or len(title_text) < 5:
+                continue
 
-            # Detect country
-            full_text = card.get_text(" ", strip=True)
-            country, country_code = _detect_country(full_text)
+            # Parse dates
+            pub_date = _parse_ecepp_date(published_raw)
+            deadline = _parse_ecepp_date(closing_raw)
 
-            # Try to find reference
-            ref_match = re.search(r'(?:ref|reference|no)[:\s]*([A-Z0-9\-/]+)', full_text, re.I)
-            source_ref = ref_match.group(1) if ref_match else title[:60]
+            # Detect country from title (usually starts with "Country: ...")
+            country, country_code = _detect_country(title_text + " " + full_text)
+
+            # Extract a reference number from the notice ID in the URL
+            source_ref = ""
+            if href:
+                ref_match = re.search(r"displayNoticeId=(\d+)", href)
+                if ref_match:
+                    source_ref = f"ECEPP-{ref_match.group(1)}"
+            if not source_ref:
+                source_ref = title_text[:60]
+
+            # Determine status
+            status = "open"
+            state_lower = current_state.lower()
+            if "closed" in state_lower or "awarded" in state_lower:
+                status = "closed"
+            elif "information" in state_lower:
+                status = "open"
+
+            # Build description from procurement title + notice type
+            desc_parts = []
+            if procurement_title and procurement_title != "N/A":
+                desc_parts.append(f"Procurement: {procurement_title}")
+            if notice_type:
+                desc_parts.append(f"Type: {notice_type}")
+            if current_state:
+                desc_parts.append(f"State: {current_state}")
+            description = ". ".join(desc_parts) if desc_parts else title_text
 
             tender = {
                 "id": generate_id("ebrd", source_ref, ""),
                 "source": "EBRD",
                 "sourceRef": source_ref,
                 "sourceLanguage": "en",
-                "title": {"en": title, "ar": title, "fr": title},
+                "title": {"en": title_text, "ar": title_text, "fr": title_text},
                 "organization": {
                     "en": "European Bank for Reconstruction and Development",
                     "ar": "البنك الأوروبي لإعادة الإعمار والتنمية",
@@ -114,125 +182,54 @@ def _scrape_notices_html() -> list[dict]:
                 },
                 "country": country,
                 "countryCode": country_code,
-                "sector": classify_sector(full_text),
+                "sector": classify_sector(title_text + " " + procurement_title),
                 "budget": 0,
                 "currency": "EUR",
                 "deadline": deadline,
                 "publishDate": pub_date,
-                "status": "open",
+                "status": status,
                 "description": {
-                    "en": full_text[:500],
-                    "ar": full_text[:500],
-                    "fr": full_text[:500],
+                    "en": description[:500],
+                    "ar": description[:500],
+                    "fr": description[:500],
                 },
                 "requirements": [],
                 "matchScore": 0,
-                "sourceUrl": href or NOTICES_URL,
+                "sourceUrl": href or ECEPP_SEARCH_URL,
             }
             tenders.append(tender)
 
     except Exception as e:
-        logger.error(f"EBRD HTML scraper error: {e}")
-
-    return tenders
-
-
-def _scrape_ecepp_portal() -> list[dict]:
-    """Try to scrape the EBRD e-procurement portal (ECEPP)."""
-    tenders: list[dict] = []
-
-    # The ECEPP portal (ecepp.ebrd.com) is a WordPress site that links
-    # to the actual procurement system. Try to find opportunity listings.
-    try:
-        resp = requests.get("https://ecepp.ebrd.com/", headers={
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "text/html",
-        }, timeout=30)
-
-        if resp.status_code != 200:
-            logger.warning(f"ECEPP portal returned {resp.status_code}")
-            return tenders
-
-        soup = BeautifulSoup(resp.text, "lxml")
-
-        # Look for any procurement opportunity links
-        links = soup.select("a[href*='opportunity'], a[href*='tender'], "
-                            "a[href*='procurement'], a[href*='notice']")
-
-        for link in links:
-            title = link.get_text(strip=True)
-            href = link.get("href", "")
-            if not title or len(title) < 10 or not href:
-                continue
-
-            if not href.startswith("http"):
-                href = "https://ecepp.ebrd.com" + href
-
-            country, country_code = _detect_country(title)
-
-            tender = {
-                "id": generate_id("ebrd_ecepp", title[:60], ""),
-                "source": "EBRD",
-                "sourceRef": title[:60],
-                "sourceLanguage": "en",
-                "title": {"en": title, "ar": title, "fr": title},
-                "organization": {
-                    "en": "European Bank for Reconstruction and Development",
-                    "ar": "البنك الأوروبي لإعادة الإعمار والتنمية",
-                    "fr": "Banque européenne pour la reconstruction et le développement",
-                },
-                "country": country,
-                "countryCode": country_code,
-                "sector": classify_sector(title),
-                "budget": 0,
-                "currency": "EUR",
-                "deadline": "",
-                "publishDate": "",
-                "status": "open",
-                "description": {
-                    "en": title,
-                    "ar": title,
-                    "fr": title,
-                },
-                "requirements": [],
-                "matchScore": 0,
-                "sourceUrl": href,
-            }
-            tenders.append(tender)
-
-    except Exception as e:
-        logger.error(f"ECEPP portal scraper error: {e}")
+        logger.error(f"ECEPP scraper error: {e}")
 
     return tenders
 
 
 def scrape() -> list[dict]:
-    """Scrape EBRD procurement notices from multiple sources."""
-    html_tenders = _scrape_notices_html()
-    time.sleep(2)
-    ecepp_tenders = _scrape_ecepp_portal()
+    """Scrape EBRD procurement notices from the ECEPP portal."""
+    tenders = _scrape_ecepp_search()
 
-    # Merge and deduplicate
+    # Deduplicate by sourceRef
     seen: set[str] = set()
-    all_tenders: list[dict] = []
-    for t in html_tenders + ecepp_tenders:
+    unique: list[dict] = []
+    for t in tenders:
         key = t["sourceRef"]
         if key not in seen:
             seen.add(key)
-            all_tenders.append(t)
+            unique.append(t)
 
-    logger.info(f"EBRD total: {len(all_tenders)} notices "
-                f"(HTML: {len(html_tenders)}, ECEPP: {len(ecepp_tenders)})")
+    logger.info(f"EBRD total: {len(unique)} MENA-region notices from ECEPP")
 
-    if not all_tenders:
-        logger.warning("EBRD: No tenders found. The procurement notices page may use "
-                        "client-side JavaScript rendering that cannot be scraped with "
-                        "requests+BeautifulSoup. Consider using a headless browser.")
+    if not unique:
+        logger.warning(
+            "EBRD: No MENA tenders found on ECEPP. "
+            "The search page may have changed its structure."
+        )
 
-    return all_tenders
+    return unique
 
 
 if __name__ == "__main__":
     results = scrape()
     save_tenders(results, "ebrd")
-    print(f"Scraped {len(results)} notices from EBRD")
+    print(f"Scraped {len(results)} notices from EBRD (ECEPP)")

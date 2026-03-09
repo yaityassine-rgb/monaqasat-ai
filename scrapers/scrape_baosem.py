@@ -17,6 +17,12 @@ from bs4 import BeautifulSoup
 
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
+try:
+    from curl_cffi import requests as curl_requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    HAS_CURL_CFFI = False
+
 logger = logging.getLogger("baosem")
 
 BASE_URL = "https://baosem.com/site"
@@ -25,12 +31,22 @@ TENDERS_URL_FR = f"{BASE_URL}/appels-doffres/"
 RSS_URL = f"{BASE_URL}/feed/?lang=en"
 RSS_URL_FR = f"{BASE_URL}/feed/"
 WP_API = f"{BASE_URL}/wp-json/wp/v2/posts"
+WP_API_TENDERS = f"{BASE_URL}/wp-json/wp/v2/tenders"
+WP_API_APPELS = f"{BASE_URL}/wp-json/wp/v2/appels-doffres"
+WP_API_PAGES = f"{BASE_URL}/wp-json/wp/v2/pages"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     "Accept": "text/html,application/xhtml+xml,application/json",
     "Accept-Language": "en,fr,ar",
 }
+
+
+def _get(url, **kwargs):
+    """HTTP GET with TLS fingerprint impersonation if available."""
+    if HAS_CURL_CFFI:
+        return curl_requests.get(url, impersonate="chrome131", **kwargs)
+    return requests.get(url, **kwargs)
 
 
 def _extract_ref(text: str) -> str:
@@ -47,76 +63,88 @@ def _extract_ref(text: str) -> str:
 
 
 def _scrape_wp_api() -> list[dict]:
-    """Try to scrape tenders from WordPress REST API."""
+    """Try to scrape tenders from WordPress REST API.
+
+    Tries multiple WP API endpoints including custom post types:
+    /wp/v2/posts, /wp/v2/tenders, /wp/v2/appels-doffres, /wp/v2/pages
+    """
     tenders = []
-    try:
-        for page in range(1, 6):
-            resp = requests.get(
-                WP_API,
-                params={
-                    "per_page": 100,
-                    "page": page,
-                    "lang": "en",
-                    "_fields": "id,title,link,date,excerpt,categories",
-                },
-                headers=HEADERS,
-                timeout=30,
-            )
-            if resp.status_code != 200:
-                break
+    api_endpoints = [WP_API, WP_API_TENDERS, WP_API_APPELS, WP_API_PAGES]
 
-            items = resp.json()
-            if not items:
-                break
-
-            for item in items:
-                raw_title = item.get("title", {}).get("rendered", "")
-                title = BeautifulSoup(raw_title, "html.parser").get_text(strip=True)
-                if not title or len(title) < 5:
-                    continue
-
-                link = item.get("link", "")
-                date_str = item.get("date", "")
-                excerpt_html = item.get("excerpt", {}).get("rendered", "")
-                excerpt = BeautifulSoup(excerpt_html, "html.parser").get_text(strip=True)
-
-                ref = _extract_ref(title) or str(item.get("id", ""))
-                pub_date = parse_date(date_str) or ""
-
-                tender = {
-                    "id": generate_id("baosem", ref, ""),
-                    "source": "BAOSEM Algeria",
-                    "sourceRef": ref,
-                    "sourceLanguage": "en",
-                    "title": {"en": title, "ar": title, "fr": title},
-                    "organization": {
-                        "en": "BAOSEM / Sonatrach / Sonelgaz",
-                        "ar": "سوناطراك / سونلغاز",
-                        "fr": "BAOSEM / Sonatrach / Sonelgaz",
+    for api_url in api_endpoints:
+        try:
+            for page in range(1, 6):
+                resp = _get(
+                    api_url,
+                    params={
+                        "per_page": 100,
+                        "page": page,
+                        "_fields": "id,title,link,date,excerpt,categories",
                     },
-                    "country": "Algeria",
-                    "countryCode": "DZ",
-                    "sector": classify_sector(title + " " + excerpt + " energy oil gas"),
-                    "budget": 0,
-                    "currency": "DZD",
-                    "deadline": "",
-                    "publishDate": pub_date,
-                    "status": "open",
-                    "description": {
-                        "en": excerpt or title,
-                        "ar": excerpt or title,
-                        "fr": excerpt or title,
-                    },
-                    "requirements": [],
-                    "matchScore": 0,
-                    "sourceUrl": link or TENDERS_URL,
-                }
-                tenders.append(tender)
+                    headers=HEADERS,
+                    timeout=30,
+                )
+                if resp.status_code != 200:
+                    if resp.status_code == 400:
+                        logger.debug(f"BAOSEM WP API {api_url}: endpoint not found (400)")
+                    elif resp.status_code == 404:
+                        logger.debug(f"BAOSEM WP API {api_url}: not found (404)")
+                    break
 
-            time.sleep(2)
+                items = resp.json()
+                if not isinstance(items, list) or not items:
+                    break
 
-    except Exception as e:
-        logger.warning(f"BAOSEM WP API error: {e}")
+                logger.info(f"BAOSEM WP API {api_url} page {page}: {len(items)} items")
+
+                for item in items:
+                    raw_title = item.get("title", {}).get("rendered", "")
+                    title = BeautifulSoup(raw_title, "html.parser").get_text(strip=True)
+                    if not title or len(title) < 5:
+                        continue
+
+                    link = item.get("link", "")
+                    date_str = item.get("date", "")
+                    excerpt_html = item.get("excerpt", {}).get("rendered", "")
+                    excerpt = BeautifulSoup(excerpt_html, "html.parser").get_text(strip=True)
+
+                    ref = _extract_ref(title) or str(item.get("id", ""))
+                    pub_date = parse_date(date_str) or ""
+
+                    tender = {
+                        "id": generate_id("baosem", ref, ""),
+                        "source": "BAOSEM Algeria",
+                        "sourceRef": ref,
+                        "sourceLanguage": "en",
+                        "title": {"en": title, "ar": title, "fr": title},
+                        "organization": {
+                            "en": "BAOSEM / Sonatrach / Sonelgaz",
+                            "ar": "سوناطراك / سونلغاز",
+                            "fr": "BAOSEM / Sonatrach / Sonelgaz",
+                        },
+                        "country": "Algeria",
+                        "countryCode": "DZ",
+                        "sector": classify_sector(title + " " + excerpt + " energy oil gas"),
+                        "budget": 0,
+                        "currency": "DZD",
+                        "deadline": "",
+                        "publishDate": pub_date,
+                        "status": "open",
+                        "description": {
+                            "en": excerpt or title,
+                            "ar": excerpt or title,
+                            "fr": excerpt or title,
+                        },
+                        "requirements": [],
+                        "matchScore": 0,
+                        "sourceUrl": link or TENDERS_URL,
+                    }
+                    tenders.append(tender)
+
+                time.sleep(2)
+
+        except Exception as e:
+            logger.warning(f"BAOSEM WP API ({api_url}) error: {e}")
 
     return tenders
 
@@ -178,7 +206,7 @@ def _scrape_html() -> list[dict]:
     tenders = []
     for url in [TENDERS_URL, TENDERS_URL_FR]:
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=30)
+            resp = _get(url, headers=HEADERS, timeout=30)
             if resp.status_code != 200:
                 logger.warning(f"BAOSEM HTML {url} returned {resp.status_code}")
                 continue

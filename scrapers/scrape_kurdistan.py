@@ -16,20 +16,34 @@ import requests
 from bs4 import BeautifulSoup
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
+try:
+    from curl_cffi import requests as curl_requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    HAS_CURL_CFFI = False
+
 logger = logging.getLogger("kurdistan")
 
 KEPS_URL = "https://keps.digital.gov.krd/"
 GOV_KRD_URL = "https://gov.krd/english/hot-topics/tenders/"
 GOV_KRD_API = "https://gov.krd/wp-json/wp/v2/posts"  # WordPress REST API attempt
+GOV_KRD_TENDER_SEARCH = "https://gov.krd/wp-json/wp/v2/posts?search=tender&per_page=50"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/120.0.0.0 Safari/537.36",
+                  "Chrome/131.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9,ar;q=0.8,ku;q=0.7",
     "Accept-Encoding": "gzip, deflate, br",
 }
+
+
+def _get(url, **kwargs):
+    """HTTP GET with TLS fingerprint impersonation if available."""
+    if HAS_CURL_CFFI:
+        return curl_requests.get(url, impersonate="chrome131", **kwargs)
+    return requests.get(url, **kwargs)
 
 
 def _scrape_gov_krd_html() -> list[dict]:
@@ -37,8 +51,8 @@ def _scrape_gov_krd_html() -> list[dict]:
     tenders: list[dict] = []
 
     try:
-        resp = requests.get(GOV_KRD_URL, headers=HEADERS, timeout=30,
-                            allow_redirects=True)
+        resp = _get(GOV_KRD_URL, headers=HEADERS, timeout=30,
+                    allow_redirects=True)
 
         if resp.status_code == 403:
             logger.warning("Kurdistan gov.krd: Cloudflare protection (403)")
@@ -136,7 +150,7 @@ def _scrape_gov_krd_api() -> list[dict]:
             "order": "desc",
         }
 
-        resp = requests.get(GOV_KRD_API, params=params, headers={
+        resp = _get(GOV_KRD_API, params=params, headers={
             **HEADERS,
             "Accept": "application/json",
         }, timeout=15)
@@ -215,8 +229,8 @@ def _scrape_keps_portal() -> list[dict]:
     tenders: list[dict] = []
 
     try:
-        resp = requests.get(KEPS_URL, headers=HEADERS, timeout=30,
-                            allow_redirects=True)
+        resp = _get(KEPS_URL, headers=HEADERS, timeout=30,
+                    allow_redirects=True)
 
         if resp.status_code == 403:
             logger.warning("KEPS portal: Cloudflare protection (403)")

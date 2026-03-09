@@ -14,38 +14,37 @@ import requests
 from bs4 import BeautifulSoup
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
+try:
+    from curl_cffi import requests as curl_requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    HAS_CURL_CFFI = False
+
 logger = logging.getLogger("kuwait")
 
 BASE_URL = "https://capt.gov.kw"
 TENDERS_EN_URL = f"{BASE_URL}/en/tenders/opening-tenders/"
 TENDERS_AR_URL = f"{BASE_URL}/ar/tenders/opening-tenders/"
+EGOV_URL = "https://e.gov.kw/sites/kgoenglish/Pages/eServices/CTC/Openedtenders.aspx"
 ALTERNATE_URLS = [
+    EGOV_URL,
     f"{BASE_URL}/en/tenders/",
     f"{BASE_URL}/en/",
     f"{BASE_URL}/",
 ]
 
+HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
+    "Accept-Encoding": "gzip, deflate, br",
+}
 
-def _create_session() -> requests.Session:
-    """Create a session with browser-like headers."""
-    s = requests.Session()
-    s.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/131.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
-    })
-    return s
+
+def _get(url, **kwargs):
+    """HTTP GET with TLS fingerprint impersonation if available."""
+    if HAS_CURL_CFFI:
+        return curl_requests.get(url, impersonate="chrome131", **kwargs)
+    return requests.get(url, **kwargs)
 
 
 def _parse_tender_row(row, page_url: str) -> dict | None:
@@ -128,7 +127,7 @@ def _parse_tender_row(row, page_url: str) -> dict | None:
     }
 
 
-def _is_cloudflare_block(resp: requests.Response) -> bool:
+def _is_cloudflare_block(resp) -> bool:
     """Check if the response is a Cloudflare challenge page."""
     if resp.status_code == 403:
         return True
@@ -139,24 +138,23 @@ def _is_cloudflare_block(resp: requests.Response) -> bool:
 def scrape() -> list[dict]:
     """Scrape Kuwait CAPT for opening tenders.
 
-    Note: The site uses Cloudflare protection which may block automated
-    requests. If blocked, this returns an empty list gracefully.
+    Uses curl_cffi for TLS fingerprint impersonation to bypass Cloudflare.
+    Also tries e.gov.kw as an alternative source.
     """
     tenders: list[dict] = []
     seen: set[str] = set()
-    session = _create_session()
 
-    # Try multiple URLs in case one works
-    urls_to_try = [TENDERS_EN_URL, TENDERS_AR_URL] + ALTERNATE_URLS
+    # Try multiple URLs in case one works — e.gov.kw first (may not be behind Cloudflare)
+    urls_to_try = [EGOV_URL, TENDERS_EN_URL, TENDERS_AR_URL] + ALTERNATE_URLS
 
     for url in urls_to_try:
         try:
-            resp = session.get(url, timeout=30)
+            resp = _get(url, headers=HEADERS, timeout=30)
 
             if _is_cloudflare_block(resp):
                 logger.warning(
                     f"Kuwait {url}: Cloudflare protection detected (HTTP {resp.status_code}). "
-                    "Automated access is blocked."
+                    "Trying next URL."
                 )
                 continue
 
@@ -196,12 +194,8 @@ def scrape() -> list[dict]:
 
             time.sleep(2)
 
-        except requests.exceptions.ConnectionError as e:
-            logger.warning(f"Kuwait {url}: connection error — {e}")
-        except requests.exceptions.Timeout:
-            logger.warning(f"Kuwait {url}: request timed out")
         except Exception as e:
-            logger.error(f"Kuwait {url}: {e}")
+            logger.warning(f"Kuwait {url}: {e}")
 
     if not tenders:
         logger.warning(

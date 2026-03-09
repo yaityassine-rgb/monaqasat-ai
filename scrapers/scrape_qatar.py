@@ -13,15 +13,34 @@ import requests
 from bs4 import BeautifulSoup
 from base_scraper import classify_sector, generate_id, parse_date, save_tenders
 
+try:
+    from curl_cffi import requests as curl_requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    HAS_CURL_CFFI = False
+
 logger = logging.getLogger("qatar")
 
 BASE_URL = "https://monaqasat.mof.gov.qa"
 LISTING_URL = f"{BASE_URL}/TendersOnlineServices/AvailableMinistriesTenders"
 MAX_PAGES = 10
 
+HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ar,en;q=0.9",
+    "Referer": BASE_URL,
+}
+
+
+def _get(url, **kwargs):
+    """HTTP GET with TLS fingerprint impersonation if available."""
+    if HAS_CURL_CFFI:
+        return curl_requests.get(url, impersonate="chrome131", **kwargs)
+    return requests.get(url, **kwargs)
+
 
 def _create_session() -> requests.Session:
-    """Create a session with proper headers."""
+    """Create a session with proper headers (used as fallback only)."""
     s = requests.Session()
     s.headers.update({
         "User-Agent": (
@@ -119,12 +138,11 @@ def scrape() -> list[dict]:
     """Scrape Qatar Monaqasat portal for procurement notices."""
     tenders: list[dict] = []
     seen: set[str] = set()
-    session = _create_session()
 
     for page in range(1, MAX_PAGES + 1):
         url = f"{LISTING_URL}/{page}"
         try:
-            resp = session.get(url, timeout=30, verify=True)
+            resp = _get(url, headers=HEADERS, timeout=30)
             if resp.status_code != 200:
                 logger.warning(f"Qatar page {page}: HTTP {resp.status_code}")
                 break
@@ -168,17 +186,16 @@ def scrape() -> list[dict]:
 
             time.sleep(2)
 
-        except requests.exceptions.SSLError as e:
-            logger.warning(f"Qatar page {page}: SSL error — {e}")
-            break
-        except requests.exceptions.ConnectionError as e:
-            logger.warning(f"Qatar page {page}: connection error — {e}")
-            break
-        except requests.exceptions.Timeout:
-            logger.warning(f"Qatar page {page}: request timed out")
-            break
         except Exception as e:
-            logger.error(f"Qatar page {page}: {e}")
+            err_str = str(e).lower()
+            if "ssl" in err_str or "eof" in err_str:
+                logger.warning(f"Qatar page {page}: SSL error — {e}")
+            elif "timeout" in err_str or "timed out" in err_str:
+                logger.warning(f"Qatar page {page}: request timed out — {e}")
+            elif "connection" in err_str:
+                logger.warning(f"Qatar page {page}: connection error — {e}")
+            else:
+                logger.error(f"Qatar page {page}: {e}")
             break
 
     if not tenders:
