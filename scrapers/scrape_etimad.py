@@ -18,11 +18,11 @@ logger = logging.getLogger("etimad")
 
 API_URL = "https://tenders.etimad.sa/Tender/AllSupplierTendersForVisitorAsync"
 
-# We scrape recent pages — going too deep returns old/closed tenders
-MAX_PAGES = 200  # 200 pages × 24 items = ~4,800 recent tenders
-CLOSED_RATIO_THRESHOLD = 0.80  # Stop when pages are >80% closed
-CONSECUTIVE_CLOSED_PAGES = 3   # Need 3 such pages in a row
-CONSECUTIVE_KNOWN_PAGES = 2    # For incremental: stop after 2 pages of known tenders
+# We scrape recent pages — going deep to capture all open tenders
+MAX_PAGES = 500  # 500 pages × 24 items = ~12,000 tenders
+CLOSED_RATIO_THRESHOLD = 0.95  # Stop when pages are >95% closed (nearly all)
+CONSECUTIVE_CLOSED_PAGES = 5   # Need 5 such pages in a row to be sure
+CONSECUTIVE_KNOWN_PAGES = 3    # For incremental: stop after 3 pages of known tenders
 DATA_DIR = Path(__file__).parent / "data"
 
 
