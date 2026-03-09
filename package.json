@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.99.0",
     "framer-motion": "^12.35.1",
     "i18next": "^25.8.14",
     "i18next-browser-languagedetector": "^8.2.1",

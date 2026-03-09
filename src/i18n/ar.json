@@ -108,6 +108,7 @@
     "perYear": "/سنة",
     "getStarted": "ابدأ الآن",
     "contactSales": "تواصل مع المبيعات",
+    "subscribe": "اشترك",
     "popular": "الأكثر شعبية",
     "free": {
       "name": "المستكشف",
@@ -274,6 +275,8 @@
     "seePortal": "انظر البوابة",
     "loading": "جاري تحميل المناقصات...",
     "prev": "السابق",
+    "personalizedScores": "تقييمات AI مخصصة",
+    "upgradeForAI": "ترقية للمطابقة بالذكاء الاصطناعي",
     "next": "التالي"
   },
   "tenderDetail": {
@@ -330,7 +333,9 @@
     "description": "وصف الشركة",
     "descriptionPh": "وصف موجز لشركتك وقدراتها...",
     "save": "حفظ الملف",
-    "saved": "تم حفظ الملف بنجاح!"
+    "saving": "جاري الحفظ...",
+    "saved": "تم حفظ الملف بنجاح!",
+    "aiMatchingNote": "ملفك يغذي المطابقة بالذكاء الاصطناعي — كلما أضفت تفاصيل أكثر، كانت تقييماتك أفضل."
   },
   "analytics": {
     "title": "تحليلات السوق",
@@ -370,5 +375,74 @@
     "subtitle": "الصفحة غير موجودة",
     "text": "الصفحة التي تبحث عنها غير موجودة.",
     "cta": "العودة للرئيسية"
+  },
+  "auth": {
+    "loginTitle": "تسجيل الدخول",
+    "loginSubtitle": "مرحباً بعودتك إلى مناقصات AI",
+    "signupTitle": "إنشاء حساب",
+    "signupSubtitle": "ابدأ في الفوز بالعقود الحكومية اليوم",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "your@email.com",
+    "password": "كلمة المرور",
+    "createPassword": "أنشئ كلمة مرور (6 أحرف على الأقل)",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPh": "أعد كتابة كلمة المرور",
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جاري تسجيل الدخول...",
+    "createAccount": "إنشاء حساب",
+    "creatingAccount": "جاري إنشاء الحساب...",
+    "continueWithGoogle": "المتابعة مع Google",
+    "orEmail": "أو المتابعة بالبريد الإلكتروني",
+    "noAccount": "ليس لديك حساب؟",
+    "signUpLink": "سجل الآن",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "signInLink": "سجل دخولك",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "checkEmail": "تحقق من بريدك الإلكتروني",
+    "checkEmailDesc": "أرسلنا رابط تأكيد إلى بريدك الإلكتروني. انقر عليه لتفعيل حسابك.",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "profile": "ملفي الشخصي",
+    "subscription": "الاشتراك",
+    "settings": "الإعدادات",
+    "freeAccount": "الخطة المجانية"
+  },
+  "analysis": {
+    "title": "تحليل بالذكاء الاصطناعي",
+    "runAnalysis": "تشغيل التحليل",
+    "analyzing": "جاري التحليل بالذكاء الاصطناعي...",
+    "error": "فشل التحليل. حاول مرة أخرى.",
+    "notConfigured": "التحليل غير مهيأ بعد.",
+    "upgradeRequired": "التحليل متاح في خطة المبتدئين وما فوق.",
+    "upgradeCta": "ترقية الآن",
+    "summary": "ملخص تنفيذي",
+    "eligibility": "تقييم الأهلية",
+    "strengths": "نقاط القوة",
+    "gaps": "الفجوات",
+    "risks": "عوامل المخاطرة",
+    "recommendation": "الإجراء",
+    "competition": "المنافسة",
+    "strategy": "استراتيجية العطاء",
+    "actionBid": "تقدم",
+    "actionConsider": "فكّر",
+    "actionSkip": "تجاوز",
+    "verdict": {
+      "ELIGIBLE": "مؤهل — توافق قوي",
+      "PARTIALLY_ELIGIBLE": "مؤهل جزئياً — راجع الفجوات",
+      "NOT_ELIGIBLE": "غير مؤهل"
+    }
+  },
+  "subscription": {
+    "title": "الاشتراك",
+    "subtitle": "إدارة خطتك والفوترة",
+    "currentPlan": "الخطة الحالية",
+    "current": "الحالية",
+    "renewsOn": "يتجدد في",
+    "upgrade": "ترقية",
+    "freeFeatures": ["10 مشاهدات مناقصات/يوم", "بحث أساسي وفلاتر", "حفظ حتى 10 مناقصات", "دعم المجتمع"],
+    "starterFeatures": ["تقييمات AI حقيقية", "20 تحليل AI/شهر", "تنبيهات بريدية للمطابقات", "دعم أولوية"],
+    "professionalFeatures": ["تحليلات AI غير محدودة", "10 عروض AI/شهر", "رؤى المنافسين", "تحليل الكميات", "دعم 24/7"],
+    "businessFeatures": ["عروض غير محدودة", "وصول API", "مساحة عمل فريق (5 مقاعد)", "ذكاء السوق", "مدير حساب مخصص"]
   }
 }

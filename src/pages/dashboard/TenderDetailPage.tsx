@@ -11,7 +11,6 @@ import {
   Globe,
   Layers,
   CheckCircle2,
-  Sparkles,
   ExternalLink,
   Bookmark,
   FileText,
@@ -21,6 +20,7 @@ import {
 import { getTenders } from "../../lib/tender-store";
 import { COUNTRIES } from "../../lib/constants";
 import { formatBudget, getSavedIds, setSavedIds, getStatusStyle, getLocalizedText } from "../../lib/utils";
+import TenderAnalysis from "../../components/TenderAnalysis";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -74,7 +74,6 @@ export default function TenderDetailPage() {
   const tender = getTenders().find((t) => t.id === id);
 
   const [savedIdsState, setSavedIdsState] = useState<string[]>(getSavedIds);
-  const [showProposalToast, setShowProposalToast] = useState(false);
   const isSaved = tender ? savedIdsState.includes(tender.id) : false;
 
   const toggleSave = () => {
@@ -188,15 +187,10 @@ export default function TenderDetailPage() {
         className="glass-card rounded-xl p-6 mb-6"
       >
         <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-          {/* Title & Org */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap mb-3">
-              <span className="text-xs text-slate-500 font-mono">
-                {tender.id}
-              </span>
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-md border text-xs font-medium ${getStatusStyle(tender.status)}`}
-              >
+              <span className="text-xs text-slate-500 font-mono">{tender.id}</span>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md border text-xs font-medium ${getStatusStyle(tender.status)}`}>
                 {getStatusLabel(tender.status, t)}
               </span>
             </div>
@@ -224,15 +218,9 @@ export default function TenderDetailPage() {
 
           {/* Match Score Badge */}
           <div className="shrink-0 flex flex-col items-center">
-            <span className="text-xs text-slate-500 mb-2">
-              {t("tenderDetail.matchScore")}
-            </span>
-            <div
-              className={`w-20 h-20 rounded-full border-3 flex items-center justify-center ${matchColors.ring} ${matchColors.bg} shadow-lg ${matchColors.glow}`}
-            >
-              <span
-                className={`text-2xl font-bold ${matchColors.text}`}
-              >
+            <span className="text-xs text-slate-500 mb-2">{t("tenderDetail.matchScore")}</span>
+            <div className={`w-20 h-20 rounded-full border-3 flex items-center justify-center ${matchColors.ring} ${matchColors.bg} shadow-lg ${matchColors.glow}`}>
+              <span className={`text-2xl font-bold ${matchColors.text}`}>
                 {tender.matchScore}%
               </span>
             </div>
@@ -247,17 +235,12 @@ export default function TenderDetailPage() {
         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6"
       >
         {infoItems.map((item, idx) => (
-          <div
-            key={idx}
-            className="glass-card rounded-xl p-4 flex flex-col gap-2"
-          >
+          <div key={idx} className="glass-card rounded-xl p-4 flex flex-col gap-2">
             <div className="flex items-center gap-2 text-slate-500">
               <item.icon className="w-4 h-4" />
               <span className="text-xs">{item.label}</span>
             </div>
-            <span className="text-sm font-semibold text-slate-200">
-              {item.value}
-            </span>
+            <span className="text-sm font-semibold text-slate-200">{item.value}</span>
           </div>
         ))}
       </motion.div>
@@ -266,29 +249,15 @@ export default function TenderDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Description */}
-          <motion.div
-            {...fadeUp}
-            transition={{ delay: 0.2 }}
-            className="glass-card rounded-xl p-6"
-          >
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
-              {t("tenderDetail.description")}
-            </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              {tender.description[lang]}
-            </p>
+          <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="glass-card rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-slate-100 mb-4">{t("tenderDetail.description")}</h2>
+            <p className="text-sm text-slate-300 leading-relaxed">{tender.description[lang]}</p>
           </motion.div>
 
           {/* Requirements */}
           {tender.requirements && tender.requirements.length > 0 ? (
-            <motion.div
-              {...fadeUp}
-              transition={{ delay: 0.25 }}
-              className="glass-card rounded-xl p-6"
-            >
-              <h2 className="text-lg font-semibold text-slate-100 mb-4">
-                {t("tenderDetail.requirements")}
-              </h2>
+            <motion.div {...fadeUp} transition={{ delay: 0.25 }} className="glass-card rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">{t("tenderDetail.requirements")}</h2>
               <ul className="space-y-3">
                 {tender.requirements.map((req, idx) => (
                   <li key={idx} className="flex items-start gap-3">
@@ -299,58 +268,22 @@ export default function TenderDetailPage() {
               </ul>
             </motion.div>
           ) : (
-            <motion.div
-              {...fadeUp}
-              transition={{ delay: 0.25 }}
-              className="glass-card rounded-xl p-6"
-            >
-              <h2 className="text-lg font-semibold text-slate-100 mb-4">
-                {t("tenderDetail.requirements")}
-              </h2>
-              <p className="text-sm text-slate-400 italic">
-                {t("tenderDetail.noRequirements")}
-              </p>
+            <motion.div {...fadeUp} transition={{ delay: 0.25 }} className="glass-card rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">{t("tenderDetail.requirements")}</h2>
+              <p className="text-sm text-slate-400 italic">{t("tenderDetail.noRequirements")}</p>
             </motion.div>
           )}
 
-          {/* AI Analysis */}
-          <motion.div
-            {...fadeUp}
-            transition={{ delay: 0.3 }}
-            className="glass-card rounded-xl p-6 border-primary/20"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-primary-light" />
-              <h2 className="text-lg font-semibold gradient-text">
-                {t("tenderDetail.aiAnalysis")}
-              </h2>
-            </div>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              {t("tenderDetail.aiInsight")}
-            </p>
-            <div className="mt-4 flex items-center gap-2">
-              <div
-                className={`w-3 h-3 rounded-full ${tender.matchScore >= 80 ? "bg-emerald-400" : tender.matchScore >= 60 ? "bg-amber-400" : "bg-red-400"}`}
-              />
-              <span className="text-xs text-slate-400">
-                {tender.matchScore >= 80
-                  ? t("tenderDetail.alignStrong")
-                  : tender.matchScore >= 60
-                    ? t("tenderDetail.alignModerate")
-                    : t("tenderDetail.alignLow")}
-              </span>
-            </div>
+          {/* AI Analysis — Real Gemini-powered analysis */}
+          <motion.div {...fadeUp} transition={{ delay: 0.3 }}>
+            <TenderAnalysis tender={tender} />
           </motion.div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Action Buttons */}
-          <motion.div
-            {...fadeUp}
-            transition={{ delay: 0.2 }}
-            className="glass-card rounded-xl p-5 space-y-3"
-          >
+          <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="glass-card rounded-xl p-5 space-y-3">
             <a
               href={tender.sourceUrl || "#"}
               target="_blank"
@@ -379,64 +312,37 @@ export default function TenderDetailPage() {
               }`}
             >
               <Bookmark className="w-4 h-4" />
-              {isSaved
-                ? t("dashboard.saved")
-                : t("tenderDetail.saveForLater")}
+              {isSaved ? t("dashboard.saved") : t("tenderDetail.saveForLater")}
             </button>
-            <button
-              onClick={() => {
-                setShowProposalToast(true);
-                setTimeout(() => setShowProposalToast(false), 3000);
-              }}
+            <Link
+              to="/pricing"
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />
               {t("tenderDetail.generateProposal")}
-            </button>
-            {showProposalToast && (
-              <p className="text-xs text-center text-primary-light mt-1 animate-pulse">
-                {t("tenderDetail.proposalComingSoon")}
-              </p>
-            )}
+            </Link>
           </motion.div>
 
           {/* Similar Tenders */}
           {similarTenders.length > 0 && (
-            <motion.div
-              {...fadeUp}
-              transition={{ delay: 0.35 }}
-              className="glass-card rounded-xl p-5"
-            >
-              <h3 className="text-sm font-semibold text-slate-200 mb-4">
-                {t("tenderDetail.similarTenders")}
-              </h3>
+            <motion.div {...fadeUp} transition={{ delay: 0.35 }} className="glass-card rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-slate-200 mb-4">{t("tenderDetail.similarTenders")}</h3>
               <div className="space-y-3">
                 {similarTenders.map((st) => {
-                  const stCountry = COUNTRIES.find(
-                    (c) => c.code === st.countryCode,
-                  );
+                  const stCountry = COUNTRIES.find((c) => c.code === st.countryCode);
                   const stMatchColors = getMatchScoreColor(st.matchScore);
-
                   return (
                     <Link
                       key={st.id}
                       to={`/dashboard/tender/${st.id}`}
                       className="block p-3 rounded-lg bg-dark/40 border border-dark-border hover:border-primary/30 transition-colors"
                     >
-                      <h4 className="text-xs font-medium text-slate-200 line-clamp-2 mb-2">
-                        {st.title[lang]}
-                      </h4>
+                      <h4 className="text-xs font-medium text-slate-200 line-clamp-2 mb-2">{st.title[lang]}</h4>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-slate-500">
-                          {stCountry
-                            ? `${stCountry.flag} ${stCountry.name[lang]}`
-                            : st.country}
+                          {stCountry ? `${stCountry.flag} ${stCountry.name[lang]}` : st.country}
                         </span>
-                        <span
-                          className={`text-xs font-bold ${stMatchColors.text}`}
-                        >
-                          {st.matchScore}%
-                        </span>
+                        <span className={`text-xs font-bold ${stMatchColors.text}`}>{st.matchScore}%</span>
                       </div>
                     </Link>
                   );

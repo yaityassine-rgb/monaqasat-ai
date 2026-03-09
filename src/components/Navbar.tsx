@@ -4,11 +4,14 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LayoutDashboard } from "lucide-react";
 import { NAV_LINKS } from "../lib/constants";
+import { useAuth } from "../lib/auth-context";
 import LanguageSwitcher from "./LanguageSwitcher";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  const { user, loading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -84,12 +87,18 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
 
-          <Link
-            to="/dashboard"
-            className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 md:block"
-          >
-            {t("nav.startFree")}
-          </Link>
+          {!loading && (
+            user ? (
+              <UserMenu />
+            ) : (
+              <Link
+                to="/auth/login"
+                className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 md:block"
+              >
+                {t("nav.signIn")}
+              </Link>
+            )
+          )}
 
           {/* Mobile hamburger */}
           <button
@@ -142,12 +151,21 @@ export default function Navbar() {
                 {t("nav.dashboard")}
               </Link>
 
-              <Link
-                to="/dashboard"
-                className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-all hover:bg-primary-dark"
-              >
-                {t("nav.startFree")}
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard/profile"
+                  className="mt-2 rounded-lg bg-primary/20 px-4 py-3 text-center text-sm font-semibold text-primary-light transition-all hover:bg-primary/30"
+                >
+                  {t("auth.profile")}
+                </Link>
+              ) : (
+                <Link
+                  to="/auth/login"
+                  className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-all hover:bg-primary-dark"
+                >
+                  {t("nav.signIn")}
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r scrapers/requirements.txt
+          pip install supabase
           playwright install chromium --with-deps
 
       - name: Restore scraper cache (for incremental mode)
@@ -44,6 +45,19 @@ jobs:
         run: |
           COUNT=$(python -c "import json; print(json.load(open('public/data/tenders.json'))['totalCount'])")
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Supabase
+        if: steps.diff.outputs.changed == 'true'
+        working-directory: scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            python upload_to_supabase.py --trigger-embeddings
+          else
+            echo "Supabase not configured, skipping upload"
+          fi
 
       - name: Commit and push
         if: steps.diff.outputs.changed == 'true'

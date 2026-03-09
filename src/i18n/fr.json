@@ -108,6 +108,7 @@
     "perYear": "/an",
     "getStarted": "Commencer",
     "contactSales": "Contacter les ventes",
+    "subscribe": "S'abonner",
     "popular": "Le plus populaire",
     "free": {
       "name": "Explorateur",
@@ -274,6 +275,8 @@
     "seePortal": "Voir le portail",
     "loading": "Chargement des appels d'offres...",
     "prev": "Précédent",
+    "personalizedScores": "Scores IA personnalisés",
+    "upgradeForAI": "Passez à l'IA matching",
     "next": "Suivant"
   },
   "tenderDetail": {
@@ -330,7 +333,9 @@
     "description": "Description de l'entreprise",
     "descriptionPh": "Brève description de votre entreprise...",
     "save": "Enregistrer le profil",
-    "saved": "Profil enregistré avec succès !"
+    "saving": "Enregistrement...",
+    "saved": "Profil enregistré avec succès !",
+    "aiMatchingNote": "Votre profil alimente le matching IA — plus vous ajoutez de détails, meilleurs seront vos scores."
   },
   "analytics": {
     "title": "Analyses de marché",
@@ -370,5 +375,74 @@
     "subtitle": "Page non trouvée",
     "text": "La page que vous recherchez n'existe pas.",
     "cta": "Retour à l'accueil"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "loginSubtitle": "Bienvenue sur Monaqasat AI",
+    "signupTitle": "Créer un compte",
+    "signupSubtitle": "Commencez à gagner des marchés publics aujourd'hui",
+    "email": "E-mail",
+    "emailPlaceholder": "votre@email.com",
+    "password": "Mot de passe",
+    "createPassword": "Créez un mot de passe (min. 6 caractères)",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPh": "Répétez votre mot de passe",
+    "signIn": "Se connecter",
+    "signingIn": "Connexion en cours...",
+    "createAccount": "Créer un compte",
+    "creatingAccount": "Création en cours...",
+    "continueWithGoogle": "Continuer avec Google",
+    "orEmail": "ou continuer par e-mail",
+    "noAccount": "Pas encore de compte ?",
+    "signUpLink": "S'inscrire",
+    "hasAccount": "Déjà un compte ?",
+    "signInLink": "Se connecter",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "checkEmail": "Vérifiez votre e-mail",
+    "checkEmailDesc": "Nous avons envoyé un lien de confirmation à votre adresse e-mail. Cliquez dessus pour activer votre compte.",
+    "backToLogin": "Retour à la connexion",
+    "signOut": "Se déconnecter",
+    "profile": "Mon profil",
+    "subscription": "Abonnement",
+    "settings": "Paramètres",
+    "freeAccount": "Plan gratuit"
+  },
+  "analysis": {
+    "title": "Analyse IA",
+    "runAnalysis": "Lancer l'analyse IA",
+    "analyzing": "Analyse en cours avec Gemini IA...",
+    "error": "Échec de l'analyse. Veuillez réessayer.",
+    "notConfigured": "L'analyse IA n'est pas encore configurée.",
+    "upgradeRequired": "L'analyse IA est disponible à partir du plan Starter.",
+    "upgradeCta": "Mettre à niveau",
+    "summary": "Résumé exécutif",
+    "eligibility": "Évaluation de l'éligibilité",
+    "strengths": "Vos forces",
+    "gaps": "Points à améliorer",
+    "risks": "Facteurs de risque",
+    "recommendation": "Action",
+    "competition": "Concurrence",
+    "strategy": "Stratégie d'offre",
+    "actionBid": "SOUMISSIONNER",
+    "actionConsider": "CONSIDÉRER",
+    "actionSkip": "PASSER",
+    "verdict": {
+      "ELIGIBLE": "Éligible — Forte correspondance",
+      "PARTIALLY_ELIGIBLE": "Partiellement éligible — Vérifiez les écarts",
+      "NOT_ELIGIBLE": "Non éligible"
+    }
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "subtitle": "Gérez votre plan et facturation",
+    "currentPlan": "Plan actuel",
+    "current": "Actuel",
+    "renewsOn": "Renouvellement le",
+    "upgrade": "Mettre à niveau",
+    "freeFeatures": ["10 vues de marchés/jour", "Recherche de base et filtres", "Sauvegarder jusqu'à 10 marchés", "Support communautaire"],
+    "starterFeatures": ["Scores IA personnalisés", "20 analyses IA/mois", "Alertes e-mail pour les correspondances", "Support prioritaire"],
+    "professionalFeatures": ["Analyses IA illimitées", "10 propositions IA/mois", "Veille concurrentielle", "Analyse BPU", "Support prioritaire 24/7"],
+    "businessFeatures": ["Propositions illimitées", "Accès API", "Espace équipe (5 places)", "Intelligence de marché", "Gestionnaire de compte dédié"]
   }
 }

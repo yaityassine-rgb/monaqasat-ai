@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronDown, Sparkles } from "lucide-react";
+import { Check, ChevronDown, Sparkles, Zap, Crown, Shield, Loader2 } from "lucide-react";
+import { useAuth } from "../lib/auth-context";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import SEOHead from "../components/SEOHead";
 
 const fadeUp = {
@@ -19,31 +20,119 @@ const stagger = {
 };
 
 interface Tier {
-  key: "free" | "pro" | "enterprise";
+  key: string;
+  monthly: number;
+  yearly: number;
   popular?: boolean;
-  featureCount: number;
+  icon: typeof Zap;
+  features: string[];
 }
 
 const TIERS: Tier[] = [
-  { key: "free", featureCount: 4 },
-  { key: "pro", popular: true, featureCount: 6 },
-  { key: "enterprise", featureCount: 6 },
+  {
+    key: "free",
+    monthly: 0,
+    yearly: 0,
+    icon: Zap,
+    features: [
+      "10 tender views/day",
+      "Basic search & filters",
+      "Save up to 10 tenders",
+      "Community support",
+    ],
+  },
+  {
+    key: "starter",
+    monthly: 79,
+    yearly: 790,
+    icon: Sparkles,
+    features: [
+      "Everything in Free",
+      "Real AI match scores",
+      "20 AI analyses/month",
+      "Email alerts for new matches",
+      "Priority support",
+    ],
+  },
+  {
+    key: "professional",
+    monthly: 199,
+    yearly: 1990,
+    popular: true,
+    icon: Crown,
+    features: [
+      "Everything in Starter",
+      "Unlimited AI analyses",
+      "10 AI proposals/month (AR/EN/FR)",
+      "Competitor insights",
+      "BOQ analysis",
+      "Priority 24/7 support",
+    ],
+  },
+  {
+    key: "business",
+    monthly: 499,
+    yearly: 4990,
+    icon: Shield,
+    features: [
+      "Everything in Professional",
+      "Unlimited proposals",
+      "API access",
+      "Team workspace (5 seats)",
+      "Market intelligence dashboard",
+      "Dedicated account manager",
+    ],
+  },
 ];
 
 export default function PricingPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [yearly, setYearly] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
-  function getPrice(tier: Tier): string {
-    if (tier.key === "free") return "0";
-    if (yearly) return t(`pricing.${tier.key}.priceYearly`);
-    return t(`pricing.${tier.key}.price`);
-  }
+  const handleCheckout = async (tierKey: string) => {
+    if (!user) {
+      window.location.href = "/auth/signup";
+      return;
+    }
 
-  function getPeriod(): string {
-    return yearly ? t("pricing.perYear") : t("pricing.perMonth");
-  }
+    if (tierKey === "free") {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    setCheckoutLoading(tierKey);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: {
+          userId: user.id,
+          tier: tierKey,
+          interval: yearly ? "yearly" : "monthly",
+          provider: "paddle",
+          successUrl: `${window.location.origin}/dashboard/subscription?success=true`,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      // Fallback: redirect to dashboard
+      window.location.href = "/dashboard/subscription";
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
 
   return (
     <>
@@ -105,7 +194,7 @@ export default function PricingPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className="grid gap-6 lg:grid-cols-3"
+            className="grid gap-6 md:grid-cols-2 xl:grid-cols-4"
           >
             {TIERS.map((tier, i) => (
               <motion.div
@@ -127,45 +216,54 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                <h3 className="text-lg font-bold text-white">
-                  {t(`pricing.${tier.key}.name`)}
-                </h3>
-                <p className="mt-1 text-sm text-slate-400">
-                  {t(`pricing.${tier.key}.desc`)}
-                </p>
-
-                <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-white">
-                    ${getPrice(tier)}
-                  </span>
-                  {tier.key !== "free" && (
-                    <span className="text-sm text-slate-500">{getPeriod()}</span>
-                  )}
+                <div className="flex items-center gap-2 mb-1">
+                  <tier.icon className={`w-5 h-5 ${tier.popular ? "text-primary-light" : "text-slate-400"}`} />
+                  <h3 className="text-lg font-bold text-white capitalize">{tier.key}</h3>
                 </div>
 
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-white">
+                    ${yearly ? Math.round(tier.yearly / 12) : tier.monthly}
+                  </span>
+                  {tier.monthly > 0 && (
+                    <span className="text-sm text-slate-500">
+                      /{yearly ? t("pricing.perMonth") : t("pricing.perMonth")}
+                    </span>
+                  )}
+                </div>
+                {yearly && tier.yearly > 0 && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    ${tier.yearly}/year (save ${tier.monthly * 12 - tier.yearly})
+                  </p>
+                )}
+
                 <ul className="mt-8 flex-1 space-y-3">
-                  {Array.from({ length: tier.featureCount }).map((_, fi) => (
+                  {tier.features.map((feature, fi) => (
                     <li key={fi} className="flex items-start gap-2.5">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                      <span className="text-sm text-slate-300">
-                        {t(`pricing.${tier.key}.f${fi + 1}`)}
-                      </span>
+                      <span className="text-sm text-slate-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
-                <Link
-                  to={tier.key === "enterprise" ? "/contact" : "/dashboard"}
-                  className={`mt-8 block rounded-xl py-3 text-center text-sm font-semibold transition-all ${
+                <button
+                  onClick={() => handleCheckout(tier.key)}
+                  disabled={checkoutLoading === tier.key}
+                  className={`mt-8 flex items-center justify-center gap-2 rounded-xl py-3 text-center text-sm font-semibold transition-all ${
                     tier.popular
                       ? "bg-primary text-white shadow-lg shadow-primary/25 hover:bg-primary-dark"
                       : "border border-dark-border text-slate-300 hover:border-slate-600 hover:text-white"
-                  }`}
+                  } disabled:opacity-50`}
                 >
-                  {tier.key === "enterprise"
-                    ? t("pricing.contactSales")
-                    : t("pricing.getStarted")}
-                </Link>
+                  {checkoutLoading === tier.key ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : null}
+                  {tier.key === "free"
+                    ? t("pricing.getStarted")
+                    : tier.key === "business"
+                      ? t("pricing.contactSales")
+                      : t("pricing.subscribe")}
+                </button>
               </motion.div>
             ))}
           </motion.div>

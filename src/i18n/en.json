@@ -108,6 +108,7 @@
     "perYear": "/year",
     "getStarted": "Get Started",
     "contactSales": "Contact Sales",
+    "subscribe": "Subscribe",
     "popular": "Most Popular",
     "free": {
       "name": "Explorer",
@@ -274,7 +275,9 @@
     "seePortal": "See portal",
     "loading": "Loading tenders...",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "personalizedScores": "Personalized AI scores",
+    "upgradeForAI": "Upgrade for AI matching"
   },
   "tenderDetail": {
     "back": "Back to Dashboard",
@@ -330,7 +333,9 @@
     "description": "Company Description",
     "descriptionPh": "Brief description of your company and capabilities...",
     "save": "Save Profile",
-    "saved": "Profile saved successfully!"
+    "saving": "Saving...",
+    "saved": "Profile saved successfully!",
+    "aiMatchingNote": "Your profile powers AI matching — the more detail you add, the better your match scores."
   },
   "analytics": {
     "title": "Market Analytics",
@@ -370,5 +375,74 @@
     "subtitle": "Page Not Found",
     "text": "The page you're looking for doesn't exist.",
     "cta": "Back to Home"
+  },
+  "auth": {
+    "loginTitle": "Sign In",
+    "loginSubtitle": "Welcome back to Monaqasat AI",
+    "signupTitle": "Create Account",
+    "signupSubtitle": "Start winning government contracts today",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "password": "Password",
+    "createPassword": "Create a password (min. 6 characters)",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPh": "Repeat your password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "createAccount": "Create Account",
+    "creatingAccount": "Creating account...",
+    "continueWithGoogle": "Continue with Google",
+    "orEmail": "or continue with email",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up",
+    "hasAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "checkEmail": "Check Your Email",
+    "checkEmailDesc": "We've sent a confirmation link to your email. Click it to activate your account.",
+    "backToLogin": "Back to Sign In",
+    "signOut": "Sign Out",
+    "profile": "My Profile",
+    "subscription": "Subscription",
+    "settings": "Settings",
+    "freeAccount": "Free Plan"
+  },
+  "analysis": {
+    "title": "AI Analysis",
+    "runAnalysis": "Run AI Analysis",
+    "analyzing": "Analyzing with Gemini AI...",
+    "error": "Analysis failed. Please try again.",
+    "notConfigured": "AI analysis is not yet configured.",
+    "upgradeRequired": "AI Analysis is available on Starter plan and above.",
+    "upgradeCta": "Upgrade Now",
+    "summary": "Executive Summary",
+    "eligibility": "Eligibility Assessment",
+    "strengths": "Your Strengths",
+    "gaps": "Gaps to Address",
+    "risks": "Risk Factors",
+    "recommendation": "Action",
+    "competition": "Competition",
+    "strategy": "Bid Strategy",
+    "actionBid": "BID",
+    "actionConsider": "CONSIDER",
+    "actionSkip": "SKIP",
+    "verdict": {
+      "ELIGIBLE": "Eligible — Strong Fit",
+      "PARTIALLY_ELIGIBLE": "Partially Eligible — Review Gaps",
+      "NOT_ELIGIBLE": "Not Eligible"
+    }
+  },
+  "subscription": {
+    "title": "Subscription",
+    "subtitle": "Manage your plan and billing",
+    "currentPlan": "Current Plan",
+    "current": "Current",
+    "renewsOn": "Renews on",
+    "upgrade": "Upgrade",
+    "freeFeatures": ["10 tender views/day", "Basic search & filters", "Save up to 10 tenders", "Community support"],
+    "starterFeatures": ["Real AI match scores", "20 AI analyses/month", "Email alerts for new matches", "Priority support"],
+    "professionalFeatures": ["Unlimited AI analyses", "10 AI proposals/month", "Competitor insights", "BOQ analysis", "Priority 24/7 support"],
+    "businessFeatures": ["Unlimited proposals", "API access", "Team workspace (5 seats)", "Market intelligence", "Dedicated account manager"]
   }
 }
