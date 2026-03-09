@@ -352,6 +352,11 @@
     "parent": "Un produit Holoul AI",
     "builtIn": "Construit avec l'IA au Maroc"
   },
+  "common": {
+    "toggleMenu": "Menu",
+    "changeLanguage": "Changer de langue",
+    "loadError": "Échec du chargement des appels d'offres. Veuillez réessayer."
+  },
   "seo": {
     "homeTitle": "Monaqasat AI — Intelligence des marchés publics pour la région MENA",
     "homeDesc": "Intelligence d'approvisionnement par l'IA pour la région MENA. Trouvez et remportez les marchés publics plus vite."

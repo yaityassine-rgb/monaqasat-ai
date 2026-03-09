@@ -13,6 +13,18 @@ export default function ContactPage() {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = data.get("name") as string;
+    const email = data.get("email") as string;
+    const subject = data.get("subject") as string;
+    const message = data.get("message") as string;
+
+    const body = `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`;
+    window.open(
+      `mailto:${COMPANY.email}?subject=${encodeURIComponent(subject + " — " + name)}&body=${encodeURIComponent(body)}`,
+      "_self",
+    );
     setSent(true);
   }
 

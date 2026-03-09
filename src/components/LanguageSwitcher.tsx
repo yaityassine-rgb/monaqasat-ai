@@ -10,7 +10,7 @@ const LANGUAGES = [
 ] as const;
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -36,7 +36,7 @@ export default function LanguageSwitcher() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
-        aria-label="Change language"
+        aria-label={t("common.changeLanguage")}
       >
         <Globe className="h-4 w-4" />
         <span className="font-medium">{current.short}</span>

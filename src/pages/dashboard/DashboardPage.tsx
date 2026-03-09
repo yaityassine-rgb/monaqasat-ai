@@ -32,6 +32,7 @@ export default function DashboardPage() {
 
   const [allTenders, setAllTenders] = useState<Tender[]>(getTenders);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("");
   const [sector, setSector] = useState("");
@@ -46,6 +47,7 @@ export default function DashboardPage() {
       setAllTenders(data);
       setLoading(false);
     }).catch(() => {
+      setLoadError(true);
       setLoading(false);
     });
   }, []);
@@ -339,6 +341,14 @@ export default function DashboardPage() {
         <div className="glass-card rounded-xl p-12 text-center">
           <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-3" />
           <p className="text-slate-400 text-sm">{t("dashboard.loading")}</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {!loading && loadError && allTenders.length === 0 && (
+        <div className="glass-card rounded-xl p-12 text-center">
+          <Search className="w-12 h-12 text-red-400/60 mx-auto mb-4" />
+          <p className="text-red-400 text-sm">{t("common.loadError")}</p>
         </div>
       )}
 

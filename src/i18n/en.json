@@ -352,6 +352,11 @@
     "parent": "A Holoul AI product",
     "builtIn": "Built with AI in Morocco"
   },
+  "common": {
+    "toggleMenu": "Toggle menu",
+    "changeLanguage": "Change language",
+    "loadError": "Failed to load tenders. Please try again."
+  },
   "seo": {
     "homeTitle": "Monaqasat AI — Government Tender Intelligence for MENA",
     "homeDesc": "AI-powered procurement intelligence for MENA. Find and win government contracts faster."
