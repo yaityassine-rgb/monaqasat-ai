@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLang, localizedPath } from "../../lib/use-lang";
 import { motion } from "framer-motion";
+import { supabase } from "../../lib/supabase";
 import {
   Globe,
   DollarSign,
@@ -17,6 +18,7 @@ import {
   Clock,
   Filter,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 
 
@@ -39,172 +41,38 @@ interface Grant {
   status: GrantStatus;
   matchScore: number;
   description: string;
+  sourceUrl?: string;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Mock Data                                                          */
+/*  Source styling map                                                  */
 /* ------------------------------------------------------------------ */
 
-const MOCK_GRANTS: Grant[] = [
-  {
-    id: "GR-WB-2026-001",
-    title: "Digital Government Transformation Program - MENA Region",
-    source: "World Bank",
-    sourceColor: "text-blue-400",
-    sourceBg: "bg-blue-400/10 border-blue-400/30",
-    sector: "Technology",
-    countries: ["Saudi Arabia", "UAE", "Jordan", "Egypt"],
-    fundingAmount: "$45M",
-    deadline: "2026-05-15",
-    status: "open",
-    matchScore: 92,
-    description:
-      "Supporting digital transformation of government services across MENA countries with focus on e-procurement and smart governance platforms.",
-  },
-  {
-    id: "GR-ISDB-2026-014",
-    title: "Sustainable Infrastructure Development Fund",
-    source: "IsDB",
-    sourceColor: "text-emerald-400",
-    sourceBg: "bg-emerald-400/10 border-emerald-400/30",
-    sector: "Infrastructure",
-    countries: ["Morocco", "Tunisia", "Senegal", "Malaysia"],
-    fundingAmount: "$120M",
-    deadline: "2026-04-20",
-    status: "open",
-    matchScore: 87,
-    description:
-      "Financing sustainable infrastructure projects in member countries including roads, water systems, and renewable energy installations.",
-  },
-  {
-    id: "GR-AFDB-2026-008",
-    title: "Africa Climate Resilient Agriculture Initiative",
-    source: "AfDB",
-    sourceColor: "text-amber-400",
-    sourceBg: "bg-amber-400/10 border-amber-400/30",
-    sector: "Agriculture",
-    countries: ["Kenya", "Nigeria", "Ethiopia", "Tanzania"],
-    fundingAmount: "$78M",
-    deadline: "2026-04-01",
-    status: "closing-soon",
-    matchScore: 74,
-    description:
-      "Building climate-resilient agricultural value chains and supporting smallholder farmers with modern irrigation and crop management technologies.",
-  },
-  {
-    id: "GR-UN-2026-022",
-    title: "UNDP Smart Cities & Urban Development Program",
-    source: "UN",
-    sourceColor: "text-sky-400",
-    sourceBg: "bg-sky-400/10 border-sky-400/30",
-    sector: "Urban Development",
-    countries: ["Jordan", "Lebanon", "Iraq", "Palestine"],
-    fundingAmount: "$32M",
-    deadline: "2026-06-30",
-    status: "open",
-    matchScore: 81,
-    description:
-      "Promoting smart urban solutions, affordable housing, and sustainable transport systems in conflict-affected and developing cities.",
-  },
-  {
-    id: "GR-EU-2026-005",
-    title: "EU-Mediterranean Renewable Energy Transition",
-    source: "EU",
-    sourceColor: "text-indigo-400",
-    sourceBg: "bg-indigo-400/10 border-indigo-400/30",
-    sector: "Energy",
-    countries: ["Morocco", "Tunisia", "Egypt", "Jordan"],
-    fundingAmount: "$95M",
-    deadline: "2026-03-25",
-    status: "closing-soon",
-    matchScore: 88,
-    description:
-      "Accelerating the transition to renewable energy sources in Mediterranean partner countries through solar, wind, and green hydrogen projects.",
-  },
-  {
-    id: "GR-WB-2026-037",
-    title: "Healthcare Systems Strengthening Project",
-    source: "World Bank",
-    sourceColor: "text-blue-400",
-    sourceBg: "bg-blue-400/10 border-blue-400/30",
-    sector: "Healthcare",
-    countries: ["Egypt", "Iraq", "Yemen", "Sudan"],
-    fundingAmount: "$150M",
-    deadline: "2026-07-15",
-    status: "open",
-    matchScore: 69,
-    description:
-      "Strengthening primary healthcare delivery, hospital infrastructure, and public health surveillance systems in underserved regions.",
-  },
-  {
-    id: "GR-ISDB-2026-041",
-    title: "Islamic Finance & SME Development Program",
-    source: "IsDB",
-    sourceColor: "text-emerald-400",
-    sourceBg: "bg-emerald-400/10 border-emerald-400/30",
-    sector: "Finance",
-    countries: ["Saudi Arabia", "Indonesia", "Pakistan", "Turkey"],
-    fundingAmount: "$55M",
-    deadline: "2026-08-01",
-    status: "open",
-    matchScore: 76,
-    description:
-      "Expanding access to Sharia-compliant financial products for SMEs and promoting fintech innovation in OIC member states.",
-  },
-  {
-    id: "GR-UN-2026-019",
-    title: "UNICEF Water, Sanitation & Hygiene (WASH) Initiative",
-    source: "UN",
-    sourceColor: "text-sky-400",
-    sourceBg: "bg-sky-400/10 border-sky-400/30",
-    sector: "Water & Sanitation",
-    countries: ["Somalia", "Sudan", "Yemen", "Chad"],
-    fundingAmount: "$28M",
-    deadline: "2026-03-18",
-    status: "closed",
-    matchScore: 63,
-    description:
-      "Providing clean water access, sanitation infrastructure, and hygiene education to vulnerable communities in crisis-affected areas.",
-  },
-];
+const SOURCE_STYLES: Record<string, { color: string; bg: string; label: string }> = {
+  world_bank:  { color: "text-blue-400",    bg: "bg-blue-400/10 border-blue-400/30",    label: "World Bank" },
+  isdb:        { color: "text-emerald-400",  bg: "bg-emerald-400/10 border-emerald-400/30", label: "IsDB" },
+  afdb:        { color: "text-amber-400",    bg: "bg-amber-400/10 border-amber-400/30",  label: "AfDB" },
+  ungm:        { color: "text-sky-400",      bg: "bg-sky-400/10 border-sky-400/30",      label: "UN" },
+  eu_ted:      { color: "text-indigo-400",   bg: "bg-indigo-400/10 border-indigo-400/30", label: "EU" },
+  ebrd:        { color: "text-violet-400",   bg: "bg-violet-400/10 border-violet-400/30", label: "EBRD" },
+  afesd:       { color: "text-teal-400",     bg: "bg-teal-400/10 border-teal-400/30",    label: "AFESD" },
+  opec_fund:   { color: "text-orange-400",   bg: "bg-orange-400/10 border-orange-400/30", label: "OPEC Fund" },
+};
 
-const SOURCE_OPTIONS = ["World Bank", "IsDB", "AfDB", "UN", "EU"];
-
-const COUNTRY_OPTIONS = [
-  "Saudi Arabia",
-  "UAE",
-  "Jordan",
-  "Egypt",
-  "Morocco",
-  "Tunisia",
-  "Iraq",
-  "Kenya",
-  "Nigeria",
-  "Lebanon",
-  "Senegal",
-  "Malaysia",
-  "Indonesia",
-  "Pakistan",
-  "Turkey",
-  "Yemen",
-  "Sudan",
-  "Ethiopia",
-];
-
-const SECTOR_OPTIONS = [
-  "Technology",
-  "Infrastructure",
-  "Agriculture",
-  "Urban Development",
-  "Energy",
-  "Healthcare",
-  "Finance",
-  "Water & Sanitation",
-];
+function getSourceStyle(source: string) {
+  return SOURCE_STYLES[source] || { color: "text-slate-400", bg: "bg-slate-400/10 border-slate-400/30", label: source };
+}
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
+
+function formatAmount(amount: number): string {
+  if (amount >= 1_000_000_000) return `$${(amount / 1_000_000_000).toFixed(1)}B`;
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(0)}M`;
+  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
+  return `$${amount}`;
+}
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -236,13 +104,28 @@ function getMatchBgColor(score: number): string {
   return "bg-slate-400/10 border-slate-400/20";
 }
 
+// DB status uses underscore, UI uses hyphen
+function normalizeStatus(dbStatus: string): GrantStatus {
+  if (dbStatus === "closing_soon") return "closing-soon";
+  if (dbStatus === "open" || dbStatus === "upcoming") return "open";
+  return "closed";
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function GrantsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const urlLang = useLang();
+  const lang = i18n.language;
+
+  /* Data state */
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalValue, setTotalValue] = useState(0);
+  const [uniqueCountries, setUniqueCountries] = useState<string[]>([]);
 
   /* Filters */
   const [search, setSearch] = useState("");
@@ -251,9 +134,94 @@ export default function GrantsPage() {
   const [sectorFilter, setSectorFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  /* Fetch grants from Supabase */
+  useEffect(() => {
+    async function fetchGrants() {
+      setLoading(true);
+      try {
+        // Get total count
+        const { count } = await supabase
+          .from("grants")
+          .select("*", { count: "exact", head: true });
+
+        setTotalCount(count || 0);
+
+        // Get grants data (limit 100 for display)
+        const { data, error } = await supabase
+          .from("grants")
+          .select("id, title, title_ar, title_fr, source, sector, country, country_code, funding_amount, application_deadline, status, description, description_ar, description_fr, source_url, eligibility_countries")
+          .order("application_deadline", { ascending: true })
+          .limit(100);
+
+        if (error) throw error;
+
+        if (data) {
+          // Compute total value
+          const { data: sumData } = await supabase
+            .from("grants")
+            .select("funding_amount");
+          const total = (sumData || []).reduce((sum, r) => sum + (Number(r.funding_amount) || 0), 0);
+          setTotalValue(total);
+
+          // Extract unique countries
+          const countries = [...new Set(data.map(g => g.country).filter(Boolean))].sort();
+          setUniqueCountries(countries);
+
+          // Map to Grant interface
+          const mapped: Grant[] = data.map((row) => {
+            const style = getSourceStyle(row.source);
+            const title = lang === "ar" ? (row.title_ar || row.title) : lang === "fr" ? (row.title_fr || row.title) : row.title;
+            const desc = lang === "ar" ? (row.description_ar || row.description) : lang === "fr" ? (row.description_fr || row.description) : row.description;
+            const deadline = row.application_deadline ? new Date(row.application_deadline).toLocaleDateString() : "";
+
+            // Simple relevance score based on funding amount and status
+            const amount = Number(row.funding_amount) || 0;
+            let score = 50;
+            if (amount > 100_000_000) score += 30;
+            else if (amount > 10_000_000) score += 20;
+            else if (amount > 1_000_000) score += 10;
+            if (row.status === "open") score += 15;
+            else if (row.status === "closing_soon") score += 10;
+            score = Math.min(score, 99);
+
+            return {
+              id: row.id,
+              title: title || "Untitled Grant",
+              source: style.label,
+              sourceColor: style.color,
+              sourceBg: style.bg,
+              sector: row.sector || "General",
+              countries: row.eligibility_countries?.length
+                ? row.eligibility_countries
+                : row.country ? [row.country] : [],
+              fundingAmount: formatAmount(amount),
+              deadline,
+              status: normalizeStatus(row.status || "open"),
+              matchScore: score,
+              description: desc || "",
+              sourceUrl: row.source_url || undefined,
+            };
+          });
+
+          setGrants(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch grants:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGrants();
+  }, [lang]);
+
+  /* Derived filter options from data */
+  const sourceOptions = useMemo(() => [...new Set(grants.map(g => g.source))].sort(), [grants]);
+  const sectorOptions = useMemo(() => [...new Set(grants.map(g => g.sector))].sort(), [grants]);
+
   /* Filtered grants */
   const filtered = useMemo(() => {
-    let list = [...MOCK_GRANTS];
+    let list = [...grants];
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -272,16 +240,17 @@ export default function GrantsPage() {
     if (sectorFilter) list = list.filter((g) => g.sector === sectorFilter);
 
     return list;
-  }, [search, sourceFilter, countryFilter, sectorFilter]);
+  }, [grants, search, sourceFilter, countryFilter, sectorFilter]);
 
   const activeFilterCount = [sourceFilter, countryFilter, sectorFilter].filter(Boolean).length;
 
-  /* Stat cards */
+  /* Stat cards — computed from real data */
+  const avgSize = totalCount > 0 ? totalValue / totalCount : 0;
   const statCards = [
     {
       icon: Globe,
       label: t("grants.statsTotal"),
-      value: "247",
+      value: totalCount.toLocaleString(),
       color: "text-primary-light",
       bgColor: "bg-primary/10",
       borderColor: "border-primary/20",
@@ -289,7 +258,7 @@ export default function GrantsPage() {
     {
       icon: DollarSign,
       label: t("grants.statsTotalValue"),
-      value: "$12.8B",
+      value: formatAmount(totalValue),
       color: "text-emerald-400",
       bgColor: "bg-emerald-400/10",
       borderColor: "border-emerald-400/20",
@@ -297,7 +266,7 @@ export default function GrantsPage() {
     {
       icon: MapPin,
       label: t("grants.statsCountries"),
-      value: "18",
+      value: String(uniqueCountries.length),
       color: "text-sky-400",
       bgColor: "bg-sky-400/10",
       borderColor: "border-sky-400/20",
@@ -305,7 +274,7 @@ export default function GrantsPage() {
     {
       icon: TrendingUp,
       label: t("grants.statsAvgSize"),
-      value: "$2.4M",
+      value: formatAmount(avgSize),
       color: "text-amber-400",
       bgColor: "bg-amber-400/10",
       borderColor: "border-amber-400/20",
@@ -413,7 +382,7 @@ export default function GrantsPage() {
                   className="appearance-none bg-dark/60 border border-dark-border rounded-lg pl-8 pr-8 py-2 text-xs text-slate-300 focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
                 >
                   <option value="">{t("grants.allSources")}</option>
-                  {SOURCE_OPTIONS.map((s) => (
+                  {sourceOptions.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
@@ -436,7 +405,7 @@ export default function GrantsPage() {
                   className="appearance-none bg-dark/60 border border-dark-border rounded-lg pl-8 pr-8 py-2 text-xs text-slate-300 focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
                 >
                   <option value="">{t("grants.allCountries")}</option>
-                  {COUNTRY_OPTIONS.map((c) => (
+                  {uniqueCountries.map((c) => (
                     <option key={c} value={c}>
                       {c}
                     </option>
@@ -459,7 +428,7 @@ export default function GrantsPage() {
                   className="appearance-none bg-dark/60 border border-dark-border rounded-lg pl-8 pr-8 py-2 text-xs text-slate-300 focus:outline-none focus:border-primary/50 transition-colors cursor-pointer"
                 >
                   <option value="">{t("grants.allSectors")}</option>
-                  {SECTOR_OPTIONS.map((s) => (
+                  {sectorOptions.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
@@ -497,124 +466,140 @@ export default function GrantsPage() {
         {filtered.length} {t("grants.resultsFound")}
       </motion.p>
 
+      {/* ── Loading state ────────────────────────────────────── */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-primary-light animate-spin" />
+        </div>
+      )}
+
       {/* ── Grant Cards ────────────────────────────────────────── */}
-      <div className="space-y-4">
-        {filtered.map((grant, idx) => (
-          <motion.div
-            key={grant.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.38 + idx * 0.05 }}
-            className="glass-card rounded-xl overflow-hidden hover:border-primary/30 transition-colors"
-          >
-            <div className="p-4 md:p-5">
-              {/* Top row: ID + Status + Source Badge */}
-              <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-slate-500 font-mono">
-                    {grant.id}
-                  </span>
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${getStatusStyle(grant.status)}`}
-                  >
-                    {t(`grants.status.${grant.status}`)}
-                  </span>
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${grant.sourceBg} ${grant.sourceColor}`}
-                  >
-                    {grant.source}
-                  </span>
-                </div>
-
-                {/* AI Match Score */}
-                <div
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${getMatchBgColor(grant.matchScore)}`}
-                >
-                  <Sparkles className={`w-3.5 h-3.5 ${getMatchTextColor(grant.matchScore)}`} />
-                  <span
-                    className={`text-sm font-bold ${getMatchTextColor(grant.matchScore)}`}
-                  >
-                    {grant.matchScore}%
-                  </span>
-                  <span className="text-[10px] text-slate-500">
-                    {t("grants.aiMatch")}
-                  </span>
-                </div>
-              </div>
-
-              {/* Title */}
-              <h3 className="text-sm md:text-base font-semibold text-slate-100 leading-snug mb-2">
-                {grant.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-3">
-                {grant.description}
-              </p>
-
-              {/* Meta row */}
-              <div className="flex items-center gap-3 flex-wrap text-xs text-slate-400 mb-3">
-                <span className="flex items-center gap-1">
-                  <Filter className="w-3 h-3" />
-                  {grant.sector}
-                </span>
-                <span className="flex items-center gap-1 font-semibold text-emerald-400">
-                  <DollarSign className="w-3 h-3" />
-                  {grant.fundingAmount}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  {grant.deadline}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {t("grants.deadline")}
-                </span>
-              </div>
-
-              {/* Countries + View Details */}
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-                  {grant.countries.map((country) => (
-                    <span
-                      key={country}
-                      className="inline-flex px-2 py-0.5 rounded bg-dark/60 border border-dark-border text-[11px] text-slate-400"
-                    >
-                      {country}
+      {!loading && (
+        <div className="space-y-4">
+          {filtered.map((grant, idx) => (
+            <motion.div
+              key={grant.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.38 + idx * 0.05 }}
+              className="glass-card rounded-xl overflow-hidden hover:border-primary/30 transition-colors"
+            >
+              <div className="p-4 md:p-5">
+                {/* Top row: ID + Status + Source Badge */}
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-slate-500 font-mono">
+                      {grant.id.slice(0, 16)}
                     </span>
-                  ))}
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${getStatusStyle(grant.status)}`}
+                    >
+                      {t(`grants.status.${grant.status}`)}
+                    </span>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${grant.sourceBg} ${grant.sourceColor}`}
+                    >
+                      {grant.source}
+                    </span>
+                  </div>
+
+                  {/* AI Match Score */}
+                  <div
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${getMatchBgColor(grant.matchScore)}`}
+                  >
+                    <Sparkles className={`w-3.5 h-3.5 ${getMatchTextColor(grant.matchScore)}`} />
+                    <span
+                      className={`text-sm font-bold ${getMatchTextColor(grant.matchScore)}`}
+                    >
+                      {grant.matchScore}%
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      {t("grants.aiMatch")}
+                    </span>
+                  </div>
                 </div>
 
-                <Link
-                  to={localizedPath(urlLang, `/dashboard/grants/${grant.id}`)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-primary-light hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 rounded-lg transition-colors"
-                >
-                  {t("grants.viewDetails")}
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+                {/* Title */}
+                <h3 className="text-sm md:text-base font-semibold text-slate-100 leading-snug mb-2">
+                  {grant.title}
+                </h3>
 
-        {/* Empty state */}
-        {filtered.length === 0 && (
-          <motion.div
-            {...fadeUp}
-            transition={{ delay: 0.4 }}
-            className="glass-card rounded-xl p-12 text-center"
-          >
-            <Search className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-300 text-lg mb-2 font-medium">
-              {t("grants.noResults")}
-            </p>
-            <p className="text-slate-400 text-sm max-w-md mx-auto">
-              {t("grants.noResultsHint")}
-            </p>
-          </motion.div>
-        )}
-      </div>
+                {/* Description */}
+                <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-3">
+                  {grant.description}
+                </p>
+
+                {/* Meta row */}
+                <div className="flex items-center gap-3 flex-wrap text-xs text-slate-400 mb-3">
+                  <span className="flex items-center gap-1">
+                    <Filter className="w-3 h-3" />
+                    {grant.sector}
+                  </span>
+                  <span className="flex items-center gap-1 font-semibold text-emerald-400">
+                    <DollarSign className="w-3 h-3" />
+                    {grant.fundingAmount}
+                  </span>
+                  {grant.deadline && (
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {grant.deadline}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {t("grants.deadline")}
+                  </span>
+                </div>
+
+                {/* Countries + View Details */}
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+                    {grant.countries.slice(0, 5).map((country) => (
+                      <span
+                        key={country}
+                        className="inline-flex px-2 py-0.5 rounded bg-dark/60 border border-dark-border text-[11px] text-slate-400"
+                      >
+                        {country}
+                      </span>
+                    ))}
+                    {grant.countries.length > 5 && (
+                      <span className="text-[11px] text-slate-500">
+                        +{grant.countries.length - 5}
+                      </span>
+                    )}
+                  </div>
+
+                  <Link
+                    to={localizedPath(urlLang, `/dashboard/grants/${grant.id}`)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-primary-light hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 rounded-lg transition-colors"
+                  >
+                    {t("grants.viewDetails")}
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+
+          {/* Empty state */}
+          {filtered.length === 0 && (
+            <motion.div
+              {...fadeUp}
+              transition={{ delay: 0.4 }}
+              className="glass-card rounded-xl p-12 text-center"
+            >
+              <Search className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-300 text-lg mb-2 font-medium">
+                {t("grants.noResults")}
+              </p>
+              <p className="text-slate-400 text-sm max-w-md mx-auto">
+                {t("grants.noResultsHint")}
+              </p>
+            </motion.div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
