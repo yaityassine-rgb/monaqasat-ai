@@ -64,7 +64,7 @@ export default function ProposalPage() {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
 
-  const canGenerate = limits.proposalsPerMonth > 0;
+  const canGenerate = limits.proposalGeneration;
 
   const fetchProposals = useCallback(async () => {
     if (!user || !isSupabaseConfigured) {
@@ -470,7 +470,7 @@ export default function ProposalPage() {
 
           <p className="text-xs text-slate-500 mt-3">
             {t("proposals.tierInfo", {
-              count: limits.proposalsPerMonth === Infinity ? "∞" : String(limits.proposalsPerMonth),
+              count: limits.aiCreditsPerMonth === Infinity ? "∞" : String(limits.aiCreditsPerMonth),
             } as Record<string, string>)}
           </p>
         </div>

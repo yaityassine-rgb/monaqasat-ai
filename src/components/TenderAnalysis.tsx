@@ -43,7 +43,7 @@ export default function TenderAnalysis({ tender }: { tender: Tender }) {
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(true);
 
-  const canAnalyze = canUseFeature("analysesPerMonth") || tier !== "free";
+  const canAnalyze = canUseFeature("aiMatching") || tier !== "free";
 
   const runAnalysis = async () => {
     if (!isSupabaseConfigured || !user) {

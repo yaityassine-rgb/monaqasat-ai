@@ -26,6 +26,11 @@ import AlertsPage from "../pages/dashboard/AlertsPage";
 import DocumentsPage from "../pages/dashboard/DocumentsPage";
 import ProposalPage from "../pages/dashboard/ProposalPage";
 import TeamPage from "../pages/dashboard/TeamPage";
+import GrantsPage from "../pages/dashboard/GrantsPage";
+import PPPPage from "../pages/dashboard/PPPPage";
+import PartnersPage from "../pages/dashboard/PartnersPage";
+import PreQualificationPage from "../pages/dashboard/PreQualificationPage";
+import ConsultingPage from "../pages/dashboard/ConsultingPage";
 
 export default function Router() {
   return (
@@ -64,6 +69,11 @@ export default function Router() {
           <Route path="dashboard/proposals" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
           <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
           <Route path="dashboard/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+          <Route path="dashboard/grants" element={<ProtectedRoute><GrantsPage /></ProtectedRoute>} />
+          <Route path="dashboard/ppp" element={<ProtectedRoute><PPPPage /></ProtectedRoute>} />
+          <Route path="dashboard/partners" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
+          <Route path="dashboard/prequalification" element={<ProtectedRoute><PreQualificationPage /></ProtectedRoute>} />
+          <Route path="dashboard/consulting" element={<ProtectedRoute><ConsultingPage /></ProtectedRoute>} />
 
           {/* Catch-all within lang */}
           <Route path="*" element={<NotFoundPage />} />

@@ -2,15 +2,20 @@ import { useState, useEffect } from "react";
 import { supabase, isSupabaseConfigured } from "./supabase";
 import { useAuth } from "./auth-context";
 
-export type Tier = "free" | "starter" | "professional" | "business";
+export type Tier = "free" | "starter" | "professional" | "business" | "enterprise";
 
 export interface TierLimits {
   tenderViewsPerDay: number;
-  analysesPerMonth: number;
-  proposalsPerMonth: number;
+  aiCreditsPerMonth: number;
   aiMatching: boolean;
   emailAlerts: boolean;
   competitorInsights: boolean;
+  proposalGeneration: boolean;
+  grantsIntelligence: boolean;
+  pppIntelligence: boolean;
+  jvMatchmaking: boolean;
+  preQualification: boolean;
+  marketConsulting: boolean;
   apiAccess: boolean;
   teamSeats: number;
 }
@@ -18,51 +23,87 @@ export interface TierLimits {
 export const TIER_LIMITS: Record<Tier, TierLimits> = {
   free: {
     tenderViewsPerDay: 10,
-    analysesPerMonth: 0,
-    proposalsPerMonth: 0,
+    aiCreditsPerMonth: 10,
     aiMatching: false,
     emailAlerts: false,
     competitorInsights: false,
+    proposalGeneration: false,
+    grantsIntelligence: false,
+    pppIntelligence: false,
+    jvMatchmaking: false,
+    preQualification: false,
+    marketConsulting: false,
     apiAccess: false,
     teamSeats: 1,
   },
   starter: {
     tenderViewsPerDay: Infinity,
-    analysesPerMonth: 20,
-    proposalsPerMonth: 0,
+    aiCreditsPerMonth: 100,
     aiMatching: true,
     emailAlerts: true,
     competitorInsights: false,
+    proposalGeneration: false,
+    grantsIntelligence: false,
+    pppIntelligence: false,
+    jvMatchmaking: false,
+    preQualification: false,
+    marketConsulting: false,
     apiAccess: false,
     teamSeats: 1,
   },
   professional: {
     tenderViewsPerDay: Infinity,
-    analysesPerMonth: Infinity,
-    proposalsPerMonth: 10,
+    aiCreditsPerMonth: 500,
     aiMatching: true,
     emailAlerts: true,
     competitorInsights: true,
+    proposalGeneration: true,
+    grantsIntelligence: true,
+    pppIntelligence: false,
+    jvMatchmaking: false,
+    preQualification: false,
+    marketConsulting: false,
     apiAccess: false,
     teamSeats: 1,
   },
   business: {
     tenderViewsPerDay: Infinity,
-    analysesPerMonth: Infinity,
-    proposalsPerMonth: Infinity,
+    aiCreditsPerMonth: 2000,
     aiMatching: true,
     emailAlerts: true,
     competitorInsights: true,
+    proposalGeneration: true,
+    grantsIntelligence: true,
+    pppIntelligence: true,
+    jvMatchmaking: true,
+    preQualification: true,
+    marketConsulting: false,
     apiAccess: true,
     teamSeats: 5,
+  },
+  enterprise: {
+    tenderViewsPerDay: Infinity,
+    aiCreditsPerMonth: 999999,
+    aiMatching: true,
+    emailAlerts: true,
+    competitorInsights: true,
+    proposalGeneration: true,
+    grantsIntelligence: true,
+    pppIntelligence: true,
+    jvMatchmaking: true,
+    preQualification: true,
+    marketConsulting: true,
+    apiAccess: true,
+    teamSeats: Infinity,
   },
 };
 
 export const TIER_PRICES = {
   free: { monthly: 0, yearly: 0 },
-  starter: { monthly: 79, yearly: 790 },
-  professional: { monthly: 199, yearly: 1990 },
-  business: { monthly: 499, yearly: 4990 },
+  starter: { monthly: 49, yearly: 470 },
+  professional: { monthly: 149, yearly: 1430 },
+  business: { monthly: 399, yearly: 3830 },
+  enterprise: { monthly: 999, yearly: 9990 },
 };
 
 interface SubscriptionState {

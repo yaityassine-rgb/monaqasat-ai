@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown } from "lucide-react";
+import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown, Globe, Handshake, ShieldCheck, Briefcase } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useLang, localizedPath } from "../lib/use-lang";
 
@@ -100,6 +100,55 @@ export default function UserMenu() {
             <Users className="w-4 h-4" />
             {t("auth.team")}
           </Link>
+
+          <div className="border-t border-dark-border my-1" />
+
+          <Link
+            to={localizedPath(lang, "/dashboard/grants")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <Globe className="w-4 h-4" />
+            {t("auth.grants")}
+          </Link>
+
+          <Link
+            to={localizedPath(lang, "/dashboard/ppp")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <Handshake className="w-4 h-4" />
+            {t("auth.ppp")}
+          </Link>
+
+          <Link
+            to={localizedPath(lang, "/dashboard/partners")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <Users className="w-4 h-4" />
+            {t("auth.partners")}
+          </Link>
+
+          <Link
+            to={localizedPath(lang, "/dashboard/prequalification")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            {t("auth.preQual")}
+          </Link>
+
+          <Link
+            to={localizedPath(lang, "/dashboard/consulting")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <Briefcase className="w-4 h-4" />
+            {t("auth.consulting")}
+          </Link>
+
+          <div className="border-t border-dark-border my-1" />
 
           <Link
             to={localizedPath(lang, "/dashboard/profile")}
