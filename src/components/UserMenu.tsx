@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown, Globe, Handshake, ShieldCheck, Briefcase } from "lucide-react";
+import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown, Globe, Handshake, ShieldCheck, Briefcase, Shield } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
+import { useAdmin } from "../lib/use-admin";
 import { useLang, localizedPath } from "../lib/use-lang";
 
 export default function UserMenu() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const lang = useLang();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -46,6 +48,20 @@ export default function UserMenu() {
             <p className="text-sm font-medium text-slate-200 truncate">{email}</p>
             <p className="text-xs text-slate-500 mt-0.5">{t("auth.freeAccount")}</p>
           </div>
+
+          {isAdmin && (
+            <>
+              <Link
+                to={localizedPath(lang, "/admin")}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-accent font-medium hover:bg-accent/5 transition-colors"
+              >
+                <Shield className="w-4 h-4" />
+                {t("nav.adminPanel", "Admin Panel")}
+              </Link>
+              <div className="border-t border-dark-border my-1" />
+            </>
+          )}
 
           <Link
             to={localizedPath(lang, "/dashboard/profile")}

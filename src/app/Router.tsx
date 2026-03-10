@@ -1,6 +1,9 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
+import AdminRoute from "../components/AdminRoute";
 import { LanguageLayout, RootRedirect } from "../lib/use-lang";
 
 import HomePage from "../pages/HomePage";
@@ -31,6 +34,26 @@ import PPPPage from "../pages/dashboard/PPPPage";
 import PartnersPage from "../pages/dashboard/PartnersPage";
 import PreQualificationPage from "../pages/dashboard/PreQualificationPage";
 import ConsultingPage from "../pages/dashboard/ConsultingPage";
+
+// Admin pages (lazy-loaded — non-admin users never download this code)
+const AdminLayout = lazy(() => import("../components/admin/AdminLayout"));
+const AdminOverviewPage = lazy(() => import("../pages/admin/AdminOverviewPage"));
+const ScraperManagementPage = lazy(() => import("../pages/admin/ScraperManagementPage"));
+const UserManagementPage = lazy(() => import("../pages/admin/UserManagementPage"));
+const DataExplorerPage = lazy(() => import("../pages/admin/DataExplorerPage"));
+const AdminSubscriptionsPage = lazy(() => import("../pages/admin/SubscriptionsPage"));
+const CreditsPage = lazy(() => import("../pages/admin/CreditsPage"));
+const ContentManagementPage = lazy(() => import("../pages/admin/ContentManagementPage"));
+const SystemLogsPage = lazy(() => import("../pages/admin/SystemLogsPage"));
+const AdminSettingsPage = lazy(() => import("../pages/admin/AdminSettingsPage"));
+
+function AdminFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-dark">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
 
 export default function Router() {
   return (
@@ -77,6 +100,29 @@ export default function Router() {
 
           {/* Catch-all within lang */}
           <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        {/* Admin pages (separate layout, no Navbar/Footer) */}
+        <Route
+          path="admin"
+          element={
+            <AdminRoute>
+              <Suspense fallback={<AdminFallback />}>
+                <AdminLayout />
+              </Suspense>
+            </AdminRoute>
+          }
+        >
+          <Route index element={<Suspense fallback={<AdminFallback />}><AdminOverviewPage /></Suspense>} />
+          <Route path="scrapers" element={<Suspense fallback={<AdminFallback />}><ScraperManagementPage /></Suspense>} />
+          <Route path="users" element={<Suspense fallback={<AdminFallback />}><UserManagementPage /></Suspense>} />
+          <Route path="data" element={<Suspense fallback={<AdminFallback />}><DataExplorerPage /></Suspense>} />
+          <Route path="data/:type" element={<Suspense fallback={<AdminFallback />}><DataExplorerPage /></Suspense>} />
+          <Route path="subscriptions" element={<Suspense fallback={<AdminFallback />}><AdminSubscriptionsPage /></Suspense>} />
+          <Route path="credits" element={<Suspense fallback={<AdminFallback />}><CreditsPage /></Suspense>} />
+          <Route path="content" element={<Suspense fallback={<AdminFallback />}><ContentManagementPage /></Suspense>} />
+          <Route path="logs" element={<Suspense fallback={<AdminFallback />}><SystemLogsPage /></Suspense>} />
+          <Route path="settings" element={<Suspense fallback={<AdminFallback />}><AdminSettingsPage /></Suspense>} />
         </Route>
       </Route>
     </Routes>

@@ -65,3 +65,46 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* Admin layout: offset main content by sidebar width */
+.admin-main {
+  margin-inline-start: 15rem;
+  transition: margin 0.2s;
+}
+
+/* When sidebar is collapsed */
+body:has([data-sidebar="collapsed"]) .admin-main {
+  margin-inline-start: 4rem;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 768px) {
+  .admin-main {
+    margin-inline-start: 0 !important;
+  }
+}
+
+/* Admin pulse animation for running scrapers */
+@keyframes admin-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.admin-pulse {
+  animation: admin-pulse 2s ease-in-out infinite;
+}
+
+/* cmdk overrides for dark theme */
+[cmdk-root] {
+  background: transparent;
+}
+[cmdk-input] {
+  caret-color: #818cf8;
+}
+[cmdk-group-heading] {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #475569;
+}

@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, LayoutDashboard } from "lucide-react";
+import { Menu, X, LayoutDashboard, Shield } from "lucide-react";
 import { NAV_LINKS } from "../lib/constants";
 import { useAuth } from "../lib/auth-context";
+import { useAdmin } from "../lib/use-admin";
 import { useLang, localizedPath } from "../lib/use-lang";
 import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
@@ -13,6 +14,7 @@ export default function Navbar() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { user, loading } = useAuth();
+  const { isAdmin } = useAdmin();
   const lang = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -84,6 +86,20 @@ export default function Navbar() {
             <LayoutDashboard className="h-4 w-4" />
             {t("nav.dashboard")}
           </Link>
+
+          {isAdmin && (
+            <Link
+              to={localizedPath(lang, "/admin")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                pathname.includes("/admin")
+                  ? "bg-accent/20 text-accent-light"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Shield className="h-4 w-4" />
+              {t("nav.admin", "Admin")}
+            </Link>
+          )}
         </div>
 
         {/* Right side */}
