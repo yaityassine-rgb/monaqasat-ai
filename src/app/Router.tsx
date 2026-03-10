@@ -30,6 +30,7 @@ import DocumentsPage from "../pages/dashboard/DocumentsPage";
 import ProposalPage from "../pages/dashboard/ProposalPage";
 import TeamPage from "../pages/dashboard/TeamPage";
 import GrantsPage from "../pages/dashboard/GrantsPage";
+import GrantDetailPage from "../pages/dashboard/GrantDetailPage";
 import PPPPage from "../pages/dashboard/PPPPage";
 import PartnersPage from "../pages/dashboard/PartnersPage";
 import PreQualificationPage from "../pages/dashboard/PreQualificationPage";
@@ -93,6 +94,7 @@ export default function Router() {
           <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
           <Route path="dashboard/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
           <Route path="dashboard/grants" element={<ProtectedRoute><GrantsPage /></ProtectedRoute>} />
+          <Route path="dashboard/grants/:id" element={<ProtectedRoute><GrantDetailPage /></ProtectedRoute>} />
           <Route path="dashboard/ppp" element={<ProtectedRoute><PPPPage /></ProtectedRoute>} />
           <Route path="dashboard/partners" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
           <Route path="dashboard/prequalification" element={<ProtectedRoute><PreQualificationPage /></ProtectedRoute>} />
