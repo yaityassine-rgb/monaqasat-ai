@@ -2,6 +2,9 @@
 -- Monaqasat AI — Core Schema
 -- ============================================================
 
+-- Enable pgvector for embedding columns
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extensions;
+
 -- Company Profiles (one per user)
 CREATE TABLE company_profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
