@@ -133,7 +133,7 @@ export default function SavedTendersPage() {
                           </span>
                         </div>
 
-                        <Link to={`/dashboard/tender/${tender.id}`}>
+                        <Link to={localizedPath(urlLang, `/dashboard/tender/${tender.id}`)}>
                           {(() => {
                             const titleInfo = getLocalizedText(tender.title, lang);
                             return (

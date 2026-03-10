@@ -319,7 +319,7 @@ export default function TenderDetailPage() {
               {isSaved ? t("dashboard.saved") : t("tenderDetail.saveForLater")}
             </button>
             <Link
-              to={`/dashboard/proposals?tender=${tender.id}`}
+              to={localizedPath(urlLang, `/dashboard/proposals?tender=${tender.id}`)}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dark-border bg-dark/40 text-slate-300 hover:border-primary/30 hover:text-primary-light text-sm font-medium rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />
@@ -348,7 +348,7 @@ export default function TenderDetailPage() {
                   return (
                     <Link
                       key={st.id}
-                      to={`/dashboard/tender/${st.id}`}
+                      to={localizedPath(urlLang, `/dashboard/tender/${st.id}`)}
                       className="block p-3 rounded-lg bg-dark/40 border border-dark-border hover:border-primary/30 transition-colors"
                     >
                       <h4 className="text-xs font-medium text-slate-200 line-clamp-2 mb-2">{st.title[lang]}</h4>

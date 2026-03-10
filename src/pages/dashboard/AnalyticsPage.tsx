@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLang, localizedPath } from "../../lib/use-lang";
 import { motion } from "framer-motion";
 import {
   TrendingUp,
@@ -39,6 +40,7 @@ interface TrendSnapshot {
 export default function AnalyticsPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
+  const urlLang = useLang();
 
   const [trends, setTrends] = useState<TrendSnapshot[]>([]);
 
@@ -395,7 +397,7 @@ export default function AnalyticsPage() {
                 transition={{ delay: 0.5 + idx * 0.06 }}
               >
                 <Link
-                  to={`/dashboard/tender/${tender.id}`}
+                  to={localizedPath(urlLang, `/dashboard/tender/${tender.id}`)}
                   className="flex items-center gap-4 p-3 md:p-4 rounded-lg bg-dark/40 border border-dark-border hover:border-primary/30 transition-colors group"
                 >
                   {/* Rank */}

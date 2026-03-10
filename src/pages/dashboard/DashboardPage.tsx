@@ -320,7 +320,7 @@ export default function DashboardPage() {
                   <div className="p-4 pb-3">
                     <div className="flex items-start justify-between gap-2 mb-3">
                       <div className="flex-1 min-w-0">
-                        <Link to={`/dashboard/tender/${tender.id}`} className="block">
+                        <Link to={localizedPath(urlLang, `/dashboard/tender/${tender.id}`)} className="block">
                           {(() => {
                             const titleInfo = getLocalizedText(tender.title, lang);
                             return (
@@ -395,7 +395,7 @@ export default function DashboardPage() {
                   </div>
 
                   <Link
-                    to={`/dashboard/tender/${tender.id}`}
+                    to={localizedPath(urlLang, `/dashboard/tender/${tender.id}`)}
                     className="block px-4 py-2.5 text-center text-xs font-medium text-primary-light hover:bg-primary/10 transition-colors border-t border-dark-border"
                   >
                     {t("dashboard.viewDetails")}
