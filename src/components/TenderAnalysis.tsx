@@ -15,6 +15,7 @@ import {
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { useAuth } from "../lib/auth-context";
 import { useSubscription } from "../lib/use-subscription";
+import { useLang, localizedPath } from "../lib/use-lang";
 import type { Tender } from "../lib/types";
 
 interface AnalysisResult {
@@ -36,6 +37,7 @@ export default function TenderAnalysis({ tender }: { tender: Tender }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { tier, canUseFeature } = useSubscription();
+  const urlLang = useLang();
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -131,7 +133,7 @@ export default function TenderAnalysis({ tender }: { tender: Tender }) {
                     <Shield className="w-10 h-10 text-slate-600 mx-auto mb-3" />
                     <p className="text-sm text-slate-400 mb-3">{t("analysis.upgradeRequired")}</p>
                     <a
-                      href="/pricing"
+                      href={localizedPath(urlLang, "/pricing")}
                       className="inline-flex px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
                     >
                       {t("analysis.upgradeCta")}

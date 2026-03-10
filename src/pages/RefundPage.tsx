@@ -1,15 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import SEOHead from "../components/SEOHead";
+import { useLang } from "../lib/use-lang";
+import { buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 const SECTION_KEYS = ["s1", "s2", "s3", "s4", "s5"] as const;
 
 export default function RefundPage() {
   const { t } = useTranslation();
+  const lang = useLang();
 
   return (
     <>
-      <SEOHead title={t("refund.title")} />
+      <SEOHead
+        title={t("seo.refundTitle")}
+        description={t("seo.refundDesc")}
+        path="/refund"
+        jsonLd={buildBreadcrumbJsonLd(lang, [{ name: t("refund.title"), path: "/refund" }])}
+      />
 
       <section className="relative py-24">
         <div className="pointer-events-none absolute -top-40 start-1/3 h-[400px] w-[400px] rounded-full bg-primary/5 blur-[120px]" />

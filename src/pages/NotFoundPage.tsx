@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home } from "lucide-react";
 import SEOHead from "../components/SEOHead";
+import { useLang, localizedPath } from "../lib/use-lang";
 
 export default function NotFoundPage() {
   const { t } = useTranslation();
+  const lang = useLang();
 
   return (
     <>
-      <SEOHead title={t("notFound.subtitle")} />
+      <SEOHead title={t("notFound.subtitle")} noindex />
 
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0">
@@ -32,7 +34,7 @@ export default function NotFoundPage() {
             {t("notFound.text")}
           </p>
           <Link
-            to="/"
+            to={localizedPath(lang, "/")}
             className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30"
           >
             <Home className="h-4 w-4" />

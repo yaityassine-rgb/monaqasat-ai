@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home pages -->
+  <url>
+    <loc>https://monaqasat.ai/en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en" />
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en" />
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en" />
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+
+  <!-- About pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/about" />
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/about" />
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/about" />
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- Pricing pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/pricing" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/pricing" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/pricing" />
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/pricing" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/pricing" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/pricing" />
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/pricing" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/pricing" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/pricing" />
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- Contact pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/contact" />
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/contact" />
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/contact" />
+    <priority>0.7</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <!-- Terms pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/terms" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/terms" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/terms" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+
+  <!-- Privacy pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/privacy" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/privacy" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/privacy" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+
+  <!-- Refund pages -->
+  <url>
+    <loc>https://monaqasat.ai/en/refund</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/refund" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/refund" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/refund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/refund" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/ar/refund</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/refund" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/refund" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/refund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/refund" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://monaqasat.ai/fr/refund</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://monaqasat.ai/en/refund" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://monaqasat.ai/ar/refund" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://monaqasat.ai/fr/refund" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://monaqasat.ai/en/refund" />
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+
+</urlset>

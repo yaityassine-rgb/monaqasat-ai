@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLang, localizedPath } from "../../lib/use-lang";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookmarkX,
@@ -20,6 +21,7 @@ type LangKey = "en" | "ar" | "fr";
 export default function SavedTendersPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
+  const urlLang = useLang();
   const isRtl = lang === "ar";
 
   const [savedIds, setSavedIdsState] = useState<string[]>(getSavedIds);
@@ -74,7 +76,7 @@ export default function SavedTendersPage() {
             {t("savedTenders.empty")}
           </p>
           <Link
-            to="/dashboard"
+            to={localizedPath(urlLang, "/dashboard")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
           >
             {t("savedTenders.browseTenders")}

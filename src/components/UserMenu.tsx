@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
+import { useLang, localizedPath } from "../lib/use-lang";
 
 export default function UserMenu() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +48,7 @@ export default function UserMenu() {
           </div>
 
           <Link
-            to="/dashboard/profile"
+            to={localizedPath(lang, "/dashboard/profile")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -55,7 +57,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/subscription"
+            to={localizedPath(lang, "/dashboard/subscription")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -64,7 +66,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/proposals"
+            to={localizedPath(lang, "/dashboard/proposals")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -73,7 +75,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/documents"
+            to={localizedPath(lang, "/dashboard/documents")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -82,7 +84,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/alerts"
+            to={localizedPath(lang, "/dashboard/alerts")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -91,7 +93,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/team"
+            to={localizedPath(lang, "/dashboard/team")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >
@@ -100,7 +102,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/dashboard/profile"
+            to={localizedPath(lang, "/dashboard/profile")}
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
           >

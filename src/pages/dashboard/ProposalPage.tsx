@@ -17,6 +17,7 @@ import {
 import { useAuth } from "../../lib/auth-context";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { useSubscription } from "../../lib/use-subscription";
+import { useLang, localizedPath } from "../../lib/use-lang";
 import ProposalExport from "../../components/ProposalExport";
 
 interface ProposalSection {
@@ -50,6 +51,7 @@ export default function ProposalPage() {
   const [searchParams] = useSearchParams();
   const tenderId = searchParams.get("tender");
   const { limits } = useSubscription();
+  const urlLang = useLang();
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [activeProposal, setActiveProposal] = useState<Proposal | null>(null);
@@ -215,7 +217,7 @@ export default function ProposalPage() {
             {t("proposals.upgradeDesc")}
           </p>
           <Link
-            to="/pricing"
+            to={localizedPath(urlLang, "/pricing")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors"
           >
             {t("proposals.upgradeCta")}

@@ -1,15 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import SEOHead from "../components/SEOHead";
+import { useLang } from "../lib/use-lang";
+import { buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 const SECTION_KEYS = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"] as const;
 
 export default function PrivacyPage() {
   const { t } = useTranslation();
+  const lang = useLang();
 
   return (
     <>
-      <SEOHead title={t("privacy.title")} />
+      <SEOHead
+        title={t("seo.privacyTitle")}
+        description={t("seo.privacyDesc")}
+        path="/privacy"
+        jsonLd={buildBreadcrumbJsonLd(lang, [{ name: t("privacy.title"), path: "/privacy" }])}
+      />
 
       <section className="relative py-24">
         <div className="pointer-events-none absolute -top-40 end-1/4 h-[400px] w-[400px] rounded-full bg-primary/5 blur-[120px]" />

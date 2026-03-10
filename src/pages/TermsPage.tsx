@@ -1,15 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import SEOHead from "../components/SEOHead";
+import { useLang } from "../lib/use-lang";
+import { buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 const SECTION_KEYS = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10"] as const;
 
 export default function TermsPage() {
   const { t } = useTranslation();
+  const lang = useLang();
 
   return (
     <>
-      <SEOHead title={t("terms.title")} />
+      <SEOHead
+        title={t("seo.termsTitle")}
+        description={t("seo.termsDesc")}
+        path="/terms"
+        jsonLd={buildBreadcrumbJsonLd(lang, [{ name: t("terms.title"), path: "/terms" }])}
+      />
 
       <section className="relative py-24">
         <div className="pointer-events-none absolute -top-40 start-1/4 h-[400px] w-[400px] rounded-full bg-primary/5 blur-[120px]" />

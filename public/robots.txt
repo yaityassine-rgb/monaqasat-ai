@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /*/dashboard
+Disallow: /*/dashboard/*
+Disallow: /*/auth/
+Disallow: /api/
+
+Sitemap: https://monaqasat.ai/sitemap.xml

@@ -20,6 +20,7 @@ import { COUNTRIES, SECTORS } from "../../lib/constants";
 import { useAuth } from "../../lib/auth-context";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { useSubscription } from "../../lib/use-subscription";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 type LangKey = "en" | "ar" | "fr";
 
@@ -64,6 +65,7 @@ export default function AlertsPage() {
   const lang = i18n.language as LangKey;
   const { user } = useAuth();
   const { canUseFeature } = useSubscription();
+  const urlLang = useLang();
 
   const [prefs, setPrefs] = useState<AlertPrefs>(DEFAULT_PREFS);
   const [history, setHistory] = useState<AlertHistoryEntry[]>([]);
@@ -186,7 +188,7 @@ export default function AlertsPage() {
         <motion.div {...fadeUp} transition={{ delay: 0.15 }} className="glass-card rounded-xl p-6 mb-6 border-primary/20 text-center">
           <Bell className="w-10 h-10 text-slate-600 mx-auto mb-3" />
           <p className="text-sm text-slate-400 mb-3">{t("alerts.upgradeRequired")}</p>
-          <a href="/pricing" className="inline-flex px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors">
+          <a href={localizedPath(urlLang, "/pricing")} className="inline-flex px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors">
             {t("alerts.upgradeCta")}
           </a>
         </motion.div>
@@ -451,7 +453,7 @@ export default function AlertsPage() {
                       {Object.entries(entry.match_scores).slice(0, 5).map(([tid, score]) => (
                         <a
                           key={tid}
-                          href={`/dashboard/tender/${tid}`}
+                          href={localizedPath(urlLang, `/dashboard/tender/${tid}`)}
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-dark/60 border border-dark-border text-[10px] text-slate-400 hover:text-primary-light hover:border-primary/30 transition-colors"
                         >
                           <ExternalLink className="w-2.5 h-2.5" />

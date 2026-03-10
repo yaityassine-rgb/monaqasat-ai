@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CreditCard, Check, Crown, Zap, Shield } from "lucide-react";
 import { useSubscription, TIER_PRICES, type Tier } from "../../lib/use-subscription";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 const TIER_CONFIG: { key: Tier; icon: typeof Crown; color: string }[] = [
   { key: "free", icon: Zap, color: "text-slate-400" },
@@ -19,6 +20,7 @@ const fadeUp = {
 export default function SubscriptionPage() {
   const { t } = useTranslation();
   const { tier: currentTier, loading, currentPeriodEnd } = useSubscription();
+  const urlLang = useLang();
 
   return (
     <motion.div
@@ -106,7 +108,7 @@ export default function SubscriptionPage() {
                   </button>
                 ) : key === "free" ? null : (
                   <Link
-                    to="/pricing"
+                    to={localizedPath(urlLang, "/pricing")}
                     className="block w-full py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-center text-sm font-semibold text-white transition-colors"
                   >
                     {t("subscription.upgrade")}

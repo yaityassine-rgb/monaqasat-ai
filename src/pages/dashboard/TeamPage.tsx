@@ -18,6 +18,7 @@ import { useAuth } from "../../lib/auth-context";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { useSubscription } from "../../lib/use-subscription";
 import { Link } from "react-router-dom";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 interface Team {
   id: string;
@@ -59,6 +60,7 @@ export default function TeamPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { tier } = useSubscription();
+  const urlLang = useLang();
   const [team, setTeam] = useState<Team | null>(null);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [sharedTenders, setSharedTenders] = useState<SharedTender[]>([]);
@@ -191,7 +193,7 @@ export default function TeamPage() {
           </h2>
           <p className="text-slate-400 text-sm mb-6">{t("team.upgradeDesc")}</p>
           <Link
-            to="/pricing"
+            to={localizedPath(urlLang, "/pricing")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors"
           >
             {t("team.upgradeCta")}
@@ -357,7 +359,7 @@ export default function TeamPage() {
               sharedTenders.map((st) => (
                 <Link
                   key={st.id}
-                  to={`/dashboard/tender/${st.tender_id}`}
+                  to={localizedPath(urlLang, `/dashboard/tender/${st.tender_id}`)}
                   className="block glass-card rounded-xl p-4 hover:bg-white/[0.02] transition-colors"
                 >
                   <p className="text-sm font-medium text-white">{st.tender_id}</p>
@@ -385,7 +387,7 @@ export default function TeamPage() {
               sharedProposals.map((sp) => (
                 <Link
                   key={sp.id}
-                  to={`/dashboard/proposals/${sp.proposal_id}`}
+                  to={localizedPath(urlLang, `/dashboard/proposals/${sp.proposal_id}`)}
                   className="block glass-card rounded-xl p-4 hover:bg-white/[0.02] transition-colors"
                 >
                   <p className="text-sm font-medium text-white">{sp.proposal_id}</p>

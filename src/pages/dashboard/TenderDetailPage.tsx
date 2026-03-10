@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLang, localizedPath } from "../../lib/use-lang";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -71,6 +72,7 @@ export default function TenderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
+  const urlLang = useLang();
   const isRtl = lang === "ar";
 
   const tender = getTenders().find((t) => t.id === id);
@@ -114,7 +116,7 @@ export default function TenderDetailPage() {
             {t("tenderDetail.notFoundDesc")}
           </p>
           <Link
-            to="/dashboard"
+            to={localizedPath(urlLang, "/dashboard")}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
           >
             {isRtl ? (
@@ -170,7 +172,7 @@ export default function TenderDetailPage() {
       {/* Back Button */}
       <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
         <Link
-          to="/dashboard"
+          to={localizedPath(urlLang, "/dashboard")}
           className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-primary-light transition-colors mb-6"
         >
           {isRtl ? (

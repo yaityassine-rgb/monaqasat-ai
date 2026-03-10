@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 import { Mail, Lock, UserPlus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../lib/auth-context";
 import SEOHead from "../../components/SEOHead";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 export default function SignupPage() {
   const { t } = useTranslation();
   const { signUpWithEmail, signInWithGoogle } = useAuth();
+  const lang = useLang();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,7 +63,7 @@ export default function SignupPage() {
             <h2 className="text-xl font-bold text-white mb-2">{t("auth.checkEmail")}</h2>
             <p className="text-slate-400 text-sm mb-6">{t("auth.checkEmailDesc")}</p>
             <Link
-              to="/auth/login"
+              to={localizedPath(lang, "/auth/login")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors"
             >
               {t("auth.backToLogin")}
@@ -74,7 +76,7 @@ export default function SignupPage() {
 
   return (
     <>
-      <SEOHead title={t("auth.signupTitle")} />
+      <SEOHead title={t("seo.signupTitle")} description={t("seo.signupDesc")} noindex />
 
       <div className="min-h-screen flex items-center justify-center p-4">
         <motion.div
@@ -182,7 +184,7 @@ export default function SignupPage() {
 
             <p className="text-center text-sm text-slate-400 mt-6">
               {t("auth.hasAccount")}{" "}
-              <Link to="/auth/login" className="text-primary-light hover:text-primary font-medium">
+              <Link to={localizedPath(lang, "/auth/login")} className="text-primary-light hover:text-primary font-medium">
                 {t("auth.signInLink")}
               </Link>
             </p>

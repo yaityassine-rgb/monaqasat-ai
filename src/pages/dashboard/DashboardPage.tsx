@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLang, localizedPath } from "../../lib/use-lang";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -32,6 +33,7 @@ const PAGE_SIZE = 24;
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as LangKey;
+  const urlLang = useLang();
   const { user } = useAuth();
   const { tier, canUseFeature } = useSubscription();
 
@@ -161,7 +163,7 @@ export default function DashboardPage() {
           </div>
           {tier === "free" && (
             <Link
-              to="/pricing"
+              to={localizedPath(urlLang, "/pricing")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 text-xs font-medium text-primary-light hover:bg-primary/20 transition-colors"
             >
               <Crown className="w-3.5 h-3.5" />

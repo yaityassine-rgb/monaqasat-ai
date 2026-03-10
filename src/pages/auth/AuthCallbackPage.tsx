@@ -2,19 +2,21 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
+  const lang = useLang();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/dashboard/profile", { replace: true });
+        navigate(localizedPath(lang, "/dashboard/profile"), { replace: true });
       } else {
-        navigate("/auth/login", { replace: true });
+        navigate(localizedPath(lang, "/auth/login"), { replace: true });
       }
     });
-  }, [navigate]);
+  }, [navigate, lang]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

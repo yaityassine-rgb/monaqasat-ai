@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
+import { LanguageLayout, RootRedirect } from "../lib/use-lang";
 
 import HomePage from "../pages/HomePage";
 import AboutPage from "../pages/AboutPage";
@@ -29,38 +30,44 @@ import TeamPage from "../pages/dashboard/TeamPage";
 export default function Router() {
   return (
     <Routes>
-      <Route element={<Layout />}>
-        {/* Public pages */}
-        <Route index element={<HomePage />} />
-        <Route path="about" element={<AboutPage />} />
-        <Route path="pricing" element={<PricingPage />} />
-        <Route path="contact" element={<ContactPage />} />
+      {/* Root redirect: / → /en (or detected language) */}
+      <Route index element={<RootRedirect />} />
 
-        {/* Legal pages */}
-        <Route path="terms" element={<TermsPage />} />
-        <Route path="privacy" element={<PrivacyPage />} />
-        <Route path="refund" element={<RefundPage />} />
+      {/* All routes nested under /:lang */}
+      <Route path=":lang" element={<LanguageLayout />}>
+        <Route element={<Layout />}>
+          {/* Public pages */}
+          <Route index element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="pricing" element={<PricingPage />} />
+          <Route path="contact" element={<ContactPage />} />
 
-        {/* Auth pages */}
-        <Route path="auth/login" element={<LoginPage />} />
-        <Route path="auth/signup" element={<SignupPage />} />
-        <Route path="auth/callback" element={<AuthCallbackPage />} />
+          {/* Legal pages */}
+          <Route path="terms" element={<TermsPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="refund" element={<RefundPage />} />
 
-        {/* Dashboard pages (protected) */}
-        <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="dashboard/tender/:id" element={<ProtectedRoute><TenderDetailPage /></ProtectedRoute>} />
-        <Route path="dashboard/saved" element={<ProtectedRoute><SavedTendersPage /></ProtectedRoute>} />
-        <Route path="dashboard/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="dashboard/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
-        <Route path="dashboard/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
-        <Route path="dashboard/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
-        <Route path="dashboard/documents" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
-        <Route path="dashboard/proposals" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
-        <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
-        <Route path="dashboard/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+          {/* Auth pages */}
+          <Route path="auth/login" element={<LoginPage />} />
+          <Route path="auth/signup" element={<SignupPage />} />
+          <Route path="auth/callback" element={<AuthCallbackPage />} />
 
-        {/* Catch-all */}
-        <Route path="*" element={<NotFoundPage />} />
+          {/* Dashboard pages (protected) */}
+          <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="dashboard/tender/:id" element={<ProtectedRoute><TenderDetailPage /></ProtectedRoute>} />
+          <Route path="dashboard/saved" element={<ProtectedRoute><SavedTendersPage /></ProtectedRoute>} />
+          <Route path="dashboard/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="dashboard/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
+          <Route path="dashboard/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
+          <Route path="dashboard/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+          <Route path="dashboard/documents" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
+          <Route path="dashboard/proposals" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
+          <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
+          <Route path="dashboard/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+
+          {/* Catch-all within lang */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
       </Route>
     </Routes>
   );

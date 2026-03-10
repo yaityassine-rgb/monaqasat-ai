@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LayoutDashboard } from "lucide-react";
 import { NAV_LINKS } from "../lib/constants";
 import { useAuth } from "../lib/auth-context";
+import { useLang, localizedPath } from "../lib/use-lang";
 import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
 
@@ -12,6 +13,7 @@ export default function Navbar() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { user, loading } = useAuth();
+  const lang = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,7 +37,7 @@ export default function Navbar() {
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={localizedPath(lang, "/")} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-bold text-white">
             M
           </div>
@@ -47,11 +49,12 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map((link) => {
-            const isActive = pathname === link.path;
+            const to = localizedPath(lang, link.path);
+            const isActive = pathname === to;
             return (
               <Link
                 key={link.key}
-                to={link.path}
+                to={to}
                 className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
                     ? "text-white"
@@ -71,9 +74,9 @@ export default function Navbar() {
           })}
 
           <Link
-            to="/dashboard"
+            to={localizedPath(lang, "/dashboard")}
             className={`ms-2 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              pathname.startsWith("/dashboard")
+              pathname.includes("/dashboard")
                 ? "bg-primary/20 text-primary-light"
                 : "text-slate-400 hover:text-white"
             }`}
@@ -92,7 +95,7 @@ export default function Navbar() {
               <UserMenu />
             ) : (
               <Link
-                to="/auth/login"
+                to={localizedPath(lang, "/auth/login")}
                 className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 md:block"
               >
                 {t("nav.signIn")}
@@ -123,11 +126,12 @@ export default function Navbar() {
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
               {NAV_LINKS.map((link) => {
-                const isActive = pathname === link.path;
+                const to = localizedPath(lang, link.path);
+                const isActive = pathname === to;
                 return (
                   <Link
                     key={link.key}
-                    to={link.path}
+                    to={to}
                     className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                       isActive
                         ? "bg-primary/10 text-primary-light"
@@ -140,9 +144,9 @@ export default function Navbar() {
               })}
 
               <Link
-                to="/dashboard"
+                to={localizedPath(lang, "/dashboard")}
                 className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                  pathname.startsWith("/dashboard")
+                  pathname.includes("/dashboard")
                     ? "bg-primary/10 text-primary-light"
                     : "text-slate-300 hover:bg-white/5 hover:text-white"
                 }`}
@@ -153,14 +157,14 @@ export default function Navbar() {
 
               {user ? (
                 <Link
-                  to="/dashboard/profile"
+                  to={localizedPath(lang, "/dashboard/profile")}
                   className="mt-2 rounded-lg bg-primary/20 px-4 py-3 text-center text-sm font-semibold text-primary-light transition-all hover:bg-primary/30"
                 >
                   {t("auth.profile")}
                 </Link>
               ) : (
                 <Link
-                  to="/auth/login"
+                  to={localizedPath(lang, "/auth/login")}
                   className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-all hover:bg-primary-dark"
                 >
                   {t("nav.signIn")}

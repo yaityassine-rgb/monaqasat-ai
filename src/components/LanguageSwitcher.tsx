@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLang, SUPPORTED_LANGS } from "../lib/use-lang";
 
 const LANGUAGES = [
   { code: "en", label: "English", short: "EN" },
@@ -10,11 +12,14 @@ const LANGUAGES = [
 ] as const;
 
 export default function LanguageSwitcher() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentLang = useLang();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const current = LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
+  const current = LANGUAGES.find((l) => l.code === currentLang) ?? LANGUAGES[0];
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -27,7 +32,10 @@ export default function LanguageSwitcher() {
   }, []);
 
   function switchLanguage(code: string) {
-    i18n.changeLanguage(code);
+    if (!SUPPORTED_LANGS.includes(code as typeof SUPPORTED_LANGS[number])) return;
+    // Replace current lang prefix in the URL path
+    const rest = location.pathname.replace(/^\/[a-z]{2}/, "");
+    navigate(`/${code}${rest || "/"}`);
     setOpen(false);
   }
 
@@ -56,7 +64,7 @@ export default function LanguageSwitcher() {
                 key={lang.code}
                 onClick={() => switchLanguage(lang.code)}
                 className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
-                  lang.code === i18n.language
+                  lang.code === currentLang
                     ? "bg-primary/20 text-primary-light"
                     : "text-slate-300 hover:bg-white/5 hover:text-white"
                 }`}

@@ -4,11 +4,14 @@ import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Clock, CheckCircle } from "lucide-react";
 import SEOHead from "../components/SEOHead";
 import { COMPANY } from "../lib/constants";
+import { useLang } from "../lib/use-lang";
+import { buildOrganizationJsonLd, buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 const SUBJECT_KEYS = ["general", "sales", "support", "partnership", "data"] as const;
 
 export default function ContactPage() {
   const { t } = useTranslation();
+  const lang = useLang();
   const [sent, setSent] = useState(false);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -30,7 +33,15 @@ export default function ContactPage() {
 
   return (
     <>
-      <SEOHead title={t("contact.title")} description={t("contact.subtitle")} />
+      <SEOHead
+        title={t("seo.contactTitle")}
+        description={t("seo.contactDesc")}
+        path="/contact"
+        jsonLd={[
+          buildOrganizationJsonLd(lang),
+          buildBreadcrumbJsonLd(lang, [{ name: t("nav.contact"), path: "/contact" }]),
+        ]}
+      />
 
       <section className="relative overflow-hidden py-24">
         <div className="pointer-events-none absolute -top-40 start-1/3 h-[500px] w-[500px] rounded-full bg-primary/8 blur-[120px]" />

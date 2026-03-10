@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import SEOHead from "../components/SEOHead";
 import { COUNTRIES, SECTORS } from "../lib/constants";
+import { useLang, localizedPath } from "../lib/use-lang";
+import { buildOrganizationJsonLd, buildWebApplicationJsonLd, buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 /* ------------------------------------------------------------------ */
 /*  Animation helpers                                                  */
@@ -82,13 +84,20 @@ const STATS = [
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
-  const lang = (i18n.language || "en") as "en" | "ar" | "fr";
+  const lang = useLang();
+  const displayLang = (i18n.language || "en") as "en" | "ar" | "fr";
 
   return (
     <>
       <SEOHead
         title={t("seo.homeTitle")}
         description={t("seo.homeDesc")}
+        path=""
+        jsonLd={[
+          buildOrganizationJsonLd(lang),
+          buildWebApplicationJsonLd(lang),
+          buildBreadcrumbJsonLd(lang, []),
+        ]}
       />
 
       {/* ============================================================ */}
@@ -143,14 +152,14 @@ export default function HomePage() {
               className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
               <Link
-                to="/dashboard"
+                to={localizedPath(lang, "/dashboard")}
                 className="group flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30"
               >
                 {t("hero.cta")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
               </Link>
               <Link
-                to="/about"
+                to={localizedPath(lang, "/about")}
                 className="flex items-center gap-2 rounded-xl border border-dark-border px-8 py-3.5 text-base font-semibold text-slate-300 transition-all hover:border-slate-600 hover:text-white"
               >
                 {t("hero.ctaSecondary")}
@@ -179,7 +188,7 @@ export default function HomePage() {
                 >
                   <span className="text-lg">{country.flag}</span>
                   <span className="text-xs font-medium text-slate-400">
-                    {country.name[lang] ?? country.name.en}
+                    {country.name[displayLang] ?? country.name.en}
                   </span>
                 </motion.div>
               ))}
@@ -449,14 +458,14 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              to="/dashboard"
+              to={localizedPath(lang, "/dashboard")}
               className="group flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30"
             >
               {t("hero.cta")}
               <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Link>
             <Link
-              to="/pricing"
+              to={localizedPath(lang, "/pricing")}
               className="flex items-center gap-2 rounded-xl border border-dark-border px-8 py-3.5 text-base font-semibold text-slate-300 transition-all hover:border-slate-600 hover:text-white"
             >
               {t("nav.pricing")}

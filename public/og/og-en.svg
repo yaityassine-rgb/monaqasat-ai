@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0f1a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="80" y="480" width="200" height="6" rx="3" fill="url(#accent)"/>
+  <rect x="60" y="60" width="70" height="70" rx="16" fill="#3b82f6"/>
+  <text x="95" y="110" font-family="Arial,sans-serif" font-size="40" font-weight="bold" fill="white" text-anchor="middle">M</text>
+  <text x="80" y="240" font-family="Arial,sans-serif" font-size="56" font-weight="bold" fill="white">Monaqasat AI</text>
+  <text x="80" y="320" font-family="Arial,sans-serif" font-size="30" fill="#94a3b8">Government Tender Intelligence</text>
+  <text x="80" y="370" font-family="Arial,sans-serif" font-size="30" fill="#94a3b8">for the MENA Region</text>
+  <text x="80" y="450" font-family="Arial,sans-serif" font-size="22" fill="#64748b">AI-powered procurement intelligence — Find and win contracts faster</text>
+  <text x="1120" y="590" font-family="Arial,sans-serif" font-size="18" fill="#475569" text-anchor="end">monaqasat.ai</text>
+</svg>

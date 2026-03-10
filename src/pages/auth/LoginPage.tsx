@@ -5,11 +5,13 @@ import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, AlertCircle } from "lucide-react";
 import { useAuth } from "../../lib/auth-context";
 import SEOHead from "../../components/SEOHead";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { signInWithEmail, signInWithGoogle } = useAuth();
+  const lang = useLang();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +28,7 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      navigate("/dashboard");
+      navigate(localizedPath(lang, "/dashboard"));
     }
   };
 
@@ -38,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <SEOHead title={t("auth.loginTitle")} />
+      <SEOHead title={t("seo.loginTitle")} description={t("seo.loginDesc")} noindex />
 
       <div className="min-h-screen flex items-center justify-center p-4">
         <motion.div
@@ -130,7 +132,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-slate-400 mt-6">
               {t("auth.noAccount")}{" "}
-              <Link to="/auth/signup" className="text-primary-light hover:text-primary font-medium">
+              <Link to={localizedPath(lang, "/auth/signup")} className="text-primary-light hover:text-primary font-medium">
                 {t("auth.signUpLink")}
               </Link>
             </p>

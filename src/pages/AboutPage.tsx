@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Globe, BrainCircuit, MessageSquareText, Scale, Building, MapPin, Mail } from "lucide-react";
 import SEOHead from "../components/SEOHead";
 import { COMPANY } from "../lib/constants";
+import { useLang } from "../lib/use-lang";
+import { buildOrganizationJsonLd, buildBreadcrumbJsonLd } from "../lib/structured-data";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -26,10 +28,19 @@ const VALUE_ICONS = [
 
 export default function AboutPage() {
   const { t } = useTranslation();
+  const lang = useLang();
 
   return (
     <>
-      <SEOHead title={t("about.title")} description={t("about.subtitle")} />
+      <SEOHead
+        title={t("seo.aboutTitle")}
+        description={t("seo.aboutDesc")}
+        path="/about"
+        jsonLd={[
+          buildOrganizationJsonLd(lang),
+          buildBreadcrumbJsonLd(lang, [{ name: t("nav.about"), path: "/about" }]),
+        ]}
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden py-24">

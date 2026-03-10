@@ -15,6 +15,7 @@ import { useAuth } from "../../lib/auth-context";
 import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import { useSubscription } from "../../lib/use-subscription";
 import { Link } from "react-router-dom";
+import { useLang, localizedPath } from "../../lib/use-lang";
 
 interface UserDocument {
   id: string;
@@ -37,6 +38,7 @@ export default function DocumentsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { tier } = useSubscription();
+  const urlLang = useLang();
   const [documents, setDocuments] = useState<UserDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -155,7 +157,7 @@ export default function DocumentsPage() {
             {t("documents.upgradeDesc")}
           </p>
           <Link
-            to="/pricing"
+            to={localizedPath(urlLang, "/pricing")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-colors"
           >
             {t("documents.upgradeCta")}

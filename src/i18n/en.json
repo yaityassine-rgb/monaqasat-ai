@@ -372,7 +372,23 @@
   },
   "seo": {
     "homeTitle": "Monaqasat AI — Government Tender Intelligence for MENA",
-    "homeDesc": "AI-powered procurement intelligence for MENA. Find and win government contracts faster."
+    "homeDesc": "AI-powered procurement intelligence for MENA. Find and win government contracts faster.",
+    "aboutTitle": "About Monaqasat AI",
+    "aboutDesc": "Learn about Monaqasat AI — the AI-powered platform helping businesses win government tenders across the MENA region.",
+    "pricingTitle": "Pricing & Plans",
+    "pricingDesc": "Choose the right Monaqasat AI plan. From free tender search to unlimited AI-powered bid proposals and analytics.",
+    "contactTitle": "Contact Us",
+    "contactDesc": "Get in touch with the Monaqasat AI team for sales inquiries, support, or partnership opportunities.",
+    "termsTitle": "Terms of Service",
+    "termsDesc": "Read the Monaqasat AI terms of service governing your use of our government tender intelligence platform.",
+    "privacyTitle": "Privacy Policy",
+    "privacyDesc": "Learn how Monaqasat AI collects, uses, and protects your personal data.",
+    "refundTitle": "Refund Policy",
+    "refundDesc": "Understand Monaqasat AI's refund and cancellation policy for subscription plans.",
+    "loginTitle": "Sign In",
+    "loginDesc": "Sign in to your Monaqasat AI account to access government tenders and AI-powered insights.",
+    "signupTitle": "Create Account",
+    "signupDesc": "Create your free Monaqasat AI account and start finding government tenders across the MENA region."
   },
   "notFound": {
     "title": "404",

@@ -5,6 +5,8 @@ import { Check, ChevronDown, Sparkles, Zap, Crown, Shield, Loader2 } from "lucid
 import { useAuth } from "../lib/auth-context";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import SEOHead from "../components/SEOHead";
+import { useLang, localizedPath } from "../lib/use-lang";
+import { buildOrganizationJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd } from "../lib/structured-data";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -88,23 +90,24 @@ const TIERS: Tier[] = [
 export default function PricingPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const lang = useLang();
   const [yearly, setYearly] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   const handleCheckout = async (tierKey: string) => {
     if (!user) {
-      window.location.href = "/auth/signup";
+      window.location.href = localizedPath(lang, "/auth/signup");
       return;
     }
 
     if (tierKey === "free") {
-      window.location.href = "/dashboard";
+      window.location.href = localizedPath(lang, "/dashboard");
       return;
     }
 
     if (!isSupabaseConfigured) {
-      window.location.href = "/dashboard";
+      window.location.href = localizedPath(lang, "/dashboard");
       return;
     }
 
@@ -128,7 +131,7 @@ export default function PricingPage() {
     } catch (err) {
       console.error("Checkout error:", err);
       // Fallback: redirect to dashboard
-      window.location.href = "/dashboard/subscription";
+      window.location.href = localizedPath(lang, "/dashboard/subscription");
     } finally {
       setCheckoutLoading(null);
     }
@@ -136,7 +139,21 @@ export default function PricingPage() {
 
   return (
     <>
-      <SEOHead title={t("pricing.title")} description={t("pricing.subtitle")} />
+      <SEOHead
+        title={t("seo.pricingTitle")}
+        description={t("seo.pricingDesc")}
+        path="/pricing"
+        jsonLd={[
+          buildOrganizationJsonLd(lang),
+          buildBreadcrumbJsonLd(lang, [{ name: t("nav.pricing"), path: "/pricing" }]),
+          buildFaqJsonLd(
+            [1, 2, 3, 4, 5].map((n) => ({
+              question: t(`pricing.faq.q${n}.q`),
+              answer: t(`pricing.faq.q${n}.a`),
+            }))
+          ),
+        ]}
+      />
 
       {/* Hero */}
       <section className="relative overflow-hidden py-24">

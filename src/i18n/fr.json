@@ -372,7 +372,23 @@
   },
   "seo": {
     "homeTitle": "Monaqasat AI — Intelligence des marchés publics pour la région MENA",
-    "homeDesc": "Intelligence d'approvisionnement par l'IA pour la région MENA. Trouvez et remportez les marchés publics plus vite."
+    "homeDesc": "Intelligence d'approvisionnement par l'IA pour la région MENA. Trouvez et remportez les marchés publics plus vite.",
+    "aboutTitle": "À propos de Monaqasat AI",
+    "aboutDesc": "Découvrez Monaqasat AI — la plateforme d'IA aidant les entreprises à remporter les marchés publics dans la région MENA.",
+    "pricingTitle": "Tarifs et formules",
+    "pricingDesc": "Choisissez la formule Monaqasat AI adaptée. De la recherche gratuite aux propositions et analyses illimitées par IA.",
+    "contactTitle": "Nous contacter",
+    "contactDesc": "Contactez l'équipe Monaqasat AI pour vos demandes commerciales, le support ou les opportunités de partenariat.",
+    "termsTitle": "Conditions d'utilisation",
+    "termsDesc": "Consultez les conditions d'utilisation de Monaqasat AI régissant votre utilisation de notre plateforme.",
+    "privacyTitle": "Politique de confidentialité",
+    "privacyDesc": "Découvrez comment Monaqasat AI collecte, utilise et protège vos données personnelles.",
+    "refundTitle": "Politique de remboursement",
+    "refundDesc": "Comprenez la politique de remboursement et d'annulation de Monaqasat AI pour les abonnements.",
+    "loginTitle": "Se connecter",
+    "loginDesc": "Connectez-vous à votre compte Monaqasat AI pour accéder aux appels d'offres et aux analyses IA.",
+    "signupTitle": "Créer un compte",
+    "signupDesc": "Créez votre compte gratuit Monaqasat AI et commencez à trouver les marchés publics dans la région MENA."
   },
   "notFound": {
     "title": "404",

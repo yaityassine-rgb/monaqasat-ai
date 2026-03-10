@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, MapPin, Heart } from "lucide-react";
 import { COMPANY, NAV_LINKS, LEGAL_LINKS } from "../lib/constants";
+import { useLang, localizedPath } from "../lib/use-lang";
 
 export default function Footer() {
   const { t } = useTranslation();
+  const lang = useLang();
   const year = new Date().getFullYear();
 
   return (
@@ -20,7 +22,7 @@ export default function Footer() {
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
                   <Link
-                    to={link.path}
+                    to={localizedPath(lang, link.path)}
                     className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                   >
                     {t(`nav.${link.key}`)}
@@ -38,7 +40,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  to="/dashboard"
+                  to={localizedPath(lang, "/dashboard")}
                   className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                 >
                   {t("nav.dashboard")}
@@ -46,7 +48,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/pricing"
+                  to={localizedPath(lang, "/pricing")}
                   className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                 >
                   {t("nav.pricing")}
@@ -54,7 +56,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/dashboard/analytics"
+                  to={localizedPath(lang, "/dashboard/analytics")}
                   className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                 >
                   {t("analytics.title")}
@@ -62,7 +64,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/dashboard/profile"
+                  to={localizedPath(lang, "/dashboard/profile")}
                   className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                 >
                   {t("profile.title")}
@@ -80,7 +82,7 @@ export default function Footer() {
               {LEGAL_LINKS.map((link) => (
                 <li key={link.key}>
                   <Link
-                    to={link.path}
+                    to={localizedPath(lang, link.path)}
                     className="text-sm text-slate-400 transition-colors hover:text-primary-light"
                   >
                     {t(`footer.${link.key}`)}
