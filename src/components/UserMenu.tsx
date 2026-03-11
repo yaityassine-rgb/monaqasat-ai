@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Settings, CreditCard, Bell, FileText, FolderOpen, Users, ChevronDown, Globe, Handshake, ShieldCheck, Briefcase, Shield } from "lucide-react";
+import { User, LogOut, LayoutDashboard, ChevronDown, Shield } from "lucide-react";
 import { useAuth } from "../lib/auth-context";
 import { useAdmin } from "../lib/use-admin";
 import { useLang, localizedPath } from "../lib/use-lang";
@@ -43,25 +43,20 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full mt-2 w-56 rounded-xl glass-card border border-dark-border shadow-xl shadow-black/30 py-1 z-50">
+        <div className="absolute end-0 top-full mt-2 w-52 rounded-xl glass-card border border-dark-border shadow-xl shadow-black/30 py-1 z-50">
           <div className="px-4 py-3 border-b border-dark-border">
             <p className="text-sm font-medium text-slate-200 truncate">{email}</p>
             <p className="text-xs text-slate-500 mt-0.5">{t("auth.freeAccount")}</p>
           </div>
 
-          {isAdmin && (
-            <>
-              <Link
-                to={localizedPath(lang, "/admin")}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-accent font-medium hover:bg-accent/5 transition-colors"
-              >
-                <Shield className="w-4 h-4" />
-                {t("nav.adminPanel", "Admin Panel")}
-              </Link>
-              <div className="border-t border-dark-border my-1" />
-            </>
-          )}
+          <Link
+            to={localizedPath(lang, "/dashboard")}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            {t("nav.dashboard")}
+          </Link>
 
           <Link
             to={localizedPath(lang, "/dashboard/profile")}
@@ -72,108 +67,16 @@ export default function UserMenu() {
             {t("auth.profile")}
           </Link>
 
-          <Link
-            to={localizedPath(lang, "/dashboard/subscription")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <CreditCard className="w-4 h-4" />
-            {t("auth.subscription")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/proposals")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <FileText className="w-4 h-4" />
-            {t("auth.proposals")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/documents")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <FolderOpen className="w-4 h-4" />
-            {t("auth.documents")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/alerts")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Bell className="w-4 h-4" />
-            {t("auth.alerts")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/team")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Users className="w-4 h-4" />
-            {t("auth.team")}
-          </Link>
-
-          <div className="border-t border-dark-border my-1" />
-
-          <Link
-            to={localizedPath(lang, "/dashboard/grants")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Globe className="w-4 h-4" />
-            {t("auth.grants")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/ppp")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Handshake className="w-4 h-4" />
-            {t("auth.ppp")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/partners")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Users className="w-4 h-4" />
-            {t("auth.partners")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/prequalification")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            {t("auth.preQual")}
-          </Link>
-
-          <Link
-            to={localizedPath(lang, "/dashboard/consulting")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Briefcase className="w-4 h-4" />
-            {t("auth.consulting")}
-          </Link>
-
-          <div className="border-t border-dark-border my-1" />
-
-          <Link
-            to={localizedPath(lang, "/dashboard/profile")}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-white/5 transition-colors"
-          >
-            <Settings className="w-4 h-4" />
-            {t("auth.settings")}
-          </Link>
+          {isAdmin && (
+            <Link
+              to={localizedPath(lang, "/admin")}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-accent font-medium hover:bg-accent/5 transition-colors"
+            >
+              <Shield className="w-4 h-4" />
+              {t("nav.adminPanel", "Admin Panel")}
+            </Link>
+          )}
 
           <div className="border-t border-dark-border mt-1 pt-1">
             <button

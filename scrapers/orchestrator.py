@@ -97,6 +97,27 @@ SCRAPER_REGISTRY = {
     "companies_vendors": {"name": "Companies: Vendor Registries", "type": "companies", "module": "scrape_companies_vendors"},
     "companies_directories": {"name": "Companies: Directories", "type": "companies", "module": "scrape_companies_directories"},
     "companies_seed": {"name": "Companies: Seed Data", "type": "companies", "module": "scrape_companies_seed"},
+    # Grants (new sources)
+    "grants_adb": {"name": "Grants: Asian Dev Bank", "type": "grants", "module": "scrape_grants_adb"},
+    "grants_idb_latam": {"name": "Grants: Inter-American Dev Bank", "type": "grants", "module": "scrape_grants_idb"},
+    "grants_opec": {"name": "Grants: OPEC Fund", "type": "grants", "module": "scrape_grants_opec"},
+    "grants_afesd": {"name": "Grants: Arab Fund (AFESD)", "type": "grants", "module": "scrape_grants_afesd"},
+    "grants_ocds": {"name": "Grants: Open Contracting (OCDS)", "type": "grants", "module": "scrape_grants_ocds"},
+    "grants_un_habitat": {"name": "Grants: UN-Habitat & Agencies", "type": "grants", "module": "scrape_grants_un_habitat"},
+    # Tenders (GCC expansion)
+    "tenders_nupco": {"name": "Tenders: Saudi NUPCO", "type": "tenders", "module": "scrape_nupco"},
+    "tenders_dubai_esupply": {"name": "Tenders: Dubai eSupply", "type": "tenders", "module": "scrape_dubai_esupply"},
+    "tenders_sharjah": {"name": "Tenders: Sharjah eProcurement", "type": "tenders", "module": "scrape_sharjah"},
+    "tenders_uae_mof": {"name": "Tenders: UAE Ministry of Finance", "type": "tenders", "module": "scrape_uae_mof"},
+    "tenders_oman_et": {"name": "Tenders: Oman eTendering", "type": "tenders", "module": "scrape_oman_etendering"},
+    "tenders_bahrain_et": {"name": "Tenders: Bahrain eTendering", "type": "tenders", "module": "scrape_bahrain_etendering"},
+    # Tenders (North Africa & Levant expansion)
+    "tenders_tunisia": {"name": "Tenders: Tunisia TUNEPS", "type": "tenders", "module": "scrape_tunisia"},
+    "tenders_bomop": {"name": "Tenders: Algeria BOMOP", "type": "tenders", "module": "scrape_bomop"},
+    "tenders_egypt_gpp": {"name": "Tenders: Egypt GPP", "type": "tenders", "module": "scrape_egypt_gpp"},
+    "tenders_iraq": {"name": "Tenders: Iraq MOP/IOM", "type": "tenders", "module": "scrape_iraq"},
+    "tenders_morocco_mp": {"name": "Tenders: Morocco Marchés Publics", "type": "tenders", "module": "scrape_morocco_marchespublics"},
+    "tenders_jordan_gtd": {"name": "Tenders: Jordan GTD", "type": "tenders", "module": "scrape_jordan_gtd"},
     # Pre-Qualification
     "prequalification": {"name": "Pre-Qualification: MENA", "type": "preq", "module": "scrape_prequalification"},
     # Market Intelligence

@@ -159,8 +159,38 @@ def save_tenders(tenders: list[dict], source: str) -> None:
     logging.info(f"Saved {len(tenders)} tenders to {out_file}")
 
 
+def _is_recent_grant(grant: dict, min_year: int = 2020) -> bool:
+    """Return True if the grant's most recent date is from min_year or later."""
+    most_recent = 0
+    # Check top-level date fields
+    for key in ("publish_date", "application_deadline"):
+        val = grant.get(key, "")
+        if val and isinstance(val, str) and len(val) >= 4:
+            try:
+                most_recent = max(most_recent, int(val[:4]))
+            except ValueError:
+                pass
+    # Check metadata dates (IATI scrapers)
+    meta = grant.get("metadata", {}) or {}
+    for key in ("planned_start", "actual_start", "planned_end", "actual_end"):
+        val = meta.get(key, "")
+        if val and isinstance(val, str) and len(val) >= 4:
+            try:
+                most_recent = max(most_recent, int(val[:4]))
+            except ValueError:
+                pass
+    # If we found dates and the most recent is ancient, reject
+    if most_recent > 0 and most_recent < min_year:
+        return False
+    return True  # no dates found or has recent date — keep it
+
+
 def save_grants(grants: list[dict], source: str) -> None:
-    """Save scraped grants to a JSON file."""
+    """Save scraped grants to a JSON file. Filters out ancient grants (pre-2020)."""
+    before = len(grants)
+    grants = [g for g in grants if _is_recent_grant(g)]
+    if before != len(grants):
+        logging.info(f"Filtered {before - len(grants)} ancient grants from {source} (pre-2020)")
     out_file = GRANTS_DIR / f"{source}.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(grants, f, ensure_ascii=False, indent=2)

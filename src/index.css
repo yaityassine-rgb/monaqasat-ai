@@ -77,9 +77,20 @@ body:has([data-sidebar="collapsed"]) .admin-main {
   margin-inline-start: 4rem;
 }
 
+/* Dashboard layout: offset main content by sidebar width */
+.dashboard-main {
+  margin-inline-start: 15rem;
+  transition: margin 0.2s;
+}
+
+body:has([data-sidebar-type="dashboard"][data-sidebar="collapsed"]) .dashboard-main {
+  margin-inline-start: 4rem;
+}
+
 /* Responsive: stack on mobile */
 @media (max-width: 768px) {
-  .admin-main {
+  .admin-main,
+  .dashboard-main {
     margin-inline-start: 0 !important;
   }
 }

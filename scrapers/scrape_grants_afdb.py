@@ -359,6 +359,18 @@ def scrape() -> list[dict]:
                     publish_date = actual_start or planned_start or ""
                     deadline = planned_end or actual_end or ""
 
+                    # Skip ancient projects — only include 2020+
+                    all_dates = [planned_start, actual_start, planned_end, actual_end]
+                    most_recent_year = 0
+                    for d in all_dates:
+                        if d and len(d) >= 4:
+                            try:
+                                most_recent_year = max(most_recent_year, int(d[:4]))
+                            except ValueError:
+                                pass
+                    if most_recent_year > 0 and most_recent_year < 2020:
+                        continue
+
                     # Sectors
                     primary_sector, sectors_list = _extract_sectors(act)
 

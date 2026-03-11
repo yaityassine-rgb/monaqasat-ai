@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Layout from "../components/Layout";
+import DashboardLayout from "../components/DashboardLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AdminRoute from "../components/AdminRoute";
 import { LanguageLayout, RootRedirect } from "../lib/use-lang";
@@ -64,44 +65,25 @@ export default function Router() {
 
       {/* All routes nested under /:lang */}
       <Route path=":lang" element={<LanguageLayout />}>
-        <Route element={<Layout />}>
-          {/* Public pages */}
-          <Route index element={<HomePage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="pricing" element={<PricingPage />} />
-          <Route path="contact" element={<ContactPage />} />
-
-          {/* Legal pages */}
-          <Route path="terms" element={<TermsPage />} />
-          <Route path="privacy" element={<PrivacyPage />} />
-          <Route path="refund" element={<RefundPage />} />
-
-          {/* Auth pages */}
-          <Route path="auth/login" element={<LoginPage />} />
-          <Route path="auth/signup" element={<SignupPage />} />
-          <Route path="auth/callback" element={<AuthCallbackPage />} />
-
-          {/* Dashboard pages (protected) */}
-          <Route path="dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="dashboard/tender/:id" element={<ProtectedRoute><TenderDetailPage /></ProtectedRoute>} />
-          <Route path="dashboard/saved" element={<ProtectedRoute><SavedTendersPage /></ProtectedRoute>} />
-          <Route path="dashboard/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="dashboard/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
-          <Route path="dashboard/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
-          <Route path="dashboard/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
-          <Route path="dashboard/documents" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
-          <Route path="dashboard/proposals" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
-          <Route path="dashboard/proposals/:id" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
-          <Route path="dashboard/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
-          <Route path="dashboard/grants" element={<ProtectedRoute><GrantsPage /></ProtectedRoute>} />
-          <Route path="dashboard/grants/:id" element={<ProtectedRoute><GrantDetailPage /></ProtectedRoute>} />
-          <Route path="dashboard/ppp" element={<ProtectedRoute><PPPPage /></ProtectedRoute>} />
-          <Route path="dashboard/partners" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
-          <Route path="dashboard/prequalification" element={<ProtectedRoute><PreQualificationPage /></ProtectedRoute>} />
-          <Route path="dashboard/consulting" element={<ProtectedRoute><ConsultingPage /></ProtectedRoute>} />
-
-          {/* Catch-all within lang */}
-          <Route path="*" element={<NotFoundPage />} />
+        {/* Dashboard pages — own layout with sidebar */}
+        <Route path="dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+          <Route index element={<DashboardPage />} />
+          <Route path="tender/:id" element={<TenderDetailPage />} />
+          <Route path="saved" element={<SavedTendersPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="subscription" element={<SubscriptionPage />} />
+          <Route path="alerts" element={<AlertsPage />} />
+          <Route path="documents" element={<DocumentsPage />} />
+          <Route path="proposals" element={<ProposalPage />} />
+          <Route path="proposals/:id" element={<ProposalPage />} />
+          <Route path="team" element={<TeamPage />} />
+          <Route path="grants" element={<GrantsPage />} />
+          <Route path="grants/:id" element={<GrantDetailPage />} />
+          <Route path="ppp" element={<PPPPage />} />
+          <Route path="partners" element={<PartnersPage />} />
+          <Route path="prequalification" element={<PreQualificationPage />} />
+          <Route path="consulting" element={<ConsultingPage />} />
         </Route>
 
         {/* Admin pages (separate layout, no Navbar/Footer) */}
@@ -125,6 +107,21 @@ export default function Router() {
           <Route path="content" element={<Suspense fallback={<AdminFallback />}><ContentManagementPage /></Suspense>} />
           <Route path="logs" element={<Suspense fallback={<AdminFallback />}><SystemLogsPage /></Suspense>} />
           <Route path="settings" element={<Suspense fallback={<AdminFallback />}><AdminSettingsPage /></Suspense>} />
+        </Route>
+
+        {/* Public pages (Layout with Navbar/Footer) */}
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="pricing" element={<PricingPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="terms" element={<TermsPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="refund" element={<RefundPage />} />
+          <Route path="auth/login" element={<LoginPage />} />
+          <Route path="auth/signup" element={<SignupPage />} />
+          <Route path="auth/callback" element={<AuthCallbackPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>
     </Routes>

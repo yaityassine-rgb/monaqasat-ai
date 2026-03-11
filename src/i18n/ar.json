@@ -451,6 +451,15 @@
     "consulting": "الاستشارات",
     "credits": "رصيد AI"
   },
+  "sidebar": {
+    "main": "الرئيسية",
+    "workspace": "مساحة العمل",
+    "opportunities": "الفرص",
+    "account": "الحساب",
+    "saved": "المناقصات المحفوظة",
+    "analytics": "التحليلات",
+    "collapse": "طي"
+  },
   "analysis": {
     "title": "تحليل بالذكاء الاصطناعي",
     "runAnalysis": "تشغيل التحليل",

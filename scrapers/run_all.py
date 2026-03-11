@@ -99,6 +99,20 @@ def main(incremental: bool = False):
         ("QatarEnergy", "scrape_qatarenergy", {}),
         ("Morocco MASEN", "scrape_masen", {}),
         ("Kurdistan KEPS", "scrape_kurdistan", {}),
+        # --- GCC expansion (new) ---
+        ("Saudi NUPCO", "scrape_nupco", {}),
+        ("Dubai eSupply", "scrape_dubai_esupply", {}),
+        ("Sharjah eProcurement", "scrape_sharjah", {}),
+        ("UAE Ministry of Finance", "scrape_uae_mof", {}),
+        ("Oman eTendering", "scrape_oman_etendering", {}),
+        ("Bahrain eTendering", "scrape_bahrain_etendering", {}),
+        # --- North Africa & Levant expansion (new) ---
+        ("Tunisia TUNEPS", "scrape_tunisia", {}),
+        ("Algeria BOMOP", "scrape_bomop", {}),
+        ("Egypt GPP", "scrape_egypt_gpp", {}),
+        ("Iraq MOP/IOM", "scrape_iraq", {}),
+        ("Morocco Marchés Publics", "scrape_morocco_marchespublics", {}),
+        ("Jordan GTD", "scrape_jordan_gtd", {}),
     ]
 
     total = 0

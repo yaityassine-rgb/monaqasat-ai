@@ -451,6 +451,15 @@
     "consulting": "Conseil",
     "credits": "Crédits IA"
   },
+  "sidebar": {
+    "main": "Principal",
+    "workspace": "Espace de travail",
+    "opportunities": "Opportunités",
+    "account": "Compte",
+    "saved": "Appels d'offres sauvegardés",
+    "analytics": "Analytique",
+    "collapse": "Réduire"
+  },
   "analysis": {
     "title": "Analyse IA",
     "runAnalysis": "Lancer l'analyse IA",

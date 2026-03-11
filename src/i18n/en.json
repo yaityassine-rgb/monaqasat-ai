@@ -451,6 +451,15 @@
     "consulting": "Consulting",
     "credits": "AI Credits"
   },
+  "sidebar": {
+    "main": "Main",
+    "workspace": "Workspace",
+    "opportunities": "Opportunities",
+    "account": "Account",
+    "saved": "Saved Tenders",
+    "analytics": "Analytics",
+    "collapse": "Collapse"
+  },
   "analysis": {
     "title": "AI Analysis",
     "runAnalysis": "Run AI Analysis",
